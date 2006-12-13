@@ -1,0 +1,2 @@
+jflex Scanner.jflex &&\
+echo -e "\n\n Generating Parser\n\n" &&  java -jar ~/development/HULogic/libs/java-cup-11a.jar -symbols Sym -parser Parser Parser.cup

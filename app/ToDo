@@ -1,0 +1,12 @@
+Fehler und Vorschlagsliste:
+
+Fehler:
+05-11-06-01: Wenn man games startet ist das Fenster so klein, daß nur das Menü zu sehen ist. 
+				Öffnet man dann einen Graph, so wird das Fenster nicht vergrößert. Dummerweise, wenn man 
+				das Fenster dann größer zieht, ist das Unter-Fenster mit dem Graphen nicht sichtbar 
+				und daher auch nicht vergrößerbar. Man muß dann Games schließen und neu starten.
+				
+Wunschliste:
+05-11-07-01: Man braucht in den Algorithmen vielleicht auch sowas wie "selectionRequired" mit dem der 
+				Algorithmus angeben kann, dass er auch gerne den gerade selektierten Untergraph hätte. 
+				Der muß ihn dann übergeben werden.

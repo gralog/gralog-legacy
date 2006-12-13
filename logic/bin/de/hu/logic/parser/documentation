@@ -1,0 +1,30 @@
+
+Documentation for the modal logic specifications.
+
+Example formula
+
+
+
+
+<logic type="modal">
+  <formula name="phi">   
+  \mu X . \nu Y. X \vee Y \wedge Z
+  </formula>
+</logic>
+
+
+
+
+TAGS:
+
+logic 
+   attributes: 
+      type   specifies the logic used. in this case: modal
+   
+   
+formula
+   attributes:
+     name  gives the formula a name for future reference
+           may be omitted
+           
+           

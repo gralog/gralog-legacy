@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Tue Oct 31 19:17:12 CET 2006
+onejar.license.required=false
+manifest.classpath=.
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=dist/games.jar
+manifest.mergeall=true
+manifest.mainclass=de.hu.games.demo.GamesApp
+manifest.file=META-INF/MANIFEST.MF
+jarname.isextern=false
+onejar.expand=
+excludes=<jar|java-cup-11a.jar>
+includes=
