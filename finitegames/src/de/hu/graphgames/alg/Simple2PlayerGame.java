@@ -26,14 +26,14 @@ import java.util.Set;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Subgraph;
 
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.alg.Algorithm;
-import de.hu.games.graph.alg.AlgorithmResult;
-import de.hu.games.graph.alg.AlgorithmResultContent;
-import de.hu.games.graph.alg.InvalidPropertyValuesException;
-import de.hu.games.jgrapht.graph.SubgraphFactory;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.alg.Algorithm;
+import de.hu.gralog.graph.alg.AlgorithmResult;
+import de.hu.gralog.graph.alg.AlgorithmResultContent;
+import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.jgrapht.graph.SubgraphFactory;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.graphgames.graph.GameGraphVertex;
 
 public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> extends Algorithm {

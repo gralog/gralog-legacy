@@ -7,12 +7,8 @@
 package de.hu.dagwidth.alg;
 
 import java.beans.BeanDescriptor;
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
-
-import de.hu.games.graph.LabeledDirectedGraphTypeInfo;
-import de.hu.games.graph.alg.ChooseGraphPropertyDescriptor;
 
 public class CopStrategyAlgorithmResultContentBeanInfo extends SimpleBeanInfo {
 

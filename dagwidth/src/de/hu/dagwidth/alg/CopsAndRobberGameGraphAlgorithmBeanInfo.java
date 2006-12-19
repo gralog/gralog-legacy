@@ -11,8 +11,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.games.graph.LabeledDirectedGraphTypeInfo;
-import de.hu.games.graph.alg.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.graph.LabeledDirectedGraphTypeInfo;
+import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
 
 public class CopsAndRobberGameGraphAlgorithmBeanInfo extends SimpleBeanInfo {
 

@@ -21,14 +21,14 @@ import org.jgrapht.graph.Subgraph;
 import de.hu.dagwidth.alg.ComputeCopsStrategyAlgorithm.CopStrategyAlgorithmResultContentPersistenceDelegate;
 import de.hu.dagwidth.alg.ComputeCopsStrategyAlgorithm.CopStrategyPersistenceDelegate;
 import de.hu.dagwidth.alg.DAGConstruction.VertexVertexFilter;
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.SelectionListener;
-import de.hu.games.graph.alg.AlgorithmResultInteractiveContent;
-import de.hu.games.graph.alg.Algorithms;
-import de.hu.games.jgrapht.graph.DisplaySubgraph;
-import de.hu.games.jgrapht.graph.SubgraphFactory;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.games.jgrapht.vertex.DefaultListenableVertex;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.SelectionListener;
+import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
+import de.hu.gralog.graph.alg.Algorithms;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.SubgraphFactory;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
+import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
 
 public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
 	

@@ -30,15 +30,15 @@ import java.util.Hashtable;
 
 import org.jgrapht.graph.Subgraph;
 
-import de.hu.games.app.UserException;
-import de.hu.games.graph.alg.Algorithm;
-import de.hu.games.graph.alg.AlgorithmResult;
-import de.hu.games.graph.alg.AlgorithmResultContentTreeNode;
-import de.hu.games.graph.alg.InvalidPropertyValuesException;
-import de.hu.games.jgrapht.graph.DisplaySubgraph;
-import de.hu.games.jgrapht.graph.SubgraphFactory;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
+import de.hu.gralog.app.UserException;
+import de.hu.gralog.graph.alg.Algorithm;
+import de.hu.gralog.graph.alg.AlgorithmResult;
+import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
+import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.SubgraphFactory;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.modal.EvaluationException;

@@ -24,12 +24,12 @@ import java.util.Hashtable;
 import org.jgrapht.graph.DefaultEdge;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.LabeledGraphVertex;
-import de.hu.games.graph.alg.Algorithm;
-import de.hu.games.graph.alg.AlgorithmResult;
-import de.hu.games.graph.alg.AlgorithmResultContent;
-import de.hu.games.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.LabeledGraphVertex;
+import de.hu.gralog.graph.alg.Algorithm;
+import de.hu.gralog.graph.alg.AlgorithmResult;
+import de.hu.gralog.graph.alg.AlgorithmResultContent;
+import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
 import de.hu.graphgames.graph.GameGraphTypeInfo;
 import de.hu.graphgames.graph.GameGraphVertex;
 

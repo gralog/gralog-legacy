@@ -9,9 +9,9 @@ package de.hu.dagwidth.alg;
 import org.jgrapht.graph.DefaultEdge;
 
 import de.hu.dagwidth.alg.DAGConstruction.DAGVertex;
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.GraphTypeInfo;
-import de.hu.games.graph.GraphWithEditableElements;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.GraphWithEditableElements;
 
 public class DAGVertexGraphTypeInfo extends GraphTypeInfo {
 

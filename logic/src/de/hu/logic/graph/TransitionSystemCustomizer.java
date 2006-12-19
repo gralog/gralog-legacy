@@ -48,7 +48,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import de.hu.games.jgrapht.event.GraphPropertyListener;
+import de.hu.gralog.jgrapht.event.GraphPropertyListener;
 
 public class TransitionSystemCustomizer extends JPanel implements Customizer, ActionListener, ListSelectionListener, ItemListener {
 

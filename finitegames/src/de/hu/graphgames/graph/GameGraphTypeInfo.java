@@ -8,9 +8,9 @@ package de.hu.graphgames.graph;
 
 import org.jgrapht.graph.DefaultEdge;
 
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.GraphTypeInfo;
-import de.hu.games.graph.GraphWithEditableElements;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.GraphWithEditableElements;
 
 public class GameGraphTypeInfo extends GraphTypeInfo {
 

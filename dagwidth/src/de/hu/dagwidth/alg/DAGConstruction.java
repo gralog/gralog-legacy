@@ -30,16 +30,16 @@ import org.jgrapht.graph.DefaultEdge;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.DummyVertexFilter;
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.LabeledDirectedGraphTypeInfo;
-import de.hu.games.graph.LabeledGraphVertex;
-import de.hu.games.graph.alg.Algorithm;
-import de.hu.games.graph.alg.AlgorithmResult;
-import de.hu.games.graph.alg.AlgorithmResultContent;
-import de.hu.games.graph.alg.Algorithms;
-import de.hu.games.graph.alg.InvalidPropertyValuesException;
-import de.hu.games.jgrapht.graph.GraphUtils;
-import de.hu.games.jgrapht.traverse.VertexFilter;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.LabeledDirectedGraphTypeInfo;
+import de.hu.gralog.graph.LabeledGraphVertex;
+import de.hu.gralog.graph.alg.Algorithm;
+import de.hu.gralog.graph.alg.AlgorithmResult;
+import de.hu.gralog.graph.alg.AlgorithmResultContent;
+import de.hu.gralog.graph.alg.Algorithms;
+import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.jgrapht.graph.GraphUtils;
+import de.hu.gralog.jgrapht.traverse.VertexFilter;
 import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
 
 public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge> extends Algorithm {

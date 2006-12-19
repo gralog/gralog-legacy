@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hu.games.graph.DirectedGraph;
+import de.hu.gralog.graph.DirectedGraph;
 
 
 public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, TransitionSystemEdge> implements PropertyChangeListener {

@@ -28,10 +28,10 @@ import java.util.Set;
 
 import org.jgrapht.graph.DefaultEdge;
 
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.LabeledGraphVertex;
-import de.hu.games.graph.alg.Algorithms;
-import de.hu.games.jgrapht.traverse.VertexFilter;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.LabeledGraphVertex;
+import de.hu.gralog.graph.alg.Algorithms;
+import de.hu.gralog.jgrapht.traverse.VertexFilter;
 import de.hu.graphgames.graph.GameGraphVertex;
 
 public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends DefaultEdge> {

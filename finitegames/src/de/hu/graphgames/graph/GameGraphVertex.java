@@ -27,10 +27,10 @@ import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.VertexView;
 
-import de.hu.games.graph.LabeledGraphVertex;
-import de.hu.games.jgraph.cellview.DefaultVertexRenderer;
-import de.hu.games.jgraph.cellview.EllipseVertexRenderer;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.graph.LabeledGraphVertex;
+import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
+import de.hu.gralog.jgraph.cellview.EllipseVertexRenderer;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 
 public class GameGraphVertex extends LabeledGraphVertex {
 

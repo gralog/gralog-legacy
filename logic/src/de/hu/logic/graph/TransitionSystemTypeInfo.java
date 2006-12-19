@@ -6,8 +6,8 @@
  */
 package de.hu.logic.graph;
 
-import de.hu.games.graph.GraphTypeInfo;
-import de.hu.games.graph.GraphWithEditableElements;
+import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.GraphWithEditableElements;
 
 public class TransitionSystemTypeInfo extends GraphTypeInfo {
 

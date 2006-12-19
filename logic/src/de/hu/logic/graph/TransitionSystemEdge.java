@@ -19,7 +19,7 @@
 
 package de.hu.logic.graph;
 
-import de.hu.games.jgrapht.edge.DefaultListenableEdge;
+import de.hu.gralog.jgrapht.edge.DefaultListenableEdge;
 
 /**
  * @author kreutzer

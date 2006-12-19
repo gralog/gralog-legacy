@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hu.games.graph.NestedGraphPropertyBean;
+import de.hu.gralog.graph.NestedGraphPropertyBean;
 
 public class Proposition implements NestedGraphPropertyBean {
 
