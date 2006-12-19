@@ -276,7 +276,7 @@ public class MainPad extends JFrame {
 		
 		String defaultDir = System.getProperty( "user.home", null );
 		if ( defaultDir != null )
-			defaultDir = defaultDir + "/games/plugins";
+			defaultDir = defaultDir + "/gralog/plugins";
 		String pluginDirectories = PREFERENCES.get( PREFS_PLUGIN_DIRECTORIES, defaultDir );
 		if ( pluginDirectories != null ) {
 			StringTokenizer st = new StringTokenizer( pluginDirectories, ":" );
