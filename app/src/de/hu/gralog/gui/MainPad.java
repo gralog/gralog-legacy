@@ -528,7 +528,7 @@ public class MainPad extends JFrame {
 	}
 	
 	protected void loadProperties() {
-		gamesProperties = loadProperties( getClass().getResourceAsStream( "/de/hu/games/resources/algorithms.conf") );
+		gamesProperties = loadProperties( getClass().getResourceAsStream( "/de/hu/gralog/resources/algorithms.conf") );
 		createAlgorithms();
 	}
 	
@@ -608,9 +608,9 @@ public class MainPad extends JFrame {
 	}
 	
 	public static ImageIcon createImageIcon( String image ) {
-		URL url = Object.class.getResource( "/de/hu/games/resources/images/newimages/" + image );
+		URL url = Object.class.getResource( "/de/hu/gralog/resources/images/newimages/" + image );
 		if ( url == null )
-			url = Object.class.getResource( "/de/hu/games/resources/images/images/" + image );
+			url = Object.class.getResource( "/de/hu/gralog/resources/images/images/" + image );
 		return new ImageIcon( url );
 	}
 	
