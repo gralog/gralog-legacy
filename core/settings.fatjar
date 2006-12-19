@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Wed Nov 08 13:58:28 CET 2006
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=dist/games-core.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=MANIFEST.MF
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
