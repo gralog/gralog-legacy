@@ -1,0 +1,27 @@
+/*
+ * Created on 7 Nov 2006
+ *
+ * To change the template for this generated file go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
+package de.hu.gralog.graph.types;
+
+import org.jgrapht.graph.DefaultEdge;
+
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.GraphWithEditableElements;
+
+public class ParityGameGraphTypeInfo extends GraphTypeInfo {
+
+	public String getName() {
+		return "ParityGameGraph";
+	}
+
+	public GraphWithEditableElements newInstance() {
+		DirectedGraph<ParityGameVertex, DefaultEdge> graph = new DirectedGraph<ParityGameVertex, DefaultEdge>( ParityGameVertex.class, DefaultEdge.class );
+		graph.setTypeInfo( this );
+		return graph;
+	}
+
+}
