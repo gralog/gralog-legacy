@@ -29,9 +29,9 @@ import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Subgraph;
 
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.jgrapht.graph.GraphUtils;
-import de.hu.games.jgrapht.graph.SubgraphFactory;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.jgrapht.graph.GraphUtils;
+import de.hu.gralog.jgrapht.graph.SubgraphFactory;
 import de.hu.graphgames.graph.GameGraphVertex;
 
 public class Strategy<V extends GameGraphVertex,E extends DefaultEdge> {

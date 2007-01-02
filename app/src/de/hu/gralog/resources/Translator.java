@@ -86,7 +86,7 @@ public class Translator {
 	 *  @see #pushBundle
 	 */
 	static {
-		pushBundle("de.hu.games.resources.Graphpad");
+		pushBundle("de.hu.gralog.resources.Graphpad");
 	}
 
 	/** Returns the localized String for the key. If

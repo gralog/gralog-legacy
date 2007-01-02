@@ -36,7 +36,7 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.graphgames.graph.GameGraphVertex;
 
-public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> extends Algorithm {
+public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> implements Algorithm {
 
 	private static final String DSM_WINNING_PLAYER1 = "winning positions player 1";
 	

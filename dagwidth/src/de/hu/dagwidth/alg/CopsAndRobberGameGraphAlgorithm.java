@@ -33,7 +33,7 @@ import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
 import de.hu.graphgames.graph.GameGraphTypeInfo;
 import de.hu.graphgames.graph.GameGraphVertex;
 
-public class CopsAndRobberGameGraphAlgorithm extends Algorithm {
+public class CopsAndRobberGameGraphAlgorithm implements Algorithm {
 
 	private DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> graph;
 	private int dagWidth;

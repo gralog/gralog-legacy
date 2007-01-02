@@ -125,8 +125,8 @@ public class DirectedGraph<V extends DefaultListenableVertex, E extends DefaultE
 		ArrayList<V> vertexes = new ArrayList<V>();
 		ArrayList<E> edges = new ArrayList<E>();
 		
-		for ( Object objectCell : event.getCells() ) {
-			if ( objectCell instanceof DefaultGraphCell && event.isAddedCell( objectCell ) ) {
+		for ( Object objectCell : ((GraphSelectionModel)event.getSource()).getSelectionCells() ) {
+			if ( objectCell instanceof DefaultGraphCell ) {
 				DefaultGraphCell cell = (DefaultGraphCell)objectCell;
 				Object userObject = cell.getUserObject();
 				

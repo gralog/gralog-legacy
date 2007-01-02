@@ -11,8 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.games.app.UserException;
-import de.hu.games.graph.alg.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
 import de.hu.parity.graph.ParityGameGraphTypeInfo;
 
 public class StrategyImprovementAlgorithmBeanInfo extends SimpleBeanInfo {

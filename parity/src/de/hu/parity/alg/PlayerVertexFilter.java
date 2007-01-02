@@ -19,7 +19,7 @@
 
 package de.hu.parity.alg;
 
-import de.hu.games.jgrapht.traverse.VertexFilter;
+import de.hu.gralog.jgrapht.traverse.VertexFilter;
 import de.hu.graphgames.graph.GameGraphVertex;
 
 public class PlayerVertexFilter<V extends GameGraphVertex> implements VertexFilter<V> {

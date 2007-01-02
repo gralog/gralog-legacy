@@ -42,7 +42,7 @@ import de.hu.gralog.jgrapht.graph.GraphUtils;
 import de.hu.gralog.jgrapht.traverse.VertexFilter;
 import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
 
-public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge> extends Algorithm {
+public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {
 
 	private DirectedGraph<V, E> graph;
 	private int dagWidth = 0;

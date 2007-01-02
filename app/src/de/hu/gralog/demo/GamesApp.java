@@ -19,54 +19,9 @@
 
 package de.hu.gralog.demo;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.prefs.Preferences;
-
 import de.hu.gralog.gui.MainPad;
 
-/**
- * A demo applet that shows how to use JGraph to visualize JGraphT graphs.
- *
- * @author Barak Naveh
- *
- * @since Aug 3, 2003
- */
 public class GamesApp {
-	
-	private static String getPluginDir( String[] args ) {
-		Preferences prefs = Preferences.userNodeForPackage( MainPad.class );
-		String defaultPluginDir = null;
-		if ( args.length != 0 )
-			defaultPluginDir = args[0];
-		else {
-			defaultPluginDir = System.getProperty( "user.home", null );
-			if ( defaultPluginDir != null )
-				defaultPluginDir = defaultPluginDir + "/.games/plugins";
-		}
-		String pluginDirectories = prefs.get( MainPad.PREFS_PLUGIN_DIRECTORIES, defaultPluginDir );
-		prefs.put( MainPad.PREFS_PLUGIN_DIRECTORIES, pluginDirectories );
-		return pluginDirectories;
-	}
-	
-	private static String buildCP( File pluginDirectory ) {
-		String cp = "";
-		if ( pluginDirectory.canRead() && pluginDirectory.isDirectory() ) {
-			File[] jarFiles = pluginDirectory.listFiles( new FileFilter() {
-			
-				public boolean accept(File pathname) {
-					return pathname.isFile() && pathname.canRead() && pathname.getName().endsWith( ".jar" );
-				}
-				
-			});
-			
-			for (File jarFile : jarFiles )
-				cp = cp + jarFile.getAbsolutePath() + ":";
-			if ( cp != "" )
-				cp = cp.substring( 1, cp.length() - 1 );
-		}
-		return cp;
-	}
 	
 	public static void main(String[] args) {
 		MainPad.getInstance();

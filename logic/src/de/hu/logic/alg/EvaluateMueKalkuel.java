@@ -48,7 +48,7 @@ import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.LogicParser;
 import de.hu.logic.parser.ParseException;
 
-public class EvaluateMueKalkuel extends Algorithm {
+public class EvaluateMueKalkuel implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
 	private TransitionSystem transitionSystem;
@@ -74,7 +74,6 @@ public class EvaluateMueKalkuel extends Algorithm {
 		this.formula = formula;
 	}
 
-	@Override
 	public AlgorithmResult execute() throws InvalidPropertyValuesException, UserException {
 		InvalidPropertyValuesException pe = new InvalidPropertyValuesException();
 		

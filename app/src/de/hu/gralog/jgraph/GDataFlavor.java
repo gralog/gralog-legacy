@@ -27,7 +27,7 @@ public class GDataFlavor extends DataFlavor {
 	
 	public GDataFlavor( GJGraph graph ) throws ClassNotFoundException {
 		super( DataFlavor.javaJVMLocalObjectMimeType
-				+ "; class=de.hu.games.jgraph.GGraphTransferable");
+				+ "; class=de.hu.gralog.jgraph.GGraphTransferable");
 		this.graph = graph;
 	}
 	

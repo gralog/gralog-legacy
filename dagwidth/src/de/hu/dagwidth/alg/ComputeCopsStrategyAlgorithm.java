@@ -36,7 +36,7 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
 
-public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> extends Algorithm {
+public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {
 
 	private DirectedGraph<V,E> graph;
 	private int dagWidth = 0;
@@ -78,7 +78,6 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 		this.robberMonotone = robberMonotone;
 	}
 
-	@Override
 	public AlgorithmResult execute() throws InvalidPropertyValuesException,
 			UserException {
 		

@@ -34,23 +34,23 @@ import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.Subgraph;
 import org.jgrapht.traverse.ClosestFirstIterator;
 
-import de.hu.games.graph.DirectedGraph;
-import de.hu.games.graph.alg.Algorithm;
-import de.hu.games.graph.alg.AlgorithmResult;
-import de.hu.games.graph.alg.AlgorithmResultContent;
-import de.hu.games.graph.alg.Algorithms;
-import de.hu.games.graph.alg.InvalidPropertyValuesException;
-import de.hu.games.jgrapht.graph.GraphUtils;
-import de.hu.games.jgrapht.graph.ReversedDirectedGraph;
-import de.hu.games.jgrapht.graph.SubgraphFactory;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.games.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.games.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
-import de.hu.games.jgrapht.traverse.LongestPathIterator;
-import de.hu.games.jgrapht.traverse.VertexFilter;
+import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.alg.Algorithm;
+import de.hu.gralog.graph.alg.AlgorithmResult;
+import de.hu.gralog.graph.alg.AlgorithmResultContent;
+import de.hu.gralog.graph.alg.Algorithms;
+import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.jgrapht.graph.GraphUtils;
+import de.hu.gralog.jgrapht.graph.ReversedDirectedGraph;
+import de.hu.gralog.jgrapht.graph.SubgraphFactory;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
+import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
+import de.hu.gralog.jgrapht.traverse.LongestPathIterator;
+import de.hu.gralog.jgrapht.traverse.VertexFilter;
 import de.hu.parity.graph.ParityGameVertex;
 
-public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends DefaultEdge> extends Algorithm {
+public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends DefaultEdge> implements Algorithm {
 
 	private static final String DSM_STRATEGY_PLAYER0 = "strategy player0";
 	private static final String DSM_STRATEGY_PLAYER1 = "strategy player1";

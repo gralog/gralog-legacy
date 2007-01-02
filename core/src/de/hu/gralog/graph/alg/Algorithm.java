@@ -31,8 +31,9 @@ import de.hu.gralog.app.UserException;
  * @author Sebastian
  *
  */
-public abstract class Algorithm implements Serializable {
+public interface Algorithm extends Serializable {
 	public static final String GRAPH_TYPE_ATTRIBUTE = "GRAPH_TYPE";
 	
-	public abstract AlgorithmResult execute(  ) throws InvalidPropertyValuesException, UserException;
+	AlgorithmResult execute(  ) 
+		throws InvalidPropertyValuesException, UserException;
 }
