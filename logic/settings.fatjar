@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Tue Dec 19 14:03:53 CET 2006
+#Thu Jan 04 20:02:28 CET 2007
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<po|gralog-logic>~CVS/;<jar|games-core.jar>
+excludes=<po|gralog-logic>~CVS/;<jar|gralog-core.jar>
 includes=

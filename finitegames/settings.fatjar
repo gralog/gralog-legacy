@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Tue Dec 19 13:58:51 CET 2006
+#Thu Jan 04 20:00:25 CET 2007
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<po|gralog-finitegames>~CVS/;<po|gralog-finitegames>~de/~hu/~graphgames/~graph/~CVS/;<po|gralog-finitegames>~de/~hu/~graphgames/~alg/~CVS/;<po|gralog-finitegames>~de/~hu/~graphgames/~CVS/;<po|gralog-finitegames>~de/~hu/~CVS/;<po|gralog-finitegames>~de/~CVS/;<jar|games-core.jar>
+excludes=<po|gralog-finitegames>~CVS/;<po|gralog-finitegames>~de/~hu/~graphgames/~graph/~CVS/;<po|gralog-finitegames>~de/~hu/~graphgames/~alg/~CVS/;<jar|gralog-core.jar>
 includes=
