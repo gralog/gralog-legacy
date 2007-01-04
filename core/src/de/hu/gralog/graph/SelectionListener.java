@@ -10,6 +10,13 @@ import java.util.ArrayList;
 
 import org.jgraph.event.GraphSelectionEvent;
 
+/**
+ *	A Listener for selectionevents of graphs.
+ *
+ * 
+ * @author ordyniak
+ *
+ */
 public interface SelectionListener<V,E> {
 	public void valueChanged( ArrayList<V> selectedVertexes, ArrayList<E> selectedEdges, GraphSelectionEvent event );
 }

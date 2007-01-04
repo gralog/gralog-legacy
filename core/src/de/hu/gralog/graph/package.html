@@ -1,0 +1,22 @@
+<HTML>
+<BODY>
+	This package defines all classes needed to implement Graphs in GraLog.
+
+	All graphs in GrALoG are subclasses of {@link de.hu.gralog.graph.DirectedGraph} or {@link de.hu.gralog.graph.UndirectedGraph}. 
+	Since these	graphs are typed ( with vertices and edges ) it is usually not necessary to subclass these classes. 
+	The only case where this is necessary is if you want your graph to have properties which 
+	cannot be stored in vertices or edges. In either case in order to define your own type of graph you 
+	have to do the following:
+	<p>
+	<ul>
+		<li>define your own graph-class as a subclass of {@link de.hu.gralog.graph.DirectedGraph} or {@link de.hu.gralog.graph.UndirectedGraph} - this
+			step is optionally</li>
+		<li>define your own vertex / edge classes as subclass of {@link de.hu.gralog.jgrapht.vertex.DefaultListablbeVertex} / {@link de.hu.gralog.jgrapht.edge.DefaultListableEdge} -
+			this step is also optional</li>
+		<li>define a TypeInfo-Class for your graph which has to be a subclass of {@link de.hu.gralog.graph.GraphTypeInfo} - this step is
+		not optional</li>
+	</ul>
+	<p>
+	Please see the documentation of classes mentioned with these steps for further information.
+</BODY>
+</HTML>

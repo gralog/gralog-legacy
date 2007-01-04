@@ -8,6 +8,13 @@ package de.hu.gralog.graph;
 
 import org.jgrapht.graph.DefaultEdge;
 
+/**
+ * This class represents a DirectedGraph with {@link LabeledGraphVertex} as vertexClass {@link DefaultEdge} as
+ * edgeClass and a SIMPLE_GRAPH graph-flavour.
+ *  
+ * @author ordyniak
+ *
+ */
 public class LabeledDirectedGraphTypeInfo extends GraphTypeInfo {
 
 	public String getName() {

@@ -35,8 +35,7 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 
 /**
  * 
- * This static class provides default attributes for Edge- and VertexRenderers. It provides one set of attributes
- * for each DisplayMode.
+ * This static class provides default attributes for Edge- and VertexRenderers. 
  * 
  * @author Sebastian
  *
@@ -103,7 +102,8 @@ public class ElementAttributes {
 		
 		GraphConstants.setLineWidth(map, 1);
 		
-		GraphConstants.setLineStyle(map, GraphConstants.STYLE_ORTHOGONAL );
+		GraphConstants.setLineStyle(map, GraphConstants.STYLE_BEZIER );
+		GraphConstants.setRouting( map, GraphConstants.ROUTING_DEFAULT );
 		GraphConstants.setBorderColor(map, Color.BLACK );
 		GraphConstants.setForeground( map, Color.BLACK );
 		GraphConstants.setBackground( map, UIManager.getColor("Tree.textBackground") );

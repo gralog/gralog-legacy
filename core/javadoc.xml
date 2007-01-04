@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+<target name="javadoc">
+<javadoc access="public" author="true" classpath="lib/jgrapht-jdk1.5.jar:lib/jgraph.jar" destdir="doc/api" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" overview="/vol/fob-vol5/mi00/ordyniak/workspace/gralog-core/src/overview.html" packagenames="de.hu.gralog.graph.alg,de.hu.gralog.jgraph.cellview,de.hu.gralog.jgrapht.vertex,de.hu.gralog.jgrapht,de.hu.gralog.graph,de.hu.gralog.jgrapht.traverse,de.hu.gralog.jgrapht.edge,de.hu.gralog.app,de.hu.gralog.jgrapht.graph,de.hu.gralog.jgrapht.event" source="1.5" sourcepath="src" splitindex="true" use="true" version="true"/>
+</target>
+</project>

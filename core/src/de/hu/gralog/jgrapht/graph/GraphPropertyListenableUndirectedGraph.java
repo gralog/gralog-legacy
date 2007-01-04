@@ -38,21 +38,17 @@ public class GraphPropertyListenableUndirectedGraph<V,E> extends DefaultGraphPro
 	/**
      * Creates a new ElementListenableDirectedGraph object.
      */
-    public GraphPropertyListenableUndirectedGraph(  ) {
-    	this( new SimpleGraph( DefaultEdge.class ) );
+    public GraphPropertyListenableUndirectedGraph( GraphType graphType ) {
+    	this( graphType.newInstance( false, DefaultEdge.class ) );
     }
     
     /**
      * Creates a new ElementListenableDirectedGraph object.
      */
-    public GraphPropertyListenableUndirectedGraph( Class<? extends E> edgeClass ) {
-    	this( new SimpleGraph( edgeClass ) );
+    public GraphPropertyListenableUndirectedGraph( GraphType graphType, Class<? extends E> edgeClass ) {
+    	this( graphType.newInstance( false, edgeClass ) );
     }
 
-    public GraphPropertyListenableUndirectedGraph( EdgeFactory<V, E> ef ) {
-    	this( new SimpleGraph( ef ) );
-    }
-     
     /**
      * @see DefaultGraphPropertyListenableGraph#DefaultElementListenableGraph(Graph)
      */

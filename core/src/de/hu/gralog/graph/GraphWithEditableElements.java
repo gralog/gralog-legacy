@@ -33,16 +33,25 @@ public interface GraphWithEditableElements<V,E> extends SelectionListenableGraph
 
 	/**
 	 * 
-	 * Returns a reference to an instance of the vertexclass used by this graph. A deep copy of this instance should be used
-	 * by {@link #addVertexPrototyp() addVertexPrototyp()} to add a vertex to this graph.
+	 * Returns a reference to an instance of the vertexclass used by this graph. 
 	 * This method should not return null, since vertices of all graphs should be editable.
-	 * 
-	 * 
+	 *  
 	 * @return an instance of the vertexclass used by this graph.
 	 */
 	public V createVertex();
 	
+	/**
+	 * Sets the TypeInfo of this graph. The TypeInfo attribute is required in order to
+	 * store and load the graph. So if you construct a graph you should always set the
+	 * TypeInfo of that graph - at a future version this should be moved to the constructor. 
+	 * 
+	 * @param typeInfo
+	 */
 	public void setTypeInfo( GraphTypeInfo typeInfo );
+	
+	/**
+	 * @return the TypeInfo of this graph
+	 */
 	public GraphTypeInfo getTypeInfo();
 	public boolean isGraphEditable();
 	public boolean isVertexEditable();

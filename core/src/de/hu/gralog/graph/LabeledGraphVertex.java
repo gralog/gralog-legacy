@@ -21,6 +21,12 @@ package de.hu.gralog.graph;
 
 import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
 
+/**
+ * This class represents a vertex with a label
+ * 
+ * @author ordyniak
+ *
+ */
 public class LabeledGraphVertex extends DefaultListenableVertex {
 	
 	private String label = "label";

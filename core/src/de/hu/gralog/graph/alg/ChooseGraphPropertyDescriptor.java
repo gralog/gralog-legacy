@@ -25,30 +25,39 @@ import java.lang.reflect.Method;
 
 import de.hu.gralog.graph.GraphTypeInfo;
 
+/**
+ * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.
+ * This Descriptor can be used for all properties of type graph. Use the Descriptor
+ * if you want the user to choose among all currently opened graphs in GrALog to define
+ * your property. Each Descriptor has to have a graphType. The graphType determines which
+ * graphs are selectable for that property ( always make sure, that the getter and setter-methods
+ * of your property have a compatible type ). 
+ * 
+ * @author ordyniak
+ *
+ */
 public class ChooseGraphPropertyDescriptor extends PropertyDescriptor {
 
 	private final GraphTypeInfo graphType;
 	
+	/**
+	 * Contructs a ChooseGraphPropertyDescriptor
+	 * 
+	 * @param propertyName the name of the property
+	 * @param beanClass the class this property belongs to
+	 * @param graphType the TypeInfo-Object to define which graphs should be selectable for this property
+	 * @throws IntrospectionException
+	 */
 	public ChooseGraphPropertyDescriptor(String propertyName, Class<?> beanClass, GraphTypeInfo graphType )
 			throws IntrospectionException {
 		super(propertyName, beanClass);
 		this.graphType = graphType;
 	}
 
-	public ChooseGraphPropertyDescriptor(String propertyName,
-			Class<?> beanClass, String readMethodName, String writeMethodName, GraphTypeInfo graphType )
-			throws IntrospectionException {
-		super(propertyName, beanClass, readMethodName, writeMethodName);
-		this.graphType = graphType;
-	}
-
-	public ChooseGraphPropertyDescriptor(String propertyName,
-			Method readMethod, Method writeMethod, GraphTypeInfo graphType )
-			throws IntrospectionException {
-		super(propertyName, readMethod, writeMethod);
-		this.graphType = graphType;
-	}
-
+	/**
+	 *  
+	 * @return the TypeInfo-Object
+	 */
 	public GraphTypeInfo getGraphType() {
 		return graphType;
 	}

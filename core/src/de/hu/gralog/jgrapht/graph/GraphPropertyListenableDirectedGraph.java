@@ -39,21 +39,17 @@ public class GraphPropertyListenableDirectedGraph<V,E> extends
     /**
      * Creates a new ElementListenableDirectedGraph object.
      */
-    public GraphPropertyListenableDirectedGraph(  ) {
-    	this( new SimpleDirectedGraph( DefaultEdge.class ) );
+    public GraphPropertyListenableDirectedGraph( GraphType graphType ) {
+    	this( (DirectedGraph)graphType.newInstance( true, DefaultEdge.class ) );
     }
     
     /**
      * Creates a new ElementListenableDirectedGraph object.
      */
-    public GraphPropertyListenableDirectedGraph( Class<? extends E> edgeClass ) {
-    	this( new SimpleDirectedGraph( edgeClass ) );
+    public GraphPropertyListenableDirectedGraph( GraphType graphType, Class<? extends E> edgeClass ) {
+    	this( (DirectedGraph)graphType.newInstance( true, edgeClass ) );
     }
 
-    public GraphPropertyListenableDirectedGraph( EdgeFactory<V, E> ef ) {
-    	this( new SimpleDirectedGraph( ef ) );
-    }
-     
     /**
      * @see DefaultGraphPropertyListenableGraph#DefaultElementListenableGraph(Graph)
      */

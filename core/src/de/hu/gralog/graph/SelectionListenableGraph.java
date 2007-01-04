@@ -8,6 +8,13 @@ package de.hu.gralog.graph;
 
 import org.jgraph.event.GraphSelectionListener;
 
+/**
+ * This interface extends ViewableGraph in order to make it possible to listen for
+ * selectionevents for that graph.
+ * 
+ * @author ordyniak
+ *
+ */
 public interface SelectionListenableGraph<V,E> extends ViewableGraph<V,E>, GraphSelectionListener {
 	public void addSelectionListener( SelectionListener<V,E> listener );
 	public void removeSelectionListener( SelectionListener<V,E> listener );

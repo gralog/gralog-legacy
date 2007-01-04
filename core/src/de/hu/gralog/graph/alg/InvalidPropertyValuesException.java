@@ -24,6 +24,12 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 
+/**
+ * This Exception is used to return errors concerning the values of properties for algorithms.
+ * 
+ * @author ordyniak
+ *
+ */
 public class InvalidPropertyValuesException extends Exception {
 
 	public static final String PROPERTY_REQUIRED = "This property is required";
@@ -39,14 +45,31 @@ public class InvalidPropertyValuesException extends Exception {
 		COLUMN_NAMES.add( "Errormessage" );
 	}
 	
+	/**
+	 * Contructs an InvalidPropertyValuesException without errors. Use {@link #addPropertyError(String, String)}
+	 * to add an Error to this Exception.
+	 *
+	 */
 	public InvalidPropertyValuesException( ) {
 		
 	}
 	
+	/**
+	 * Contructs an InvalidPropertyValuesException.
+	 * 
+	 * @param property the name of the property whose value is invalid
+	 * @param errormsg the errormessage to display to the user
+	 */
 	public InvalidPropertyValuesException(String property, String errormsg ) {
 		addPropertyError( property, errormsg );
 	}
 
+	/**
+	 * Adds an error.
+	 * 
+	 * @param property the name of the property whose value is invalid
+	 * @param errormsg the errormessage to display to the user
+	 */
 	public void addPropertyError( String property, String errormsg ) {
 		Vector error = new Vector();
 		error.add( property );
@@ -57,7 +80,11 @@ public class InvalidPropertyValuesException extends Exception {
 	public JComponent getComponent() {
 		return new JTable( errors, COLUMN_NAMES );
 	}
-	
+
+	/**
+	 * 
+	 * @return true if this Exception contains a propertyerror
+	 */
 	public boolean hasErrors() {
 		return errors.size() != 0;
 	}

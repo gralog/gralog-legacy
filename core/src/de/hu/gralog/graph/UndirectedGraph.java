@@ -21,7 +21,6 @@ package de.hu.gralog.graph;
 
 import java.util.ArrayList;
 
-import org.jgraph.JGraph;
 import org.jgraph.event.GraphSelectionEvent;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgrapht.graph.DefaultEdge;
@@ -30,8 +29,16 @@ import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 import de.hu.gralog.jgrapht.edge.DefaultListenableEdge;
 import de.hu.gralog.jgrapht.graph.GraphPropertyListenableUndirectedGraph;
+import de.hu.gralog.jgrapht.graph.GraphType;
 import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
 
+/**
+ * This class is a template for undirected graphs in GrALoG.
+ * Please refer to the documentation of {@link DirectedGraph}.
+ * 
+ * @author ordyniak
+ *
+ */
 public class UndirectedGraph<V extends DefaultListenableVertex, E extends DefaultEdge> extends GraphPropertyListenableUndirectedGraph<V, E>  implements GraphWithEditableElements<V, E> {
 	private transient ArrayList<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
 	
@@ -41,17 +48,21 @@ public class UndirectedGraph<V extends DefaultListenableVertex, E extends Defaul
 	private transient DefaultEdgeRenderer EDGE_RENDERER = null;
 	private transient DefaultVertexRenderer VERTEX_RENDERER = null;
 	
-	public UndirectedGraph() {
-		
-	}
-	
 	public UndirectedGraph( Class<? extends V> vertexClass )  {
-		super();
-		this.vertexClass = vertexClass;
+		this( GraphType.SIMPLE_GRAPH, vertexClass );
 	}
 	
 	public UndirectedGraph( Class<? extends V> vertexClass, Class<? extends E> edgeClass ) {
-		super( edgeClass );
+		this( GraphType.SIMPLE_GRAPH, vertexClass, edgeClass );
+	}
+	
+	public UndirectedGraph( GraphType graphType, Class<? extends V> vertexClass )  {
+		super( graphType );
+		this.vertexClass = vertexClass;
+	}
+	
+	public UndirectedGraph( GraphType graphType, Class<? extends V> vertexClass, Class<? extends E> edgeClass ) {
+		super( graphType, edgeClass );
 		this.vertexClass = vertexClass;
 	}
 	

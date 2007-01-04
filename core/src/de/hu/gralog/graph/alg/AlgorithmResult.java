@@ -32,7 +32,42 @@ import de.hu.gralog.jgrapht.graph.ElementTips;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
 
-
+/**
+ * This class basically serves as a container for {@link AlgorithmResultContent AlgorithmResultContent's}. It also
+ * holds global information which is shared along all contents like a description,
+ * displaymodes for subgraphs and element-tips.
+ * <p> 
+ * An AlgorithmResult consists either of
+ * <ul>
+ * 	<li>a single content, see {@link #setSingleContent(AlgorithmResultContent)}</li>
+ * 	<li>a list of contents, see {@link #setContentList(ArrayList)}</li>
+ *  <li>a tree of contents, see {@link #setContentTree(AlgorithmResultContentTreeNode)}</li>
+ * </ul>
+ * <p>
+ * GraLog display's one content at a time but allows the user to switch between different contents. 
+ * Each content consists of a graph, a list of subgraphs and a list of so called element-tips. 
+ * AlgorithmResult stores the contents together with the displaying-modes for all subgraphs
+ * and element-tips contained in any content. So suppose you decide to display a certain subgraph 
+ * and you want to highlight all vertices contained in this subgraph. Then the first thing you have
+ * to do is to define a {@link de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode} and
+ * add it to your result, like this:
+ * <p>
+ * <pre>
+ * 		AlgorithmResult result = new AlgorithmResult();
+ * 
+ * 		DisplaySubgraphMode mode = new DisplaySubgraphMode();
+ * 		mode.setVertexDisplayMode( DisplayMode.HIGH1, DisplayMode.SHOW );
+ * 		result.addDisplaySubgraphMode( "a description for your subgraph", mode );
+ * </pre>
+ * <p>
+ * Note that the description given in {@link #addDisplaySubgraphMode(String, DisplaySubgraphMode)} also
+ * acts as identifier for this subgraph. So when you add the actual subgraph to your content
+ * via {@link AlgorithmResultContent#addDisplaySubgraph(String, org.jgrapht.graph.Subgraph)} you have
+ * to use the same description again. 
+ * 
+ * @author ordyniak
+ *
+ */
 public class AlgorithmResult implements Serializable {
 
 	private transient ArrayList<AlgorithmResultListener> listeners = new ArrayList<AlgorithmResultListener>();
@@ -47,13 +82,29 @@ public class AlgorithmResult implements Serializable {
 	protected ArrayList<AlgorithmResultContent> contentList = null;
 	protected AlgorithmResultContentTreeNode contentTree = null;
 	
+	/**
+	 * Contructs an AlgorithmResult
+	 *
+	 */
+	
 	public AlgorithmResult() {
 	}
 	
+	/**
+	 * Contructs an AlgorithmResult for a given graph. The graph
+	 * is used as the default graph for contents which have no graph attached.
+	 * 
+	 * @param graph
+	 */
 	public AlgorithmResult( Graph graph ) {
 		this.graph = graph;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return the graph of this result
+	 */
 	public Graph getGraph() {
 		return graph;
 	}
@@ -64,20 +115,51 @@ public class AlgorithmResult implements Serializable {
 		return content.getGraph();
 	}
 	
+	/**
+	 * Sets the description of this Result, which is displayed in GraLog.
+	 * The description can be given as html.
+	 * 
+	 * @param description an html string
+	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	/**
+	 * 
+	 * @return the description for this Result, this can be an html-string
+	 */
 	
 	public String getDescription() {
 		return description;
 	}
 	
+	/**
+	 * Add an elementtip-mode to this result. If an elementtip-mode under the same 
+	 * description already exists the mode is overriden. Please note that
+	 * when adding the corresponding element-tip to your content via 
+	 * {@link AlgorithmResultContent#addElementTips(String, Hashtable)} you
+	 * have to use the same description.
+	 * 
+	 * @param description - A description for this elementtip-mode which is displayed in gralog.
+	 * @param mode - An elementtip-mode which is used for all elementtips with the same description.
+	 */
 	public void addElementTipsDisplayMode( String description, ElementTipsDisplayMode mode ) {
 		if ( elementTipsModes == null )
 			elementTipsModes = new Hashtable<String, ElementTipsDisplayMode>();
 		elementTipsModes.put( description, mode );
 	}
 
+	/**
+	 * Add a subgraph-mode to this result. If a subgraph-mode under the same 
+	 * description already exists the mode is overriden. Please note that
+	 * when adding the corresponding subgraph to your content via 
+	 * {@link AlgorithmResultContent#addDisplaySubgraph(String, org.jgrapht.graph.Subgraph)} you
+	 * have to use the same description.
+	 * 
+	 * @param description - A description for this subgraph-mode which is displayed in gralog.
+	 * @param mode - A subgraph-mode which is used for all subgraphs with the same description.
+	 */
 	public void addDisplaySubgraphMode( String description, DisplaySubgraphMode subgraph ) {
 		if ( subgraphModes == null )
 			subgraphModes = new Hashtable<String, DisplaySubgraphMode>();
@@ -92,24 +174,58 @@ public class AlgorithmResult implements Serializable {
 		return content.getDisplaySubgraphs( subgraphModes );
 	}
 	
+	/**
+	 *  
+	 * @return a Hashtable containing all stored element-tips displaymodes together with their
+	 * descriptions
+	 */
 	public Hashtable<String, ElementTipsDisplayMode> getElementTipsDisplayModes() {
 		return elementTipsModes;
 	}
 	
+	/**
+	 *  
+	 * @return a Hashtable containing all stored subgraph displaymodes together with their
+	 * descriptions
+	 */
 	public Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes() {
 		return subgraphModes;
 	}
 	
+	/**
+	 * Set a single content for this result. Each result can consists either of
+	 * 	- a single content
+	 *  - a content list
+	 *  - a content treenode
+	 * 
+	 * @param content
+	 */
 	public void setSingleContent( AlgorithmResultContent content ) {
 		if ( content instanceof AlgorithmResultInteractiveContent )
 			((AlgorithmResultInteractiveContent)content).setResult( this );
 		this.singleContent = content;
 	}
-	
+
+	/**
+	 * Set a content list for this result. Each result can consists either of
+	 * 	- a single content
+	 *  - a content list
+	 *  - a content treenode
+	 * 
+	 * @param content
+	 */
 	public void setContentList( ArrayList<AlgorithmResultContent> content ) {
 		this.contentList = content;
 	}
 	
+	/**
+	 * Set a content treenode for this result. Each result can consists either of
+	 * 	- a single content
+	 *  - a content list
+	 *  - a content treenode
+	 * 
+	 * @param content
+	 */
 	public void setContentTree( AlgorithmResultContentTreeNode content ) {
 		this.contentTree = content;
 	}
@@ -124,14 +240,26 @@ public class AlgorithmResult implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @return the list of contents stored for this result
+	 */
 	public ArrayList<AlgorithmResultContent> getContentList() {
 		return contentList;
 	}
 
+	/**
+	 * 
+	 * @return the single content stored for this result
+	 */
 	public AlgorithmResultContent getSingleContent() {
 		return singleContent;
 	}
 	
+	/**
+	 * 
+	 * @return the content-tree stored for this result
+	 */
 	public AlgorithmResultContentTreeNode getContentTree() {
 		return contentTree;
 	}
