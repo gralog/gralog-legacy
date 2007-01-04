@@ -74,13 +74,13 @@ public class GMarqueeHandler extends BasicMarqueeHandler {
 				if (startport == null )
 					startport = port;
 				else {
-					if ( port != startport ) {
+					try {
 						graph.addEdge( startport.getParentView().getCell(), port.getParentView().getCell() );
 						startport = null;
 						edgeEndPoint = null;
 						port = null;
 						edgeAdded = true;
-					} else {
+					} catch( IllegalArgumentException i ) {
 						startport = null;
 						edgeEndPoint = null;
 					}
