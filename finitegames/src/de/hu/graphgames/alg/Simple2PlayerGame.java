@@ -31,9 +31,9 @@ import de.hu.gralog.graph.alg.Algorithm;
 import de.hu.gralog.graph.alg.AlgorithmResult;
 import de.hu.gralog.graph.alg.AlgorithmResultContent;
 import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.SubgraphFactory;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.graphgames.graph.GameGraphVertex;
 
 public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> implements Algorithm {

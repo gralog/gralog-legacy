@@ -14,7 +14,6 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import org.jgraph.event.GraphSelectionEvent;
-import org.jgraph.graph.GraphSelectionModel;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Subgraph;
 
@@ -23,8 +22,8 @@ import de.hu.gralog.graph.DirectedGraph;
 import de.hu.gralog.graph.SelectionListener;
 import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
 
 public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {

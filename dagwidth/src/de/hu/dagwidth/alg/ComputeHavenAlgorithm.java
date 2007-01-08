@@ -13,27 +13,20 @@ import java.beans.Expression;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.jgrapht.graph.DefaultEdge;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
-import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.DummyVertexFilter;
-import de.hu.dagwidth.alg.DAGConstruction.DAGVertex;
-import de.hu.dagwidth.alg.DAGConstruction.VertexVertexFilter;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.graph.DirectedGraph;
 import de.hu.gralog.graph.LabeledGraphVertex;
 import de.hu.gralog.graph.alg.Algorithm;
 import de.hu.gralog.graph.alg.AlgorithmResult;
 import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.Algorithms;
 import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.GraphUtils;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
 
 public class ComputeHavenAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {

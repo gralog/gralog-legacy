@@ -31,9 +31,9 @@ import de.hu.gralog.graph.alg.AlgorithmResult;
 import de.hu.gralog.graph.alg.AlgorithmResultContent;
 import de.hu.gralog.graph.alg.Algorithms;
 import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.GraphUtils;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
 
 public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {

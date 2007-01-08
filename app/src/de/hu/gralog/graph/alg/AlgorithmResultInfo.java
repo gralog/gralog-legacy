@@ -20,9 +20,9 @@ import org.jgrapht.Graph;
 import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.gralog.jgraph.GJGraph;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.ElementTips;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
+import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
 
 
 public class AlgorithmResultInfo implements AlgorithmResultListener {

@@ -68,11 +68,11 @@ import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.AlgorithmResultDocumentContent;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraphModeListener;
+import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
 import de.hu.gralog.jgrapht.graph.ElementTipsDisplayModeListener;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
 
 public class AlgorithmResultView extends View implements EditorDesktopViewListener, DocumentListener {
 	

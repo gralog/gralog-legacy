@@ -13,9 +13,9 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.Subgraph;
 
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.ElementTips;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
+import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
 
 /**
  * The class represents a content which is displayed as part of an {@link AlgorithmResult}.

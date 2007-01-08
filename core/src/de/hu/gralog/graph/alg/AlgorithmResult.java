@@ -28,9 +28,9 @@ import javax.swing.event.UndoableEditListener;
 import org.jgrapht.Graph;
 
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.ElementTips;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
+import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
 
 /**
  * This class basically serves as a container for {@link AlgorithmResultContent AlgorithmResultContent's}. It also
@@ -49,7 +49,7 @@ import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
  * AlgorithmResult stores the contents together with the displaying-modes for all subgraphs
  * and element-tips contained in any content. So suppose you decide to display a certain subgraph 
  * and you want to highlight all vertices contained in this subgraph. Then the first thing you have
- * to do is to define a {@link de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode} and
+ * to do is to define a {@link de.hu.gralog.jgrapht.graph.DisplaySubgraphMode} and
  * add it to your result, like this:
  * <p>
  * <pre>

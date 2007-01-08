@@ -26,8 +26,8 @@ import de.hu.gralog.graph.SelectionListener;
 import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
 import de.hu.gralog.graph.alg.Algorithms;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
 
 public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {

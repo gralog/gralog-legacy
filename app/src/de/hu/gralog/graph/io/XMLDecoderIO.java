@@ -53,11 +53,11 @@ import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.AlgorithmResultDocumentContent;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
+import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
 import de.hu.gralog.jgrapht.graph.GraphUtils;
 import de.hu.gralog.jgrapht.graph.SubgraphFactory;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTips.ElementTipsDisplayMode;
 
 public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDocumentContentIO, ExceptionListener {
 
