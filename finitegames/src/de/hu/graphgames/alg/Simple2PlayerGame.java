@@ -78,7 +78,7 @@ public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> 
 
 		result.addDisplaySubgraphMode( DSM_WINNING_PLAYER1, displaySubgraphMode );
 		
-		if ( showSteps ) {
+		if ( showSteps && win1.size() != 0 ) {
 			ArrayList<AlgorithmResultContent> contentList = new ArrayList<AlgorithmResultContent>();
 			
 			Set<V> win1Step = new HashSet<V>();
