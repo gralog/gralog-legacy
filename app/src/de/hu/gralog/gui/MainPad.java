@@ -279,10 +279,12 @@ public class MainPad extends JFrame {
 			defaultDir = defaultDir + "/gralog/plugins";
 		String pluginDirectories = PREFERENCES.get( PREFS_PLUGIN_DIRECTORIES, defaultDir );
 		if ( pluginDirectories != null ) {
-			StringTokenizer st = new StringTokenizer( pluginDirectories, ":" );
+			StringTokenizer st = new StringTokenizer( pluginDirectories, ";" );
 			while ( st.hasMoreTokens() ) {
 				try {
-					PLUGIN_MANAGER.loadPlugins( new File( st.nextToken() ) );
+					File dir = new File( st.nextToken() );
+					if ( dir.exists() && dir.canRead() )
+						PLUGIN_MANAGER.loadPlugins( dir );
 				} catch (UserException e) {
 					handleUserException( e );
 				}
