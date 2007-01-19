@@ -128,7 +128,7 @@ import java.beans.PropertyChangeListener;
  * }
  * </pre>
  * <p>
- * Note that when dealing with index properties it is often worth to thing about a customizer for
+ * Note that when dealing with index properties it is often worth to think about a customizer for
  * your class.
  *  
  * @author ordyniak
