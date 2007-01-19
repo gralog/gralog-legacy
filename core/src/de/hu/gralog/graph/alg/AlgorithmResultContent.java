@@ -82,7 +82,7 @@ public class AlgorithmResultContent {
 	}
 	
 	/**
-	 * Add elementTips to be displayed with this content. Note that their has to be
+	 * Add elementTips to be displayed with this content. Note that there has to be
 	 * a corresponding elementTipMode with the same description in the AlgorithmResult
 	 * this content belongs to.
 	 * 
