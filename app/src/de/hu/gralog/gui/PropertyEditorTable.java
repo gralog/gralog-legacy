@@ -41,6 +41,7 @@ import org.jgrapht.Graph;
 
 import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.graph.alg.ChooseVertexPropertyDescriptor;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 
@@ -104,6 +105,8 @@ public class PropertyEditorTable extends JTable {
 		
 		if ( propertyDescriptor instanceof ChooseGraphPropertyDescriptor )
 			return getCellEditor( new ChooseGraphPropertyEditor( ((ChooseGraphPropertyDescriptor)propertyDescriptor).getGraphType() ) );
+		if ( propertyDescriptor instanceof ChooseVertexPropertyDescriptor )
+			return getCellEditor( new ChooseVertexPropertyEditor( ) );
 		
 		if ( propertyDescriptor == null )
 			return getDefaultEditor( String.class );
@@ -128,6 +131,8 @@ public class PropertyEditorTable extends JTable {
 		
 		if ( propertyDescriptor instanceof ChooseGraphPropertyDescriptor )
 			return getCellRenderer( new ChooseGraphPropertyEditor( ((ChooseGraphPropertyDescriptor)propertyDescriptor).getGraphType() ) );
+		if ( propertyDescriptor instanceof ChooseVertexPropertyDescriptor )
+			return getCellRenderer( new ChooseVertexPropertyEditor(  ) );
 		
 		if ( propertyDescriptor == null )
 			return getDefaultRenderer( String.class );
