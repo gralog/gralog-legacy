@@ -4,15 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-
-import org.jgrapht.DirectedGraph;
-
-
 import de.hu.gralog.graph.AutomatonGraph;
 import de.hu.gralog.graph.AutomatonVertex;
 import de.hu.gralog.graph.LabeledGraphEdge;
-import de.hu.gralog.graph.LabeledGraphVertex;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.StrongConnectivityInspector;
 
