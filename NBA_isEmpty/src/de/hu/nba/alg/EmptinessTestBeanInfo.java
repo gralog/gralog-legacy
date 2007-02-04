@@ -24,11 +24,6 @@ public class EmptinessTestBeanInfo extends SimpleBeanInfo {
 		try {
 			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", EmptinessTest.class, new LabeledDirectedGraphTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html>This is  the graph.</html>" );
-			
-//			PROPERTY_DESCRIPTORS[1] = new ChooseVertexPropertyDescriptor( "startVertex", TestAlg.class, new LabeledGraphVertex() );
-//			PROPERTY_DESCRIPTORS[1].setShortDescription( "<html>" +
-//					"Select the <b>Vertex</b>, where the algorithm shall start.</html>"
-//					);
 		} catch( IntrospectionException e ) {
 			e.printStackTrace();
 		}

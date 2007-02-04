@@ -8,36 +8,40 @@ import java.util.Set;
 import org.jgrapht.DirectedGraph;
 
 
+import de.hu.gralog.graph.AutomatonGraph;
+import de.hu.gralog.graph.AutomatonVertex;
+import de.hu.gralog.graph.LabeledGraphEdge;
 import de.hu.gralog.graph.LabeledGraphVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.StrongConnectivityInspector;
 
-public class EmptinessTestAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> {
-
-	private V startVertex;
-	private DirectedGraph<V,E> graph;
+public class EmptinessTestAlgorithm {
 	
-	public EmptinessTestAlgorithm(V startVertex, DirectedGraph<V,E> graph ) {
-		this.startVertex = startVertex;
+	private AutomatonGraph graph;
+	
+	public EmptinessTestAlgorithm(AutomatonGraph graph ) {
 		this.graph = graph;
 	}
 	
-	public ArrayList<V> execute() {
-		ArrayList<V> resultList = new ArrayList<V>();
+	public ArrayList<AutomatonVertex> execute() {
+		ArrayList<AutomatonVertex> resultList = new ArrayList<AutomatonVertex>();
 		
-		StrongConnectivityInspector<V,E> sci = new StrongConnectivityInspector<V,E>( graph );
-		Iterator<Set<V>> it = sci.stronglyConnectedSets().iterator();
+		StrongConnectivityInspector<AutomatonVertex,LabeledGraphEdge> sci = new StrongConnectivityInspector<AutomatonVertex,LabeledGraphEdge>( graph );
+		Iterator<Set<AutomatonVertex>> it = sci.stronglyConnectedSets().iterator();
 		
 		while (it.hasNext()) {
-			Set<V> s = it.next();
-			V nodeOfSet = s.iterator().next();
+			Set<AutomatonVertex> s = it.next();
+			AutomatonVertex nodeOfSet = s.iterator().next();
 			
-//			every strong connected set, with only one element or which is out of reach of the startVertex is ignored
-			if ((s.size() == 1) || (DijkstraShortestPath.findPathBetween(graph, startVertex, nodeOfSet) == null))
+//			every strong connected set, with only one element (without a loop) or which is out of reach of the startVertex is ignored
+			if (
+					((s.size() == 1) && !(graph.containsEdge(nodeOfSet, nodeOfSet)))
+					|| (DijkstraShortestPath.findPathBetween(graph, graph.getStartVertex(), nodeOfSet) == null)
+				)
 				continue;
 			
-			for (V vertex : s) {
+			for (AutomatonVertex vertex : s) {
 				resultList.add(vertex);				
 			}
 			
