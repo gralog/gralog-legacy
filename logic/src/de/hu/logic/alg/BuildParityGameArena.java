@@ -16,9 +16,8 @@ import de.hu.logic.parser.ParseException;
 
 public class BuildParityGameArena implements Algorithm {
 
-//	private static final String BUILD_PARITY_GAME_ARENA = "buildParityGameArena";
 	private TransitionSystem transitionSystem;
-	private String formula; // = "\\nuX.(P\\and<>X)";
+	private String formula;
 	
 	public BuildParityGameArena() {
 		super();
@@ -70,6 +69,8 @@ public class BuildParityGameArena implements Algorithm {
 			result.setSingleContent( new AlgorithmResultContent( (new BuildParityGameArenaAlgorithm(transitionSystem, f)).execute() ) );
 						
 			return result;
+		} catch (UserException e) {
+			throw e;			
 		} catch (EvaluationException e) {
 			throw new UserException( "Cannot evaluate Formula: " + getFormula() + " on the given transitionSystem.", e );
 		} catch (FileNotFoundException e) {
