@@ -4,5 +4,7 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/java-cup-11a.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gralog-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/parity.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/finitegames.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

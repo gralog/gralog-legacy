@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.jgrapht.graph.GraphType;
 
 
 public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, TransitionSystemEdge> implements PropertyChangeListener {
@@ -34,7 +35,7 @@ public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, Tran
 	private ArrayList<Proposition> propositions = new ArrayList<Proposition>();
 	
 	public TransitionSystem() {
-		super( TransitionSystemVertex.class, TransitionSystemEdge.class );
+		super(  GraphType.MULTI_GRAPH, TransitionSystemVertex.class, TransitionSystemEdge.class );
 	}
 
 	public Proposition[] getPropositions() {
