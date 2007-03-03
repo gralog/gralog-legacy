@@ -1,6 +1,7 @@
 package de.hu.logic.alg;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 import org.jgrapht.graph.DefaultEdge;
 
@@ -11,7 +12,6 @@ import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.graph.TransitionSystemEdge;
 import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
-import de.hu.logic.parser.ParseException;
 import de.hu.parity.graph.ParityGameVertex;
 
 public class BuildParityGameArenaAlgorithm {
@@ -21,6 +21,8 @@ public class BuildParityGameArenaAlgorithm {
 	private int maxNesting;
 	
 	private DirectedGraph<ParityGameVertex, DefaultEdge> arena = new DirectedGraph<ParityGameVertex, DefaultEdge>(ParityGameVertex.class);
+	
+	private HashMap<String, Stack<String>> fpOpSubstitution;
 	
 	private HashMap<String, TransitionSystemVertex> tsVertices = new HashMap<String, TransitionSystemVertex>();
 	private HashMap<String, ParityGameVertex> arenaVertices = new HashMap<String, ParityGameVertex>();
@@ -42,6 +44,8 @@ public class BuildParityGameArenaAlgorithm {
 //		zu Testzwecken, verwende Formel (entspricht "\muX.\nuY.(<>P\andX)"):
 //		Formula formula = new Formula(Formula.mu,"X",new Formula(Formula.nu,"Y",new Formula(Formula.and, new Formula (Formula.diamond, "", new Formula (Formula.proposition,"P")), new Formula (Formula.proposition,"X"))));
 		maxNesting = getMaxFPNesting(formula, 0);
+		
+		formula = getOrderlyFormula(formula);		
 
 		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
 			buildArena(tsv.getLabel(), formula, 0);
@@ -81,6 +85,87 @@ public class BuildParityGameArenaAlgorithm {
 		default:
 			throw new UserException( "ParseError", "The subformula: " + f + " has a wrong syntax.");
 		}	
+	}
+	
+	private boolean isNumeric(char c) {
+	  if ((c >= '0') && (c <= '9')) return true;
+	  return false;
+	}
+	
+	public Formula getOrderlyFormula(Formula f) throws UserException {
+		fpOpSubstitution = new HashMap<String, Stack<String>>();
+		return getOrderlyFormulaRek(f);
+	}
+	
+	public Formula getOrderlyFormulaRek(Formula f) throws UserException {
+		switch(f.type())
+		{
+		case Formula.bottom:
+		case Formula.top:
+			return f;
+			
+		case Formula.proposition:
+			Stack<String> substitute = null;
+			if (fpOpSubstitution.containsKey(f.ident()))
+				substitute = fpOpSubstitution.get(f.ident());
+			if ( (substitute != null) && (!substitute.empty()) )
+				return new Formula(f.type(), substitute.peek());
+			// else:
+			return f;
+			
+		case Formula.and:
+		case Formula.or:
+			return new Formula(f.type(), getOrderlyFormulaRek(f.leftSubf()), getOrderlyFormulaRek(f.rightSubf()));
+			
+		case Formula.neg:			
+		case Formula.diamond:			
+		case Formula.box:
+			return new Formula(f.type(), f.ident(), getOrderlyFormulaRek(f.subf()));
+			
+		case Formula.mu:			
+		case Formula.nu:			
+			String newOp = f.ident();
+			
+			if (fpOpSubstitution.containsKey(newOp)) {
+				int i = newOp.length();
+				while (isNumeric(newOp.charAt(i - 1)))
+					i--;
+				
+				int tmpNumber = 1;
+				if (newOp.length()!=i) {
+					// get number from the operatorname
+					tmpNumber = Integer.parseInt(newOp.substring(i));					
+				}
+				
+				// operatorname without the number
+				String tmpPrefix = newOp.substring(0, i);
+				
+				// search for the next valid operatorname
+				do {
+					tmpNumber++;
+					newOp = tmpPrefix + tmpNumber;
+				} while (fpOpSubstitution.containsKey(newOp));
+			}
+
+			// now newOp is a valid operatorname
+			fpOpSubstitution.put(newOp, new Stack<String>());
+			
+			
+			if (!newOp.equals(f.ident()))
+				// substitution for f.ident() in subformula is added
+				fpOpSubstitution.get(f.ident()).push(newOp);
+			
+			Formula returnValue = new Formula(f.type(), newOp, getOrderlyFormulaRek(f.subf()));
+			
+			if (!newOp.equals(f.ident()))
+				// substitution for f.ident() in subformula is removed
+				fpOpSubstitution.get(f.ident()).pop();
+			
+			return returnValue;
+			
+		default:
+			throw new UserException( "ParseError", "The subformula: " + f + " has a wrong syntax.");
+		}
 	}
 	
 	public ParityGameVertex buildArena(String tsVertex, Formula f, int nesting) throws UserException {
