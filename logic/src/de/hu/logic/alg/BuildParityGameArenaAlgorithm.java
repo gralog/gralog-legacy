@@ -225,7 +225,7 @@ public class BuildParityGameArenaAlgorithm {
 		}
 	}
 	
-	public ParityGameVertex buildArena(String tsVertex, Formula f, int nesting) throws UserException {
+	private ParityGameVertex buildArena(String tsVertex, Formula f, int nesting) throws UserException {
 		
 		String vertexLabel = buildVertexLabel(tsVertex, f);
 		
