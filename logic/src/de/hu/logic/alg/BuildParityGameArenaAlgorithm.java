@@ -1,6 +1,8 @@
 package de.hu.logic.alg;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -41,8 +43,8 @@ public class BuildParityGameArenaAlgorithm {
 		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
 			tsVertices.put(tsv.getLabel(), tsv);
 		}
-//		zu Testzwecken, verwende Formel (entspricht "\muX.\nuY.(<>P\andX)"):
-//		Formula formula = new Formula(Formula.mu,"X",new Formula(Formula.nu,"Y",new Formula(Formula.and, new Formula (Formula.diamond, "", new Formula (Formula.proposition,"P")), new Formula (Formula.proposition,"X"))));
+//		zu Testzwecken, verwende Formel (entspricht "(X3\and\muX.\nuX.(<>P\andX\andX2))"):
+//		Formula formula = new Formula( Formula.and, new Formula(Formula.proposition, "X3"), new Formula(Formula.mu,"X",new Formula(Formula.nu,"X",new Formula(Formula.and, new Formula(Formula.and, new Formula (Formula.diamond, "", new Formula (Formula.proposition,"P")), new Formula (Formula.proposition,"X")), new Formula(Formula.proposition, "X2")))));
 		maxNesting = getMaxFPNesting(formula, 0);
 		
 		formula = getOrderlyFormula(formula);		
@@ -92,12 +94,60 @@ public class BuildParityGameArenaAlgorithm {
 	  return false;
 	}
 	
+	public HashSet<String> getFreeVariables(Formula f) throws UserException {		
+		return getFreeVariablesRek(f, new HashSet<String>(), new HashSet<String>());
+	}
+	
+	private HashSet<String> getFreeVariablesRek(Formula f, HashSet<String> freeVariables, HashSet<String> boundVariables) throws UserException {		
+		switch(f.type())
+		{
+		case Formula.bottom:
+		case Formula.top:
+			return freeVariables;
+			
+		case Formula.proposition:
+			if (!boundVariables.contains(f.ident()))
+				freeVariables.add(f.ident());	
+			return freeVariables;
+			
+		case Formula.and:
+		case Formula.or:
+			freeVariables.addAll(getFreeVariablesRek(f.leftSubf(), freeVariables, boundVariables));
+			freeVariables.addAll(getFreeVariablesRek(f.rightSubf(), freeVariables, boundVariables));
+			return freeVariables;
+			
+		case Formula.neg:			
+		case Formula.diamond:			
+		case Formula.box:
+			return getFreeVariablesRek(f.subf(), freeVariables, boundVariables);
+			
+		case Formula.mu:			
+		case Formula.nu:
+			boundVariables.add(f.ident());
+			return getFreeVariablesRek(f.subf(), freeVariables, boundVariables);
+
+//		case Formula.sub:
+			
+		default:
+			throw new UserException( "ParseError", "The subformula: " + f + " has a wrong syntax.");
+		}	
+		
+	}
+	
 	public Formula getOrderlyFormula(Formula f) throws UserException {
 		fpOpSubstitution = new HashMap<String, Stack<String>>();
+		
+		/* All names of free variables are reserved, so that fpOperaters with
+		 * the same name will have to be renamed
+		 */
+		for (String v : getFreeVariables(f)) {
+			fpOpSubstitution.put(v, new Stack<String>());
+		}
+		
 		return getOrderlyFormulaRek(f);
 	}
 	
-	public Formula getOrderlyFormulaRek(Formula f) throws UserException {
+	private Formula getOrderlyFormulaRek(Formula f) throws UserException {
 		switch(f.type())
 		{
 		case Formula.bottom:
@@ -106,9 +156,14 @@ public class BuildParityGameArenaAlgorithm {
 			
 		case Formula.proposition:
 			Stack<String> substitute = null;
+			
 			if (fpOpSubstitution.containsKey(f.ident()))
 				substitute = fpOpSubstitution.get(f.ident());
+			else
+				fpOpSubstitution.put(f.ident(), new Stack<String>());
+			
 			if ( (substitute != null) && (!substitute.empty()) )
+				// rename proposition:
 				return new Formula(f.type(), substitute.peek());
 			// else:
 			return f;
@@ -128,12 +183,14 @@ public class BuildParityGameArenaAlgorithm {
 			
 			if (fpOpSubstitution.containsKey(newOp)) {
 				int i = newOp.length();
+				
+				// get the position, where the number in the operatorname starts
 				while (isNumeric(newOp.charAt(i - 1)))
 					i--;
 				
 				int tmpNumber = 1;
-				if (newOp.length()!=i) {
-					// get number from the operatorname
+				if (newOp.length() != i) {
+					// get the number from the operatorname
 					tmpNumber = Integer.parseInt(newOp.substring(i));					
 				}
 				
@@ -150,14 +207,14 @@ public class BuildParityGameArenaAlgorithm {
 			// now newOp is a valid operatorname
 			fpOpSubstitution.put(newOp, new Stack<String>());
 			
-			
-			if (!newOp.equals(f.ident()))
+			boolean changed = !newOp.equals(f.ident());
+			if (changed)
 				// substitution for f.ident() in subformula is added
 				fpOpSubstitution.get(f.ident()).push(newOp);
 			
 			Formula returnValue = new Formula(f.type(), newOp, getOrderlyFormulaRek(f.subf()));
 			
-			if (!newOp.equals(f.ident()))
+			if (changed)
 				// substitution for f.ident() in subformula is removed
 				fpOpSubstitution.get(f.ident()).pop();
 			
