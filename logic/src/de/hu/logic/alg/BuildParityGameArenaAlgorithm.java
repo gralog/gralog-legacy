@@ -43,8 +43,8 @@ public class BuildParityGameArenaAlgorithm {
 		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
 			tsVertices.put(tsv.getLabel(), tsv);
 		}
-//		zu Testzwecken, verwende Formel (entspricht "(X3\and\muX.\nuX.(<>P\andX\andX2))"):
-//		Formula formula = new Formula( Formula.and, new Formula(Formula.proposition, "X3"), new Formula(Formula.mu,"X",new Formula(Formula.nu,"X",new Formula(Formula.and, new Formula(Formula.and, new Formula (Formula.diamond, "", new Formula (Formula.proposition,"P")), new Formula (Formula.proposition,"X")), new Formula(Formula.proposition, "X2")))));
+//		zu Testzwecken, verwende Formel (entspricht "(X3\and\nuX.\muX.(<>P\andX\andX2))"):
+//		Formula formula = new Formula( Formula.and, new Formula(Formula.proposition, "X3"), new Formula(Formula.nu,"X",new Formula(Formula.mu,"X",new Formula(Formula.and, new Formula(Formula.and, new Formula (Formula.diamond, "", new Formula (Formula.proposition,"P")), new Formula (Formula.proposition,"X")), new Formula(Formula.proposition, "X2")))));
 		maxNesting = getMaxFPNesting(formula, 0);
 		
 		formula = getOrderlyFormula(formula);		
@@ -137,7 +137,7 @@ public class BuildParityGameArenaAlgorithm {
 	public Formula getOrderlyFormula(Formula f) throws UserException {
 		fpOpSubstitution = new HashMap<String, Stack<String>>();
 		
-		/* All names of free variables are reserved, so that fpOperaters with
+		/* All names of free variables are reserved, so that fpOperators with
 		 * the same name will have to be renamed
 		 */
 		for (String v : getFreeVariables(f)) {
@@ -155,14 +155,9 @@ public class BuildParityGameArenaAlgorithm {
 			return f;
 			
 		case Formula.proposition:
-			Stack<String> substitute = null;
+			Stack<String> substitute = fpOpSubstitution.get(f.ident());
 			
-			if (fpOpSubstitution.containsKey(f.ident()))
-				substitute = fpOpSubstitution.get(f.ident());
-			else
-				fpOpSubstitution.put(f.ident(), new Stack<String>());
-			
-			if ( (substitute != null) && (!substitute.empty()) )
+			if (!substitute.empty()) 
 				// rename proposition:
 				return new Formula(f.type(), substitute.peek());
 			// else:
@@ -178,43 +173,45 @@ public class BuildParityGameArenaAlgorithm {
 			return new Formula(f.type(), f.ident(), getOrderlyFormulaRek(f.subf()));
 			
 		case Formula.mu:			
-		case Formula.nu:			
-			String newOp = f.ident();
+		case Formula.nu:
+			boolean opChanged = false;
+			String op = f.ident();
 			
-			if (fpOpSubstitution.containsKey(newOp)) {
-				int i = newOp.length();
+			if (fpOpSubstitution.containsKey(op)) {
+				int i = op.length();
 				
 				// get the position, where the number in the operatorname starts
-				while (isNumeric(newOp.charAt(i - 1)))
+				while (isNumeric(op.charAt(i - 1)))
 					i--;
 				
 				int tmpNumber = 1;
-				if (newOp.length() != i) {
+				if (i != op.length()) {
 					// get the number from the operatorname
-					tmpNumber = Integer.parseInt(newOp.substring(i));					
+					tmpNumber = Integer.parseInt(op.substring(i));					
 				}
 				
 				// operatorname without the number
-				String tmpPrefix = newOp.substring(0, i);
+				String tmpPrefix = op.substring(0, i);
 				
 				// search for the next valid operatorname
 				do {
 					tmpNumber++;
-					newOp = tmpPrefix + tmpNumber;
-				} while (fpOpSubstitution.containsKey(newOp));
+					op = tmpPrefix + tmpNumber;
+				} while (fpOpSubstitution.containsKey(op));
+				
+				opChanged = true;
 			}
 
-			// now newOp is a valid operatorname
-			fpOpSubstitution.put(newOp, new Stack<String>());
+			// now that op is a valid operatorname, reserve it
+			fpOpSubstitution.put(op, new Stack<String>());
 			
-			boolean changed = !newOp.equals(f.ident());
-			if (changed)
+			if (opChanged)
 				// substitution for f.ident() in subformula is added
-				fpOpSubstitution.get(f.ident()).push(newOp);
+				fpOpSubstitution.get(f.ident()).push(op);
 			
-			Formula returnValue = new Formula(f.type(), newOp, getOrderlyFormulaRek(f.subf()));
+			Formula returnValue = new Formula(f.type(), op, getOrderlyFormulaRek(f.subf()));
 			
-			if (changed)
+			if (opChanged)
 				// substitution for f.ident() in subformula is removed
 				fpOpSubstitution.get(f.ident()).pop();
 			
@@ -266,20 +263,6 @@ public class BuildParityGameArenaAlgorithm {
 			if (fpOperators.containsKey(f.ident()))
 				arena.addEdge( returnVertex, buildArena(tsVertex, fpOperators.get(f.ident()), nesting) );			
 			break;
-
-		case Formula.and:
-			returnVertex.setPlayer0(false);
-			
-			arena.addEdge( returnVertex, buildArena(tsVertex, f.leftSubf(), nesting) );
-			arena.addEdge( returnVertex, buildArena(tsVertex, f.rightSubf(), nesting) );
-			break;
-			
-		case Formula.or:
-			returnVertex.setPlayer0(true);
-			
-			arena.addEdge( returnVertex, buildArena(tsVertex, f.leftSubf(), nesting) );
-			arena.addEdge( returnVertex, buildArena(tsVertex, f.rightSubf(), nesting) );
-			break;
 			
 		case Formula.neg:
 			//TODO: test if in NNF
@@ -292,17 +275,18 @@ public class BuildParityGameArenaAlgorithm {
 			}
 			returnVertex.setPlayer0(fulfilsProposition);		
 			break;
+
+		case Formula.and:
+		case Formula.or:
+			returnVertex.setPlayer0(f.type() == Formula.or);
 			
-		case Formula.diamond:
-			returnVertex.setPlayer0(true);
-			
-			for (TransitionSystemEdge e : transitionSystem.outgoingEdgesOf(tsVertices.get(tsVertex))) {
-				arena.addEdge( returnVertex, buildArena(transitionSystem.getEdgeTarget(e).getLabel(), f.subf(), nesting) );				
-			}
+			arena.addEdge( returnVertex, buildArena(tsVertex, f.leftSubf(), nesting) );
+			arena.addEdge( returnVertex, buildArena(tsVertex, f.rightSubf(), nesting) );
 			break;
 			
+		case Formula.diamond:
 		case Formula.box:
-			returnVertex.setPlayer0(false);	
+			returnVertex.setPlayer0(f.type() == Formula.diamond);	
 			
 			for (TransitionSystemEdge e : transitionSystem.outgoingEdgesOf(tsVertices.get(tsVertex))) {
 				arena.addEdge( returnVertex, buildArena(transitionSystem.getEdgeTarget(e).getLabel(), f.subf(), nesting) );				
@@ -310,21 +294,16 @@ public class BuildParityGameArenaAlgorithm {
 			break;
 			
 		case Formula.mu:
-			returnVertex.setPlayer0(false);
-			if (!fpOperators.containsKey(f.ident()))
-				fpOperators.put(f.ident(), f);
-			
-			returnVertex.setPriority((nesting % 2 == 0)?(++nesting):(nesting));
-			
-			arena.addEdge( returnVertex, buildArena(tsVertex, f.subf(), nesting) );
-			break;
-			
 		case Formula.nu:
 			returnVertex.setPlayer0(false);
-			if (!fpOperators.containsKey(f.ident()))
-				fpOperators.put(f.ident(), f);
+			fpOperators.put(f.ident(), f);
 			
-			returnVertex.setPriority((nesting % 2 == 0)?(nesting):(++nesting));
+			// if (nesting is even and f a mu-Formula) or (uneven and a nu-Formula) increase nesting
+			// (realized by XOR)
+			if ((nesting % 2 == 0) ^ (f.type() == Formula.nu))
+				nesting++;
+			
+			returnVertex.setPriority(nesting);
 			
 			arena.addEdge( returnVertex, buildArena(tsVertex, f.subf(), nesting) );
 			break;
