@@ -17,7 +17,7 @@ import de.hu.logic.parser.ParseException;
 public class BuildParityGameArena implements Algorithm {
 
 	private TransitionSystem transitionSystem;
-	private String formula; // = "\\muX.(X\\or(\\nuX.(X\\andP)))";
+	private String formula = "\\muX.(X\\or(\\nuX.(X\\andP)))";
 	
 	public BuildParityGameArena() {
 		super();

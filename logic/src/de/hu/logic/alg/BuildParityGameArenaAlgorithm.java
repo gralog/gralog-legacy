@@ -43,11 +43,11 @@ public class BuildParityGameArenaAlgorithm {
 		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
 			tsVertices.put(tsv.getLabel(), tsv);
 		}
-//		zu Testzwecken, verwende Formel (entspricht "(X3\and\nuX.\muX.(<>P\andX\andX2))"):
+//		zu Testzwecken, verwende folgende Formel (entspricht "(X3\and\nuX.\muX.(<>P\andX\andX2))"):
 //		Formula formula = new Formula( Formula.and, new Formula(Formula.proposition, "X3"), new Formula(Formula.nu,"X",new Formula(Formula.mu,"X",new Formula(Formula.and, new Formula(Formula.and, new Formula (Formula.diamond, "", new Formula (Formula.proposition,"P")), new Formula (Formula.proposition,"X")), new Formula(Formula.proposition, "X2")))));
-		maxNesting = getMaxFPNesting(formula, 0);
+		formula = getOrderlyFormula(formula);
 		
-		formula = getOrderlyFormula(formula);		
+		maxNesting = getMaxFPNesting(formula, 0);
 
 		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
 			buildArena(tsv.getLabel(), formula, 0);
@@ -99,6 +99,8 @@ public class BuildParityGameArenaAlgorithm {
 	}
 	
 	private HashSet<String> getFreeVariablesRek(Formula f, HashSet<String> freeVariables, HashSet<String> boundVariables) throws UserException {		
+		HashSet<String> newFreeVariables;
+		
 		switch(f.type())
 		{
 		case Formula.bottom:
@@ -106,15 +108,19 @@ public class BuildParityGameArenaAlgorithm {
 			return freeVariables;
 			
 		case Formula.proposition:
-			if (!boundVariables.contains(f.ident()))
-				freeVariables.add(f.ident());	
-			return freeVariables;
+			if (!boundVariables.contains(f.ident())) {
+				newFreeVariables = new HashSet<String>(freeVariables);
+				newFreeVariables.add(f.ident());
+				return newFreeVariables;
+			} else
+				return freeVariables;
 			
 		case Formula.and:
 		case Formula.or:
-			freeVariables.addAll(getFreeVariablesRek(f.leftSubf(), freeVariables, boundVariables));
-			freeVariables.addAll(getFreeVariablesRek(f.rightSubf(), freeVariables, boundVariables));
-			return freeVariables;
+			newFreeVariables = new HashSet<String>(freeVariables);
+			newFreeVariables.addAll(getFreeVariablesRek(f.leftSubf(), newFreeVariables, boundVariables));
+			newFreeVariables.addAll(getFreeVariablesRek(f.rightSubf(), newFreeVariables, boundVariables));
+			return newFreeVariables;
 			
 		case Formula.neg:			
 		case Formula.diamond:			
@@ -123,8 +129,9 @@ public class BuildParityGameArenaAlgorithm {
 			
 		case Formula.mu:			
 		case Formula.nu:
-			boundVariables.add(f.ident());
-			return getFreeVariablesRek(f.subf(), freeVariables, boundVariables);
+			HashSet<String> newBoundVariables = new HashSet<String>(boundVariables);
+			newBoundVariables.add(f.ident());
+			return getFreeVariablesRek(f.subf(), freeVariables, newBoundVariables);
 
 //		case Formula.sub:
 			
@@ -134,8 +141,73 @@ public class BuildParityGameArenaAlgorithm {
 		
 	}
 	
+	public Formula getNNF(Formula f) throws UserException {
+		return getNNFRec(f, new HashSet<String>(), false);
+	}
+
+
+	/**
+	 * 
+	 * 
+	 * @param negVar	Contains all fixed-point Variables, that are to be negated
+	 * @param neg		This flag is true, if the formula is to be negated
+	 */
+	private Formula getNNFRec(Formula f, HashSet<String> negVar, boolean neg) throws UserException {
+		int tmpType;
+		
+		switch(f.type())
+		{
+		case Formula.bottom:
+		case Formula.top:
+			if(neg) {
+				tmpType = (f.type() == Formula.top) ? (Formula.bottom) : (Formula.top);
+				return new Formula(tmpType, f.ident());
+			} else
+				return f;
+			
+		case Formula.proposition:
+			if(neg ^ negVar.contains(f.ident()))
+				return new Formula(Formula.neg, f);
+			else
+				return f;
+			
+		case Formula.and:
+		case Formula.or:
+			tmpType = ((f.type() == Formula.or) ^ neg) ? (Formula.or) : (Formula.and);			
+			return new Formula(tmpType, getNNFRec(f.leftSubf(), negVar, neg), getNNFRec(f.rightSubf(), negVar, neg));
+			
+		case Formula.neg:
+			return getNNFRec(f.subf(), negVar, !neg);
+			
+		case Formula.diamond:
+		case Formula.box:
+			tmpType = ((f.type() == Formula.box) ^ neg) ? (Formula.box) : (Formula.diamond);			
+			return new Formula(tmpType, getNNFRec(f.subf(), negVar, neg));
+			
+		case Formula.mu:
+		case Formula.nu:
+			HashSet<String> newNegVar = new HashSet<String>(negVar);
+			if (neg) {
+				tmpType = (f.type() == Formula.nu) ? (Formula.mu) : (Formula.nu);
+				newNegVar.add(f.ident());
+			} else {
+				tmpType = f.type();
+				if (newNegVar.contains(f.ident()))
+					newNegVar.remove(f.ident());
+			}
+			return new Formula(tmpType, f.ident(), getNNFRec(f.subf(), newNegVar, neg));
+
+//		case Formula.sub:
+			
+		default:
+			throw new UserException( "ParseError", "The subformula: " + f + " has a wrong syntax.");
+		}	
+	}
+	
 	public Formula getOrderlyFormula(Formula f) throws UserException {
 		fpOpSubstitution = new HashMap<String, Stack<String>>();
+		
+		f = getNNF(f);
 		
 		/* All names of free variables are reserved, so that fpOperators with
 		 * the same name will have to be renamed
@@ -143,8 +215,13 @@ public class BuildParityGameArenaAlgorithm {
 		for (String v : getFreeVariables(f)) {
 			fpOpSubstitution.put(v, new Stack<String>());
 		}
+		Formula tmpForm = getOrderlyFormulaRek(f);
 		
-		return getOrderlyFormulaRek(f);
+		if (!tmpForm.valid())
+			throw new UserException( "SyntaxError", "A ss fixed-point variable is used negatively.\n\n"
+									+ "'" + tmpForm.toString() + "'" );
+		// else:
+		return tmpForm;
 	}
 	
 	private Formula getOrderlyFormulaRek(Formula f) throws UserException {
@@ -167,8 +244,8 @@ public class BuildParityGameArenaAlgorithm {
 		case Formula.or:
 			return new Formula(f.type(), getOrderlyFormulaRek(f.leftSubf()), getOrderlyFormulaRek(f.rightSubf()));
 			
-		case Formula.neg:			
-		case Formula.diamond:			
+		case Formula.neg:
+		case Formula.diamond:
 		case Formula.box:
 			return new Formula(f.type(), f.ident(), getOrderlyFormulaRek(f.subf()));
 			
