@@ -61,7 +61,7 @@ public class BuildParityGameArena implements Algorithm {
 			
 			FormulaList list = LogicParser.loadString( sb.toString() );
 			
-			list.printList();
+//			list.printList();
 			
 			Formula f = list.substituteMain();
 			

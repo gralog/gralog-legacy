@@ -1,6 +1,5 @@
 package de.hu.logic.alg;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
@@ -24,11 +23,11 @@ public class BuildParityGameArenaAlgorithm {
 	
 	private DirectedGraph<ParityGameVertex, DefaultEdge> arena = new DirectedGraph<ParityGameVertex, DefaultEdge>(ParityGameVertex.class);
 	
-	private HashMap<String, Stack<String>> fpOpSubstitution;
+	private HashMap<String, Stack<String>> fpVarSubstitution;
 	
 	private HashMap<String, TransitionSystemVertex> tsVertices = new HashMap<String, TransitionSystemVertex>();
 	private HashMap<String, ParityGameVertex> arenaVertices = new HashMap<String, ParityGameVertex>();
-	private HashMap<String, Formula> fpOperators = new HashMap<String, Formula>();
+	private HashMap<String, Formula> fpVars = new HashMap<String, Formula>();
 	
 	public BuildParityGameArenaAlgorithm (TransitionSystem ts, Formula f) {
 		transitionSystem = ts;
@@ -95,11 +94,11 @@ public class BuildParityGameArenaAlgorithm {
 	}
 	
 	public HashSet<String> getFreeVariables(Formula f) throws UserException {		
-		return getFreeVariablesRek(f, new HashSet<String>(), new HashSet<String>());
+		return getFreeVariablesRec(f, new HashSet<String>());
 	}
 	
-	private HashSet<String> getFreeVariablesRek(Formula f, HashSet<String> freeVariables, HashSet<String> boundVariables) throws UserException {		
-		HashSet<String> newFreeVariables;
+	private HashSet<String> getFreeVariablesRec(Formula f, HashSet<String> boundVariables) throws UserException {		
+		HashSet<String> freeVariables = new HashSet<String>();
 		
 		switch(f.type())
 		{
@@ -108,30 +107,26 @@ public class BuildParityGameArenaAlgorithm {
 			return freeVariables;
 			
 		case Formula.proposition:
-			if (!boundVariables.contains(f.ident())) {
-				newFreeVariables = new HashSet<String>(freeVariables);
-				newFreeVariables.add(f.ident());
-				return newFreeVariables;
-			} else
-				return freeVariables;
+			if (!boundVariables.contains(f.ident()))
+				freeVariables.add(f.ident());
+			return freeVariables;
 			
 		case Formula.and:
 		case Formula.or:
-			newFreeVariables = new HashSet<String>(freeVariables);
-			newFreeVariables.addAll(getFreeVariablesRek(f.leftSubf(), newFreeVariables, boundVariables));
-			newFreeVariables.addAll(getFreeVariablesRek(f.rightSubf(), newFreeVariables, boundVariables));
-			return newFreeVariables;
+			freeVariables.addAll(getFreeVariablesRec(f.leftSubf(), boundVariables));
+			freeVariables.addAll(getFreeVariablesRec(f.rightSubf(), boundVariables));
+			return freeVariables;
 			
 		case Formula.neg:			
 		case Formula.diamond:			
 		case Formula.box:
-			return getFreeVariablesRek(f.subf(), freeVariables, boundVariables);
+			return getFreeVariablesRec(f.subf(), boundVariables);
 			
 		case Formula.mu:			
 		case Formula.nu:
 			HashSet<String> newBoundVariables = new HashSet<String>(boundVariables);
 			newBoundVariables.add(f.ident());
-			return getFreeVariablesRek(f.subf(), freeVariables, newBoundVariables);
+			return getFreeVariablesRec(f.subf(), newBoundVariables);
 
 //		case Formula.sub:
 			
@@ -147,9 +142,11 @@ public class BuildParityGameArenaAlgorithm {
 
 
 	/**
+	 * Negates the given formula rekursively. If a fixed-point operator is to be negated, the
+	 * fixed-point variable is substituted by its negation before the negation of the subformula.
+	 * Thus it "stays the same".
 	 * 
-	 * 
-	 * @param negVar	Contains all fixed-point Variables, that are to be negated
+	 * @param negVar	Contains all fixed-point variables, that are to be negated
 	 * @param neg		This flag is true, if the formula is to be negated
 	 */
 	private Formula getNNFRec(Formula f, HashSet<String> negVar, boolean neg) throws UserException {
@@ -160,12 +157,14 @@ public class BuildParityGameArenaAlgorithm {
 		case Formula.bottom:
 		case Formula.top:
 			if(neg) {
+				// switch type
 				tmpType = (f.type() == Formula.top) ? (Formula.bottom) : (Formula.top);
 				return new Formula(tmpType, f.ident());
 			} else
 				return f;
 			
 		case Formula.proposition:
+			// negate, if necessary
 			if(neg ^ negVar.contains(f.ident()))
 				return new Formula(Formula.neg, f);
 			else
@@ -173,14 +172,17 @@ public class BuildParityGameArenaAlgorithm {
 			
 		case Formula.and:
 		case Formula.or:
+			// switch type, if (neg == true)
 			tmpType = ((f.type() == Formula.or) ^ neg) ? (Formula.or) : (Formula.and);			
 			return new Formula(tmpType, getNNFRec(f.leftSubf(), negVar, neg), getNNFRec(f.rightSubf(), negVar, neg));
 			
 		case Formula.neg:
+			// switch negation-flag
 			return getNNFRec(f.subf(), negVar, !neg);
 			
 		case Formula.diamond:
 		case Formula.box:
+			// switch type, if (neg == true)
 			tmpType = ((f.type() == Formula.box) ^ neg) ? (Formula.box) : (Formula.diamond);			
 			return new Formula(tmpType, getNNFRec(f.subf(), negVar, neg));
 			
@@ -188,6 +190,7 @@ public class BuildParityGameArenaAlgorithm {
 		case Formula.nu:
 			HashSet<String> newNegVar = new HashSet<String>(negVar);
 			if (neg) {
+				// switch type
 				tmpType = (f.type() == Formula.nu) ? (Formula.mu) : (Formula.nu);
 				newNegVar.add(f.ident());
 			} else {
@@ -205,26 +208,27 @@ public class BuildParityGameArenaAlgorithm {
 	}
 	
 	public Formula getOrderlyFormula(Formula f) throws UserException {
-		fpOpSubstitution = new HashMap<String, Stack<String>>();
+		fpVarSubstitution = new HashMap<String, Stack<String>>();
 		
 		f = getNNF(f);
 		
-		/* All names of free variables are reserved, so that fpOperators with
+		/* All names of free variables are reserved, so that fpVars with
 		 * the same name will have to be renamed
 		 */
 		for (String v : getFreeVariables(f)) {
-			fpOpSubstitution.put(v, new Stack<String>());
+			fpVarSubstitution.put(v, new Stack<String>());
 		}
-		Formula tmpForm = getOrderlyFormulaRek(f);
+		
+		Formula tmpForm = getOrderlyFormulaRec(f);
 		
 		if (!tmpForm.valid())
-			throw new UserException( "SyntaxError", "A ss fixed-point variable is used negatively.\n\n"
-									+ "'" + tmpForm.toString() + "'" );
-		// else:
+			throw new UserException( "SyntaxError", "A fixed-point variable is used negatively.\n\n"
+									+ "Orderly formula in NNF: \n'" + tmpForm.toString() + "'" );
+
 		return tmpForm;
 	}
 	
-	private Formula getOrderlyFormulaRek(Formula f) throws UserException {
+	private Formula getOrderlyFormulaRec(Formula f) throws UserException {
 		switch(f.type())
 		{
 		case Formula.bottom:
@@ -232,36 +236,36 @@ public class BuildParityGameArenaAlgorithm {
 			return f;
 			
 		case Formula.proposition:
-			Stack<String> substitute = fpOpSubstitution.get(f.ident());
+			Stack<String> substitute = fpVarSubstitution.get(f.ident());
 			
 			if (!substitute.empty()) 
-				// rename proposition:
+				// rename proposition
 				return new Formula(f.type(), substitute.peek());
-			// else:
-			return f;
+			else
+				return f;
 			
 		case Formula.and:
 		case Formula.or:
-			return new Formula(f.type(), getOrderlyFormulaRek(f.leftSubf()), getOrderlyFormulaRek(f.rightSubf()));
+			return new Formula(f.type(), getOrderlyFormulaRec(f.leftSubf()), getOrderlyFormulaRec(f.rightSubf()));
 			
 		case Formula.neg:
 		case Formula.diamond:
 		case Formula.box:
-			return new Formula(f.type(), f.ident(), getOrderlyFormulaRek(f.subf()));
+			return new Formula(f.type(), f.ident(), getOrderlyFormulaRec(f.subf()));
 			
 		case Formula.mu:			
 		case Formula.nu:
 			boolean opChanged = false;
 			String op = f.ident();
 			
-			if (fpOpSubstitution.containsKey(op)) {
+			if (fpVarSubstitution.containsKey(op)) {
+				int tmpNumber = 1;
 				int i = op.length();
 				
 				// get the position, where the number in the operatorname starts
 				while (isNumeric(op.charAt(i - 1)))
 					i--;
 				
-				int tmpNumber = 1;
 				if (i != op.length()) {
 					// get the number from the operatorname
 					tmpNumber = Integer.parseInt(op.substring(i));					
@@ -274,23 +278,23 @@ public class BuildParityGameArenaAlgorithm {
 				do {
 					tmpNumber++;
 					op = tmpPrefix + tmpNumber;
-				} while (fpOpSubstitution.containsKey(op));
+				} while (fpVarSubstitution.containsKey(op));
 				
 				opChanged = true;
 			}
 
 			// now that op is a valid operatorname, reserve it
-			fpOpSubstitution.put(op, new Stack<String>());
+			fpVarSubstitution.put(op, new Stack<String>());
 			
 			if (opChanged)
 				// substitution for f.ident() in subformula is added
-				fpOpSubstitution.get(f.ident()).push(op);
+				fpVarSubstitution.get(f.ident()).push(op);
 			
-			Formula returnValue = new Formula(f.type(), op, getOrderlyFormulaRek(f.subf()));
+			Formula returnValue = new Formula(f.type(), op, getOrderlyFormulaRec(f.subf()));
 			
 			if (opChanged)
 				// substitution for f.ident() in subformula is removed
-				fpOpSubstitution.get(f.ident()).pop();
+				fpVarSubstitution.get(f.ident()).pop();
 			
 			return returnValue;
 			
@@ -337,12 +341,11 @@ public class BuildParityGameArenaAlgorithm {
 			}
 			returnVertex.setPlayer0(!fulfilsProposition);
 			
-			if (fpOperators.containsKey(f.ident()))
-				arena.addEdge( returnVertex, buildArena(tsVertex, fpOperators.get(f.ident()), nesting) );			
+			if (fpVars.containsKey(f.ident()))
+				arena.addEdge( returnVertex, buildArena(tsVertex, fpVars.get(f.ident()), nesting) );			
 			break;
 			
 		case Formula.neg:
-			//TODO: test if in NNF
 			fulfilsProposition = false;
 			for (Proposition p : tsVertices.get(tsVertex).getPropositions()) {
 				if (p.getName().equals(f.subf().ident())) {
@@ -373,7 +376,7 @@ public class BuildParityGameArenaAlgorithm {
 		case Formula.mu:
 		case Formula.nu:
 			returnVertex.setPlayer0(false);
-			fpOperators.put(f.ident(), f);
+			fpVars.put(f.ident(), f);
 			
 			// if (nesting is even and f a mu-Formula) or (uneven and a nu-Formula) increase nesting
 			// (realized by XOR)
