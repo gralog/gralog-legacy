@@ -172,11 +172,13 @@ public class Formula
 		case Formula.neg:  
 			return subf().recValid(fpvar, !neg);
 		case diamond: 
-		case box: return subf().recValid(fpvar, neg);
-		case mu: 
-		case nu: 
-			fpvar.add(_ident);
+		case box:
 			return subf().recValid(fpvar, neg);
+		case mu: 
+		case nu:
+			HashSet<String> new_fpvar = new HashSet<String>(fpvar);
+			new_fpvar.add(_ident);
+			return subf().recValid(new_fpvar, neg);
 		}
 		return true;
 	}
