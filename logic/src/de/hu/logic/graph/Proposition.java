@@ -140,7 +140,10 @@ public class Proposition implements NestedGraphPropertyBean {
 		Proposition set = new Proposition("(" + name + " \\cup " + R.name + ")");
 		set.setVertexes( vertexes );
 		
-		set.getVertexes().addAll(R.getVertexes());
+		for ( TransitionSystemVertex t : R.getVertexes() ) {
+			if ( ! set.getVertexes().contains( t ) )
+				set.getVertexes().add( t );
+		}
 		return set;
 	}
 	
