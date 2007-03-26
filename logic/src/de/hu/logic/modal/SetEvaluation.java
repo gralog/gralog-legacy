@@ -47,11 +47,12 @@ public class SetEvaluation
 	
 	Proposition interpretation(String name)
 	{
+		Proposition p;
 		if(_interp.containsKey(name))
 			return _interp.get(name);
-		else if(t.getProposition(name) != null) 
+		else if((p=t.getProposition(name)) != null) 
 		{
-			return t.getProposition(name);
+			return p.copy();
 		}
 		else
 			return null;
