@@ -1,14 +1,14 @@
 #Fat Jar Configuration File
-#Sun Jan 28 15:51:40 CET 2007
+#Mon Apr 16 19:32:22 CEST 2007
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=dist\\NBA_isEmpty.jar
+jarname=dist\\nba.jar
 manifest.mergeall=true
 manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<po|nba>~CVS/;<jar|gralog-core.jar>
+excludes=<po|nba>~CVS/;<jar|gralog-core.jar>;<jar|dfa.jar>
 includes=
