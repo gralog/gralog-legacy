@@ -6,6 +6,8 @@
  */
 package de.hu.gralog.graph;
 
+import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.graph.io.XMLDecoderIO;
 /**
  * A GraphTypeInfo acts as a factory for graphs defined in GrALog. 
  * If you want to define your own graph type you have to extend this class.
@@ -62,5 +64,9 @@ public abstract class GraphTypeInfo {
 		if ( v2.getClass().isInstance( v1 ) && e2.getClass().isInstance( e1 ) )
 			return true;
 		return false;
+	}
+	
+	public GJGraph copyGraph( GJGraph graph ) {
+		return (new XMLDecoderIO().getDataCopy( graph ));
 	}
 }

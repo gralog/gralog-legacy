@@ -55,7 +55,6 @@ import de.hu.gralog.graph.alg.Algorithm;
 import de.hu.gralog.graph.alg.AlgorithmResult;
 import de.hu.gralog.graph.alg.AlgorithmResultInfo;
 import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.graph.io.XMLDecoderIO;
 import de.hu.gralog.gui.BeanEditorTableModel;
 import de.hu.gralog.gui.HTMLEditorPane;
 import de.hu.gralog.gui.MainPad;
@@ -188,7 +187,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 						Graph graph = (Graph)value;
 						for ( Document document : MainPad.getInstance().getDesktop().getOpenDocuments() ) {
 							if ( document.getContent() instanceof GJGraphDocumentContent && document.getGraph().getGraphT() == graph ) {
-								GJGraph jgraph = new XMLDecoderIO().getDataCopy( document.getGraph() );
+								GJGraph jgraph = document.getGraph().clone();
 								jgraphs.put( jgraph.getGraphT(), jgraph );
 								propertyDescriptor.getWriteMethod().invoke( preparedAlgorithm, new Object[] { jgraph.getGraphT() } );
 								algorithmSettings.put( propertyDescriptor.getName(), document.toString() );

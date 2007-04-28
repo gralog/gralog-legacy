@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Tue Dec 19 14:13:09 CET 2006
+#Mon Apr 16 19:59:36 CEST 2007
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=MANIFEST.MF
 jarname.isextern=false
 onejar.expand=
-excludes=
+excludes=<jar|games.jar>
 includes=
