@@ -122,38 +122,6 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	public GJGraph(GraphModel model, GraphLayoutCache view, GraphWithEditableElements graph) {
 		super( model, view );
 		this.grapht = graph;
-
-//		this.setGraphLayoutCache( new GGraphLayoutCache( new GJGraphCellViewFactory() ) );
-		this.setGraphLayoutCache(view);
-		this.setMarqueeHandler( new GMarqueeHandler() );
-		this.setModel( new JGraphViewableGraphModelAdapter( grapht ) );
-//		this.setModel(model);
-		
-		this.getSelectionModel().addGraphSelectionListener( grapht );
-
-		this.setSizeable( false );
-		this.setEditable( false );
-		this.setPortsScaled( true );
-		this.setTolerance( 5 );
-		this.setGridEnabled( true );
-		this.setGridMode( CROSS_GRID_MODE );
-		this.setGridSize( 40 );
-		this.setGridVisible( true );
-		this.setAutoscrolls( false );
-		this.setAutoResizeGraph( true );
-		this.setDragEnabled( true );
-		this.setDropEnabled( true );
-		this.setCloneable( true );
-		
-		KeyStroke keyStroke = KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 );
-		ActionMap actionMap = new ActionMap();
-		actionMap.put(keyStroke, MainPad.EDIT_DELETE_ACTION );
-		InputMap inputMap = new InputMap();
-		inputMap.put( keyStroke, keyStroke );
-		this.setActionMap( actionMap );
-		this.setInputMap(0, inputMap );
-		
-		ToolTipManager.sharedInstance().registerComponent( this );
 	}
 
 	public JGraphViewableGraphModelAdapter getGModel() {
