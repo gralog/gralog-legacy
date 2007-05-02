@@ -67,6 +67,6 @@ public abstract class GraphTypeInfo {
 	}
 	
 	public GJGraph copyGraph( GJGraph graph ) {
-		return graph;//new XMLDecoderIO().getDataCopy( graph );
+		return new XMLDecoderIO().getDataCopy( graph );
 	}
 }
