@@ -258,6 +258,7 @@ public class BuildParityGameArenaAlgorithm {
 			boolean opChanged = false;
 			String op = f.ident();
 			
+			// if the identifier "op" is used, search for a free one:
 			if (fpVarSubstitution.containsKey(op)) {
 				int tmpNumber = 1;
 				int i = op.length();
