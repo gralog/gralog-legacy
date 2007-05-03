@@ -8,6 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
-	<classpathentry kind="lib" path="/app/dist/games.jar"/>
+	<classpathentry kind="lib" path="/app/dist/games.jar" sourcepath="/app"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

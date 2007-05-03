@@ -19,10 +19,12 @@
 
 package de.hu.gralog.jgraph;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.ActionMap;
@@ -44,6 +46,7 @@ import org.jgraph.graph.VertexView;
 
 import de.hu.gralog.graph.ElementAttributes;
 import de.hu.gralog.graph.GraphWithEditableElements;
+import de.hu.gralog.graph.io.XMLDecoderIO;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
@@ -338,6 +341,27 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	
 	@Override
 	public GJGraph clone() {
-		return getGraphT().getTypeInfo().copyGraph(this);
+		HashMap vMap = null;
+		GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);
+		
+		if (grapht == null || vMap == null)	// copyGraph Funktion not properly overridden
+			return new XMLDecoderIO().getDataCopy( this );
+		
+		GJGraph retGJGraph = new GJGraph(grapht);
+		
+		// Position vertices in new GJGraph:
+		for ( Object cell : this.getGModel().getVertexCells()) {
+			DefaultGraphCell vertexCell = (DefaultGraphCell)cell;
+			
+			Object newVertex = vMap.get( vertexCell.getUserObject() );
+			
+			Rectangle2D bounds = GraphConstants.getBounds( this.getAttributes( vertexCell ) );
+			Point vertexPosition = new Point( (int)bounds.getX(), (int)bounds.getY() );
+			
+			retGJGraph.positionVertexAt(newVertex, vertexPosition);
+		}
+		
+		return retGJGraph;
+		
 	}
 }
