@@ -24,6 +24,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -341,16 +342,17 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	
 	@Override
 	public GJGraph clone() {
-		HashMap vMap = null;
+		HashMap vMap = new HashMap(); 
 		GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);
 		
-		if (grapht == null || vMap == null)	// copyGraph Funktion not properly overridden
+		if (grapht == null || vMap.isEmpty())
+			// copyGraph Funktion not properly overridden
 			return new XMLDecoderIO().getDataCopy( this );
 		
 		GJGraph retGJGraph = new GJGraph(grapht);
 		
 		// Position vertices in new GJGraph:
-		for ( Object cell : this.getGModel().getVertexCells()) {
+		for ( Object cell : this.getGModel().getVertexCells()) { //TODO: dauert immernoch ne Minute bei 1000 Knoten...
 			DefaultGraphCell vertexCell = (DefaultGraphCell)cell;
 			
 			Object newVertex = vMap.get( vertexCell.getUserObject() );
