@@ -18,7 +18,7 @@
  */
 
 package de.hu.gralog.jgraph;
-
+import static java.util.concurrent.TimeUnit.NANOSECONDS; 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
@@ -193,6 +193,7 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 		AttributeMap changes = new AttributeMap();
 		changes.put( cell, editAttr );
 		getGModel().edit( changes, null, null, null );
+		
 	}
 	
 	public void registerSubgraph( DisplaySubgraph subgraph ) {
@@ -339,31 +340,78 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	public void elementTipsChanged() {
 		graphDidChange();
 	}
+
 	
 	@Override
 	public GJGraph clone() {
-		HashMap vMap = new HashMap(); 
-		GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);
+		try {
+//			long[] time = new long[5];
+//			for(int i = 0; i<time.length; i++) time[i] = 0;
+//			long tmpTime, tmpTime2;
+			
+			HashMap vMap = new HashMap();
+			
+//			tmpTime=System.nanoTime();
+			GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);// 4 - 29 ms
+//			time[0]+= ( System.nanoTime() - tmpTime );
+			
+			if (grapht == null || vMap.isEmpty()) {
+				// copyGraph Funktion not properly overridden
+				System.out.println(" [ \"copyGraph\"-function of " + getGraphT().getTypeInfo().getName()
+						+" not properly overridden.\nWill use native (very slow) function. ]");
+				return new XMLDecoderIO().getDataCopy( this );
+			}
+			
+//			tmpTime=System.nanoTime();
+			GJGraph retGJGraph = new GJGraph(grapht);// dauert noch 230 - 310(1000) ms
+//			time[1]+= ( System.nanoTime() - tmpTime );
+			
+			AttributeMap changes = new AttributeMap();
+
+//			System.out.println("start cg\n" + new Date());
+//			tmpTime2=System.nanoTime();
+			
+			// Position vertices in new GJGraph:
+			for ( Object cell : this.getGModel().getVertexCells()) { // Schleife dauert noch 15-37 ms bei 1000 Knoten
+//				tmpTime=System.nanoTime();
+				
+				DefaultGraphCell vertexCell = (DefaultGraphCell)cell;
+				Object newVertex = vMap.get( vertexCell.getUserObject() );
+	
+				Rectangle2D bounds = GraphConstants.getBounds( this.getAttributes( vertexCell ) );
+				Point vertexPosition = new Point( (int)bounds.getX(), (int)bounds.getY() );
+	
+				retGJGraph.snap( vertexPosition );
+				retGJGraph.fromScreen( vertexPosition );
+				
+				DefaultGraphCell newCell = retGJGraph.getGModel().getVertexCell( newVertex );
+				//TODO: vielleicht in folgender Zeile direkt von bounds klonen:
+				Rectangle2D newBounds = (Rectangle2D)retGJGraph.getGraphLayoutCache().getMapping( newCell, true ).getBounds().clone();
+				newBounds.setRect( vertexPosition.getX(), vertexPosition.getY(), newBounds.getWidth(), newBounds.getHeight() );
+
+				AttributeMap editAttr = new AttributeMap();	
+				GraphConstants.setBounds( editAttr, newBounds );
+				changes.put( newCell, editAttr );
+				
+//				time[4]+= ( System.nanoTime() - tmpTime );
+			}
+			
+//			time[2]+= ( System.nanoTime() - tmpTime2 );tmpTime=System.nanoTime();
+			retGJGraph.getGModel().edit( changes, null, null, null ); // dauert noch 94 - 180(1330) ms 
+//			time[3]+= ( System.nanoTime() - tmpTime );
+			System.out.println("end cg\n" + new Date());
+//			for(int i = 0; i<time.length;i++) System.out.println("time["+i+"]:  "+NANOSECONDS.toMillis(time[i]));
+			
+			return retGJGraph;
 		
-		if (grapht == null || vMap.isEmpty())
-			// copyGraph Funktion not properly overridden
+		} catch (Exception e) {
+			System.out.println(" [ Exception in \"copyGraph\"-function of "
+					+ getGraphT().getTypeInfo().getName() + ":\n"
+					+ e.toString()
+					+"\nWill use native (VERY slow) function. ]");
 			return new XMLDecoderIO().getDataCopy( this );
-		
-		GJGraph retGJGraph = new GJGraph(grapht);
-		
-		// Position vertices in new GJGraph:
-		for ( Object cell : this.getGModel().getVertexCells()) { //TODO: dauert immernoch ne Minute bei 1000 Knoten...
-			DefaultGraphCell vertexCell = (DefaultGraphCell)cell;
 			
-			Object newVertex = vMap.get( vertexCell.getUserObject() );
-			
-			Rectangle2D bounds = GraphConstants.getBounds( this.getAttributes( vertexCell ) );
-			Point vertexPosition = new Point( (int)bounds.getX(), (int)bounds.getY() );
-			
-			retGJGraph.positionVertexAt(newVertex, vertexPosition);
 		}
-		
-		return retGJGraph;
 		
 	}
 }
