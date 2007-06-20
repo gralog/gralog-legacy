@@ -18,13 +18,11 @@
  */
 
 package de.hu.gralog.jgraph;
-import static java.util.concurrent.TimeUnit.NANOSECONDS; 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -345,15 +343,9 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	@Override
 	public GJGraph clone() {
 		try {
-//			long[] time = new long[5];
-//			for(int i = 0; i<time.length; i++) time[i] = 0;
-//			long tmpTime, tmpTime2;
 			
 			HashMap vMap = new HashMap();
-			
-//			tmpTime=System.nanoTime();
-			GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);// 4 - 29 ms
-//			time[0]+= ( System.nanoTime() - tmpTime );
+			GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);
 			
 			if (grapht == null || vMap.isEmpty()) {
 				// copyGraph Funktion not properly overridden
@@ -362,18 +354,13 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 				return new XMLDecoderIO().getDataCopy( this );
 			}
 			
-//			tmpTime=System.nanoTime();
-			GJGraph retGJGraph = new GJGraph(grapht);// dauert noch 230 - 310(1000) ms
-//			time[1]+= ( System.nanoTime() - tmpTime );
+			GJGraph retGJGraph = new GJGraph(grapht);
 			
 			AttributeMap changes = new AttributeMap();
 
-//			System.out.println("start cg\n" + new Date());
-//			tmpTime2=System.nanoTime();
 			
 			// Position vertices in new GJGraph:
-			for ( Object cell : this.getGModel().getVertexCells()) { // Schleife dauert noch 15-37 ms bei 1000 Knoten
-//				tmpTime=System.nanoTime();
+			for ( Object cell : this.getGModel().getVertexCells()) {
 				
 				DefaultGraphCell vertexCell = (DefaultGraphCell)cell;
 				Object newVertex = vMap.get( vertexCell.getUserObject() );
@@ -385,22 +372,15 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 				retGJGraph.fromScreen( vertexPosition );
 				
 				DefaultGraphCell newCell = retGJGraph.getGModel().getVertexCell( newVertex );
-				//TODO: vielleicht in folgender Zeile direkt von bounds klonen:
 				Rectangle2D newBounds = (Rectangle2D)retGJGraph.getGraphLayoutCache().getMapping( newCell, true ).getBounds().clone();
 				newBounds.setRect( vertexPosition.getX(), vertexPosition.getY(), newBounds.getWidth(), newBounds.getHeight() );
 
 				AttributeMap editAttr = new AttributeMap();	
 				GraphConstants.setBounds( editAttr, newBounds );
 				changes.put( newCell, editAttr );
-				
-//				time[4]+= ( System.nanoTime() - tmpTime );
 			}
 			
-//			time[2]+= ( System.nanoTime() - tmpTime2 );tmpTime=System.nanoTime();
 			retGJGraph.getGModel().edit( changes, null, null, null ); // dauert noch 94 - 180(1330) ms 
-//			time[3]+= ( System.nanoTime() - tmpTime );
-			System.out.println("end cg\n" + new Date());
-//			for(int i = 0; i<time.length;i++) System.out.println("time["+i+"]:  "+NANOSECONDS.toMillis(time[i]));
 			
 			return retGJGraph;
 		
@@ -408,9 +388,8 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 			System.out.println(" [ Exception in \"copyGraph\"-function of "
 					+ getGraphT().getTypeInfo().getName() + ":\n"
 					+ e.toString()
-					+"\nWill use native (VERY slow) function. ]");
+					+"\nWill use default (VERY slow) function. ]");
 			return new XMLDecoderIO().getDataCopy( this );
-			
 		}
 		
 	}
