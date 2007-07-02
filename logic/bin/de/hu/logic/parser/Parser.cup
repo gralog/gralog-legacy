@@ -98,7 +98,7 @@ formula ::=
 			  {: RESULT = new Formula(Formula.mu, s,f); :}
 			|
 			  NU STRING:s DOT formula:f
-			  {: RESULT = new Formula(Formula.mu, s,f); :}
+			  {: RESULT = new Formula(Formula.nu, s,f);  :}
 			;
 			
 booleanlist ::=   formula:f

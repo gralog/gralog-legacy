@@ -44,6 +44,7 @@ import org.jgraph.graph.GraphModel;
 import org.jgraph.graph.VertexView;
 
 import de.hu.gralog.graph.ElementAttributes;
+import de.hu.gralog.graph.GraphTypeInfo;
 import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.gralog.graph.io.XMLDecoderIO;
 import de.hu.gralog.gui.MainPad;
@@ -345,12 +346,13 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 		try {
 			
 			HashMap vMap = new HashMap();
-			GraphWithEditableElements grapht = getGraphT().getTypeInfo().copyGraph(getGraphT(), vMap);
-			
+			GraphTypeInfo gti = getGraphT().getTypeInfo();
+			GraphWithEditableElements grapht = gti.copyGraph(getGraphT(), vMap);
+
 			if (grapht == null || vMap.isEmpty()) {
 				// copyGraph Funktion not properly overridden
 				System.out.println(" [ \"copyGraph\"-function of " + getGraphT().getTypeInfo().getName()
-						+" not properly overridden.\nWill use native (very slow) function. ]");
+						+" not properly overridden.\nWill use default (very slow) function. ]");
 				return new XMLDecoderIO().getDataCopy( this );
 			}
 			

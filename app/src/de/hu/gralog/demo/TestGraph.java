@@ -11,7 +11,7 @@ import org.jgrapht.graph.DefaultEdge;
 import de.hu.gralog.graph.DirectedGraph;
 import de.hu.gralog.graph.LabeledGraphVertex;
 
-public class TestGraph extends DirectedGraph<LabeledGraphVertex, DefaultEdge >{
+public class TestGraph extends DirectedGraph<LabeledGraphVertex, DefaultEdge>{
 
 	private LabeledGraphVertex startVertex = null;
 	
