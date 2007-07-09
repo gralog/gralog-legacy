@@ -136,16 +136,19 @@ public class BuildParityGameArenaAlgorithm {
 		
 	}
 	
+	/**
+	 * Negates the given formula recursively. If a fixed-point operator is to be negated, the
+	 * fixed-point variable is substituted by its negation before the negation of the subformula.
+	 * Thus it "stays the same".
+	 * 
+	 * @param f			The formula that is to be negated 
+	 */
 	public Formula getNNF(Formula f) throws UserException {
 		return getNNFRec(f, new HashSet<String>(), false);
 	}
 
 
 	/**
-	 * Negates the given formula rekursively. If a fixed-point operator is to be negated, the
-	 * fixed-point variable is substituted by its negation before the negation of the subformula.
-	 * Thus it "stays the same".
-	 * 
 	 * @param negVar	Contains all fixed-point variables, that are to be negated
 	 * @param neg		This flag is true, if the formula is to be negated
 	 */
@@ -258,7 +261,7 @@ public class BuildParityGameArenaAlgorithm {
 			boolean opChanged = false;
 			String op = f.ident();
 			
-			// if the identifier "op" is used, search for a free one:
+			// if the identifier 'op' is used, search for a free one:
 			if (fpVarSubstitution.containsKey(op)) {
 				int tmpNumber = 1;
 				int i = op.length();
