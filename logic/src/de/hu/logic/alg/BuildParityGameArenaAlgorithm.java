@@ -13,6 +13,7 @@ import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.graph.TransitionSystemEdge;
 import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
+import de.hu.parity.graph.ParityGameGraphTypeInfo;
 import de.hu.parity.graph.ParityGameVertex;
 
 public class BuildParityGameArenaAlgorithm {
@@ -21,7 +22,7 @@ public class BuildParityGameArenaAlgorithm {
 	private Formula formula;
 	private int maxNesting;
 	
-	private DirectedGraph<ParityGameVertex, DefaultEdge> arena = new DirectedGraph<ParityGameVertex, DefaultEdge>(ParityGameVertex.class);
+	private DirectedGraph<ParityGameVertex, DefaultEdge> arena = (DirectedGraph<ParityGameVertex, DefaultEdge>)new ParityGameGraphTypeInfo().newInstance();
 	
 	private HashMap<String, Stack<String>> fpVarSubstitution;
 	
