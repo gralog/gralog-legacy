@@ -59,6 +59,8 @@ import de.hu.gralog.jgrapht.event.GraphPropertyListener;
  */
 public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E> {
 
+	public static final Object NULL_VALUE = new Object();
+	
 	private GraphPropertyListener graphPropertyListener;
 	
 	protected DefaultCellFactory cellFactory = new DefaultCellFactory();
@@ -79,6 +81,10 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
 			Object oldValue = e.getOldValue();
 			if ( e instanceof IndexedPropertyChangeEvent )
 				oldValue = new IndexedPropertyValue( ((IndexedPropertyChangeEvent)e).getIndex(), e.getOldValue() );
+			else {
+				if ( oldValue == null )
+					oldValue = NULL_VALUE;
+			}
 			
 			AttributeMap property = new AttributeMap();
 			property.put( e.getPropertyName(), oldValue );
@@ -254,7 +260,12 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
     					PropertyDescriptor descriptor = propertyDescriptors.get( propertyName );
     					Object propertyValue = propertyMap.get( propertyName );
     					
+    					if ( propertyValue == NULL_VALUE )
+    						propertyValue = null;
+    					
     					Object oldValue = descriptor.getReadMethod().invoke( bean, new Object[] {} );
+    					if ( oldValue == null )
+    						oldValue = NULL_VALUE;
     					undoPropertyMap.put( propertyName, oldValue );
     					
     					graph.removeGraphPropertyListener( graphPropertyListener );
