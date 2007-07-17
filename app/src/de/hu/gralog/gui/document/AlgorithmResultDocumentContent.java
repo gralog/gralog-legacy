@@ -47,7 +47,7 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	}
 	
 	public AlgorithmResultDocumentContent( AlgorithmResultInfo info ) {
-		this( info, true );
+		this( info, false );
 	}
 	
 	public AlgorithmResultDocumentContent( AlgorithmResultInfo info, boolean copy ) {
@@ -81,14 +81,14 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	
 	@Override
 	public void clear() {
-		XMLDecoderIO xmlIO = new XMLDecoderIO();
+		/*XMLDecoderIO xmlIO = new XMLDecoderIO();
 		
 		info = xmlIO.getDataCopy( initialState.info );
 		info.addListener( this );
 		component = null;
 		
 		registerUndoManager( undoManager );
-		fireComponentReplaced();
+		fireComponentReplaced();*/
 	}
 
 	@Override
