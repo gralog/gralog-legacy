@@ -1,25 +1,14 @@
 package de.hu.nba.alg;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.jgrapht.graph.Subgraph;
-
 import de.hu.gralog.graph.alg.Algorithm;
 import de.hu.gralog.graph.alg.AlgorithmResult;
 import de.hu.gralog.graph.alg.AlgorithmResultContent;
 import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.graph.AutomatonGraphTypeInfo;
 import de.hu.gralog.graph.AutomatonVertex;
 import de.hu.gralog.graph.AutomatonGraph;
-import de.hu.gralog.graph.LabeledGraphEdge;
 
 public class EmptinessTest implements Algorithm {
-
-	private static final String DSM_IS_EMPTY = "Vertices, that can be reached in an infinite loop.";
 
 	private AutomatonGraph graph;
 
@@ -32,7 +21,7 @@ public class EmptinessTest implements Algorithm {
 		this.graph = graph;
 	}
 
-	public AlgorithmResult execute(  ) throws InvalidPropertyValuesException {
+	public AlgorithmResult execute() throws InvalidPropertyValuesException {
 		InvalidPropertyValuesException pe = new InvalidPropertyValuesException();
 			
 		if ( graph.getStartVertex() == null )
@@ -46,24 +35,20 @@ public class EmptinessTest implements Algorithm {
 
 	
 		
-		ArrayList<AutomatonVertex> vertexList = new EmptinessTestAlgorithm( graph ).execute();
+		boolean languageIsEmpty = new EmptinessTestAlgorithm( graph ).languageIsEmpty();
 
 		AlgorithmResult result = new AlgorithmResult( graph );
-		result.setDescription( "The highlighted vertices can be reached in an infinite loop." );
-		
-		DisplaySubgraphMode displaySubgraphMode = new DisplaySubgraphMode( );
-		displaySubgraphMode.setVertexDisplayMode( DisplayMode.HIGH2, DisplayMode.HIGH1 );
 
-		result.addDisplaySubgraphMode( DSM_IS_EMPTY, displaySubgraphMode );
+		String resultString = "The language defined by the nondeterministic-Buechi-automaton " + (languageIsEmpty?"IS":"is NOT") + " empty.";
 		
+		result.setDescription(resultString);
 		
-		Set<AutomatonVertex> resultSetVertices = new HashSet<AutomatonVertex>(vertexList);
+		AutomatonGraph resultGraph = (AutomatonGraph) new AutomatonGraphTypeInfo().newInstance();
+		resultGraph.addVertex(new AutomatonVertex(resultString));
 
-	
-		Subgraph testSubGraph = SubgraphFactory.createSubgraph( graph, resultSetVertices, new HashSet<LabeledGraphEdge>() );
-		
 		AlgorithmResultContent content = new AlgorithmResultContent();
-		content.addDisplaySubgraph( DSM_IS_EMPTY, testSubGraph );
+		content.setGraph(resultGraph);
+
 		result.setSingleContent( content );
 
 

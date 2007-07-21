@@ -1,6 +1,5 @@
 package de.hu.nba.alg;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -18,29 +17,39 @@ public class EmptinessTestAlgorithm {
 		this.graph = graph;
 	}
 	
-	public ArrayList<AutomatonVertex> execute() {
-		ArrayList<AutomatonVertex> resultList = new ArrayList<AutomatonVertex>();
-		
-		StrongConnectivityInspector<AutomatonVertex,LabeledGraphEdge> sci = new StrongConnectivityInspector<AutomatonVertex,LabeledGraphEdge>( graph );
+	
+	/**
+	 * This algorithm returns, whether the language defined by the
+	 * nondeterministic-Buechi-automaton graph is empty or not.
+	 * 
+	 * @return True, if the language is empty.
+	 */
+	public boolean languageIsEmpty() {
+		StrongConnectivityInspector<AutomatonVertex,LabeledGraphEdge> sci
+			= new StrongConnectivityInspector<AutomatonVertex,LabeledGraphEdge>( graph );
 		Iterator<Set<AutomatonVertex>> it = sci.stronglyConnectedSets().iterator();
 		
 		while (it.hasNext()) {
+			// search throug all strongly connected sets:
 			Set<AutomatonVertex> s = it.next();
-			AutomatonVertex nodeOfSet = s.iterator().next();
+			AutomatonVertex vertexOfSet = s.iterator().next();
 			
-//			every strong connected set, with only one element (without a loop) or which is out of reach of the startVertex is ignored
+			// every set s, with only one element (without a loop) or which is out of reach
+			// of the startVertex is ignored:
 			if (
-					((s.size() == 1) && !(graph.containsEdge(nodeOfSet, nodeOfSet)))
-					|| (DijkstraShortestPath.findPathBetween(graph, graph.getStartVertex(), nodeOfSet) == null)
-				)
+					((s.size() == 1) && !(graph.containsEdge(vertexOfSet, vertexOfSet)))
+					|| (DijkstraShortestPath.findPathBetween(graph, graph.getStartVertex(), vertexOfSet) == null)
+				) {
 				continue;
-			
-			for (AutomatonVertex vertex : s) {
-				resultList.add(vertex);				
+			} else {
+				// there is (at least) one vertex of a strongly connected set,
+				// that is in reach of the startVertex - thus the language is NOT empty.
+				return false;
 			}
-			
 		}
 		
-		return resultList;
+		// if there is no such set, the language IS empty:
+		return true;
 	}
+	
 }
