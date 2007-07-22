@@ -30,7 +30,7 @@ public class EmptinessTestAlgorithm {
 		Iterator<Set<AutomatonVertex>> it = sci.stronglyConnectedSets().iterator();
 		
 		while (it.hasNext()) {
-			// search throug all strongly connected sets:
+			// search through all strongly connected sets:
 			Set<AutomatonVertex> s = it.next();
 			AutomatonVertex vertexOfSet = s.iterator().next();
 			
