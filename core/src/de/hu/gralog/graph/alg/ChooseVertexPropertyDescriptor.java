@@ -21,9 +21,6 @@ package de.hu.gralog.graph.alg;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-
-import de.hu.gralog.graph.GraphTypeInfo;
 
 /**
  * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.

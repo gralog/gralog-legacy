@@ -20,10 +20,8 @@
 package de.hu.gralog.jgrapht.graph;
 
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.EdgeFactory;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleDirectedGraph;
 
 /**
  * 

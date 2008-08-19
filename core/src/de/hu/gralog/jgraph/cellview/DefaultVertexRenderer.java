@@ -50,14 +50,17 @@ public class DefaultVertexRenderer extends VertexRenderer implements VertexDispl
 	public Component getRendererComponent(JGraph graph, CellView view, boolean sel, boolean focus, boolean preview, DisplayMode displayMode ) {
 		if ( displayMode == DisplayMode.HIDE )
 			return null;
-		getRendererComponent( graph, view, sel, focus, preview );
-		if ( displayMode.getColor() != null ) {
-			int width = (int)Math.max( 1, GraphConstants.getLineWidth( view.getAllAttributes() ) );
-			setBorder( BorderFactory.createLineBorder( displayMode.getColor(), width ) );
-			
-			bordercolor = displayMode.getColor();
-		}
 		
+		getRendererComponent( graph, view, sel, focus, preview );
+		
+		if ( displayMode.getColor() != null ) {
+			borderWidth = (int)Math.max( 1, GraphConstants.getLineWidth( view.getAllAttributes() ) );
+			bordercolor = displayMode.getColor();
+
+			setBorder( BorderFactory.createLineBorder( bordercolor, borderWidth ) );
+			
+		}
+		this.view = null;
 		return this;
 	}
 }

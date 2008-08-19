@@ -76,10 +76,20 @@ public class DefaultGraphPropertyListenableGraph<V,E> extends DefaultListenableG
 			l.propertyChanged( graphSource, e );
 	}
 	
+	protected void fireGraphPropertyChange( Object graphSource, PropertyChangeEvent e, Object[] elementsToUpdateView ) {
+		for ( GraphPropertyListener l : graphPropertyListeners )
+			l.propertyChanged( graphSource, e, elementsToUpdateView );
+	}
+
+	
 	private class ElementListener implements GraphPropertyListener {
 
 		public void propertyChanged(Object graphSource, PropertyChangeEvent e) {
 			fireGraphPropertyChange( graphSource, e );
+		}
+
+		public void propertyChanged(Object graphSource, PropertyChangeEvent e, Object[] elementsToUpdateView) {
+			fireGraphPropertyChange( graphSource, e, elementsToUpdateView );
 		}
 		
 	}

@@ -23,4 +23,5 @@ import java.beans.PropertyChangeEvent;
 
 public interface GraphPropertyListener {
 	public void propertyChanged( Object graphSource, PropertyChangeEvent e );
+	public void propertyChanged( Object graphSource, PropertyChangeEvent e, Object[] elementsToUpdateView );
 }

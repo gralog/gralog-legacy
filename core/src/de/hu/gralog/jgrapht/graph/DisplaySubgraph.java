@@ -23,7 +23,6 @@ import java.awt.Color;
 import java.io.Serializable;
 import java.util.Vector;
 
-
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Subgraph;
 

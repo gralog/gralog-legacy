@@ -19,11 +19,9 @@
 
 package de.hu.gralog.jgrapht.graph;
 
-import org.jgrapht.EdgeFactory;
 import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
 
 /**
  * 

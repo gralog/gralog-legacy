@@ -29,7 +29,7 @@ import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
  */
 public class LabeledGraphVertex extends DefaultListenableVertex {
 	
-	private String label = "label";
+	protected String label = "label";
 
 	public LabeledGraphVertex() {
 		label = "label";

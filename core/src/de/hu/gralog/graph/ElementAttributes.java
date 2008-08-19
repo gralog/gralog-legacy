@@ -21,7 +21,6 @@ package de.hu.gralog.graph;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.geom.Rectangle2D;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
@@ -55,19 +54,18 @@ public class ElementAttributes {
 		
 		map = new AttributeMap();
 		
-		GraphConstants.setBounds(map, new Rectangle2D.Double(50, 50, 40, 40));
-		GraphConstants.setBorder(map, BorderFactory.createLineBorder( Color.black, 2));
-		GraphConstants.setBackground(map, Color.white );
+//		GraphConstants.setBounds(map, new Rectangle2D.Double(50, 50, 40, 40));
 		
+		GraphConstants.setBackground(map, Color.white );
 		GraphConstants.setBorderColor( map, Color.black );
-		GraphConstants.setBorder(map, BorderFactory.createLineBorder( Color.black, 2));
-				
 		GraphConstants.setLineWidth( map, 2 );
+		GraphConstants.setBorder(map, BorderFactory.createLineBorder( GraphConstants.getBorderColor( map ), (int)GraphConstants.getLineWidth( map ) ));
+				
 		GraphConstants.setForeground(map, Color.black);
 		GraphConstants.setFont(map, GraphConstants.DEFAULTFONT.deriveFont(
 				Font.BOLD, 12));
 		GraphConstants.setOpaque(map, true);
-		GraphConstants.setAutoSize( map, true );
+		GraphConstants.setAutoSize( map, false );
 		
 		VERTEX_ATTRIBUTES.put( DisplayMode.SHOW, map );
 		return map;
