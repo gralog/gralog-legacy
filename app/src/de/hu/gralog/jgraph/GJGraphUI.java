@@ -19,19 +19,14 @@
 
 package de.hu.gralog.jgraph;
 
-import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
 import org.jgraph.graph.CellView;
-import org.jgraph.graph.DefaultGraphCell;
-import org.jgraph.plaf.basic.BasicGraphUI;
 
-public class GJGraphUI extends BasicGraphUI {
+public class GJGraphUI extends BasicGraphUIFixDirtyRegion {
 
 	public GJGraphUI() {
 		super();
@@ -48,8 +43,9 @@ public class GJGraphUI extends BasicGraphUI {
 	 */
 	public void paintCell(Graphics g, CellView view, Rectangle2D bounds,
 			boolean preview) {
+		super.paintCell( g, view, bounds, preview );
 		// First Paint View
-		boolean hide = false;
+/*		boolean hide = false;
 		if (view != null && bounds != null) {
 			String tooltip = ((GJGraph)graph).getToolTip( ((DefaultGraphCell)view.getCell()).getUserObject() );
 			if ( tooltip != null && tooltip.length() > 0 ) {
@@ -78,7 +74,7 @@ public class GJGraphUI extends BasicGraphUI {
 			for (int i = 0; i < children.length; i++)
 				paintCell(g, children[i], children[i].getBounds(), preview);
 		}
-	}
+*/	}
 	
 	/**
 	 * Creates an instance of TransferHandler. Used for subclassers to provide
@@ -87,4 +83,5 @@ public class GJGraphUI extends BasicGraphUI {
 	protected TransferHandler createTransferHandler() {
 		return new GGraphTransferHandler();
 	}
+	
 }

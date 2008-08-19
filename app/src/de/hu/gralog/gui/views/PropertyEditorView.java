@@ -20,7 +20,7 @@
 package de.hu.gralog.gui.views;
 
 import java.awt.Component;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -36,17 +36,17 @@ import de.hu.gralog.gui.document.GJGraphDocumentContent;
 public class PropertyEditorView extends View implements EditorDesktopViewListener, DocumentListener {
 
 	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "no propertyview avaible" );
-	private Hashtable<Document, Hashtable<Component, JScrollPane>> tables = new Hashtable<Document, Hashtable<Component, JScrollPane>>();
+	private HashMap<Document, HashMap<Component, JScrollPane>> tables = new HashMap<Document, HashMap<Component, JScrollPane>>();
 	
 	public PropertyEditorView() {
 		super( "PropertyEditor", null, NO_PROPERTIES_AVAIBLE );
 	}
 
 	protected JScrollPane getTable( Document document ) {
-		Hashtable<Component, JScrollPane> components = tables.get( document );
+		HashMap<Component, JScrollPane> components = tables.get( document );
 		if ( components == null ) {
 			document.addDocumentListener( this );
-			components = new Hashtable<Component, JScrollPane>();
+			components = new HashMap<Component, JScrollPane>();
 			tables.put( document, components );
 		}
 		JScrollPane scrollPane = components.get( document.getContent().getComponent() );
@@ -87,6 +87,10 @@ public class PropertyEditorView extends View implements EditorDesktopViewListene
 	public void documentReverted(Document document) {
 		// 
 		
+	}
+
+	public void documentClosed(Document document) {
+		tables.remove( document );
 	}
 
 	

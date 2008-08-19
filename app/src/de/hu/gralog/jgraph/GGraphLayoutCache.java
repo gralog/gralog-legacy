@@ -19,19 +19,19 @@
 
 package de.hu.gralog.jgraph;
 
+import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
 import org.jgraph.event.GraphLayoutCacheEvent;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.CellViewFactory;
 import org.jgraph.graph.GraphLayoutCache;
+import org.jgraph.graph.GraphModel;
 
 public class GGraphLayoutCache extends GraphLayoutCache {
 
-	public GGraphLayoutCache(CellViewFactory factory) {
-		super();
-		this.setFactory( factory );
-		// TODO Auto-generated constructor stub
+	public GGraphLayoutCache(GraphModel model, CellViewFactory factory) {
+		super(model, factory);
 	}
 
 	@Override
@@ -70,11 +70,16 @@ public class GGraphLayoutCache extends GraphLayoutCache {
 				public Object[] getContext() {
 					return null;
 				}
+
+				public Rectangle2D getDirtyRegion() {
+					return null;
+				}
+
+				public void setDirtyRegion(Rectangle2D dirty) {
+				}
 				
 			});
 		}
 	}
 
-	
-	
 }

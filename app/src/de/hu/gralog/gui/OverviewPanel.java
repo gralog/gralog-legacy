@@ -73,9 +73,7 @@ public class OverviewPanel
 		
 		v = new PannerViewfinder(this, (JViewport)g.getParent() );
 		
-		GraphLayoutCache view = new ViewRedirector(g.getGraphLayoutCache());
-		
-		graph = new GJGraph(g.getModel(), view, ((GJGraph)g).getGraphT() );
+		graph = new GJGraph(g.getModel(), g.getGraphLayoutCache(), ((GJGraph)g).getGraphT() );
 		graph.setAntiAliased(true);
 		graph.getModel().addGraphModelListener(this);
 		graph.setEnabled(false);

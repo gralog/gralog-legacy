@@ -27,9 +27,10 @@ import javax.swing.undo.UndoManager;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.graph.alg.AlgorithmInfoListener;
 import de.hu.gralog.graph.alg.AlgorithmResultInfo;
-import de.hu.gralog.graph.io.XMLDecoderIO;
+import de.hu.gralog.graph.io.XMLDecoderIOFast;
 import de.hu.gralog.gui.FileFormat;
 import de.hu.gralog.gui.GraphEditor;
+import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.GJGraph;
 
 public class AlgorithmResultDocumentContent extends DocumentContent implements AlgorithmInfoListener {
@@ -42,19 +43,19 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	
 	private AlgorithmResultInfo info;
 	
-	public AlgorithmResultDocumentContent() {
+	public AlgorithmResultDocumentContent( ) {
 		super();
 	}
 	
 	public AlgorithmResultDocumentContent( AlgorithmResultInfo info ) {
-		this( info, false );
+		this( info, MainPad.getInstance().isRevertEnabled() );
 	}
 	
-	public AlgorithmResultDocumentContent( AlgorithmResultInfo info, boolean copy ) {
+	private AlgorithmResultDocumentContent( AlgorithmResultInfo info, boolean copy ) {
 		this.info = info;
 		info.addListener( this );
 		
-		XMLDecoderIO xmlIO = new XMLDecoderIO();
+		XMLDecoderIOFast xmlIO = new XMLDecoderIOFast();
 		if ( copy )
 			initialState = new AlgorithmResultDocumentContent( xmlIO.getDataCopy( info ), false );
 	}
@@ -80,7 +81,7 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	}
 	
 	@Override
-	public void clear() {
+	public void clear() throws InputOutputException {
 		/*XMLDecoderIO xmlIO = new XMLDecoderIO();
 		
 		info = xmlIO.getDataCopy( initialState.info );
@@ -103,14 +104,14 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	@Override
 	public DocumentContent read(FileFormat format, InputStream in) throws InputOutputException {
 		if ( format == XML_FILE_FORMAT )
-			return new XMLDecoderIO().readAlgorithmResultDocumentContent( in );
+			return new XMLDecoderIOFast().readAlgorithmResultDocumentContent( in );
 		return null;
 	}
 
 	@Override
 	public void write(FileFormat format, OutputStream out) throws InputOutputException {
 		if ( format == XML_FILE_FORMAT )
-			new XMLDecoderIO().writeAlgorithmResultDocumentContent( this, out );
+			new XMLDecoderIOFast().writeAlgorithmResultDocumentContent( this, out );
 	}
 
 	public void graphReplaced() {

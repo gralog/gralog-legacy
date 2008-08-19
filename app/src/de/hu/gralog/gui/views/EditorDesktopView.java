@@ -118,6 +118,7 @@ public class EditorDesktopView extends View implements DocumentListener {
 			}
 		} else
 			setCurrentView( view );
+                System.out.println("");
 	}
 	
 	public void newDocument(GraphTypeInfo graphType) {
@@ -179,8 +180,9 @@ public class EditorDesktopView extends View implements DocumentListener {
 	public void closeOtherDocuments() {
 		try {
 			for ( DocumentView view : new ArrayList<DocumentView>( documentViews ) ) {
-				if ( view != getCurrentView() )
+				if ( view != getCurrentView() ) {
 					view.closeWithAbort();
+				}
 			}
 		} catch(OperationAbortedException e) {
 			// to nothing
@@ -249,7 +251,7 @@ public class EditorDesktopView extends View implements DocumentListener {
 		DocumentView view = new DocumentView( document );
 		
 		documentViews.add( view );
-		
+
 		DockingWindow window = rootWindow.getWindow();
 		if ( window == null )
 			rootWindow.setWindow( view );
@@ -370,6 +372,9 @@ public class EditorDesktopView extends View implements DocumentListener {
 	}
 
 	protected void removeView( DocumentView view ) {
+		if ( getCurrentView() == view )
+			currentView = null;
+		view.getDocument().close();
 		rootWindow.removeView( view );
 		documentViews.remove( view );
 	}
@@ -483,7 +488,7 @@ public class EditorDesktopView extends View implements DocumentListener {
 			MainPad.FILE_SAVE_ACTION.setEnabled( false );
 			MainPad.FILE_SAVE_AS_ACTION.setEnabled( false );
 			
-			MainPad.FILE_REVERT_ACTION.setEnabled( false );
+			MainPad.FILE_REVERT_ACTION.setEnabled( false && MainPad.getInstance().isRevertEnabled() );
 			
 			MainPad.FILE_RENAME_ACTION.setEnabled( false );
 			
@@ -513,11 +518,11 @@ public class EditorDesktopView extends View implements DocumentListener {
 			
 			if ( getCurrentDocument().isModified() ) {
 				MainPad.FILE_SAVE_ACTION.setEnabled( true );
-				MainPad.FILE_REVERT_ACTION.setEnabled( true );
+				MainPad.FILE_REVERT_ACTION.setEnabled( true && MainPad.getInstance().isRevertEnabled() );
 				MainPad.FILE_RENAME_ACTION.setEnabled( false );
 			} else {
 				MainPad.FILE_SAVE_ACTION.setEnabled( false );
-				MainPad.FILE_REVERT_ACTION.setEnabled( false );
+				MainPad.FILE_REVERT_ACTION.setEnabled( false && MainPad.getInstance().isRevertEnabled() );
 				MainPad.FILE_RENAME_ACTION.setEnabled( true );
 			}
 			
@@ -554,6 +559,11 @@ public class EditorDesktopView extends View implements DocumentListener {
 
 	public void documentReverted(Document document) {
 		// 
+		
+	}
+
+	public void documentClosed(Document document) {
+		// TODO Auto-generated method stub
 		
 	}
 }

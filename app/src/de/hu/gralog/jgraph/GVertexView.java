@@ -44,5 +44,9 @@ public class GVertexView extends VertexView {
 	public Component getRendererComponent(JGraph graph, boolean selected, boolean focus, boolean preview ) {
 		return this.graph.getVertexRenderer().getRendererComponent( this.graph, this, selected, focus, preview, this.graph.getCellDisplayMode( ((DefaultGraphCell)getCell()).getUserObject()) );
 	}
-	
+
+/*	@Override
+	protected AttributeMap createAttributeMap() {
+		return AttributeMap.emptyAttributeMap;
+	}*/
 }

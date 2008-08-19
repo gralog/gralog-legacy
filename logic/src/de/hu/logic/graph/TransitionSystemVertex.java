@@ -22,7 +22,6 @@ package de.hu.logic.graph;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
@@ -33,19 +32,17 @@ import org.jgraph.graph.DefaultGraphCell;
 
 import de.hu.gralog.graph.LabeledGraphVertex;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
-import de.hu.gralog.jgrapht.event.GraphPropertyListener;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 
 /**
  * @author kreutzer
  *
  */
-public class TransitionSystemVertex extends LabeledGraphVertex implements GraphPropertyListener
+public class TransitionSystemVertex extends LabeledGraphVertex
 {
 	private static final TransitionSystemVertexRenderer RENDERER = new TransitionSystemVertexRenderer();
 	
 	private transient TransitionSystem graph;
-	private transient ArrayList<Proposition> propositions = null;
 	
 	public TransitionSystemVertex()
 	{
@@ -59,13 +56,10 @@ public class TransitionSystemVertex extends LabeledGraphVertex implements GraphP
 	
 	void setGraph( TransitionSystem graph ) {
 		this.graph = graph;
-		graph.addGraphPropertyListener( this );
 	}
 		
 	public ArrayList<Proposition> getPropositions() {
-		if ( propositions == null )
-			propositions = graph.getPropositions( this );
-		return propositions;
+		return graph.getPropositions( this );
 	}
 	
 	@Override
@@ -75,26 +69,29 @@ public class TransitionSystemVertex extends LabeledGraphVertex implements GraphP
 	
 	private static class TransitionSystemVertexRenderer extends DefaultVertexRenderer {
 
-		
+		private transient String propositionsText = null;
+
+		private void setPropositionsText( CellView view ) {
+			ArrayList<Proposition> propositions = ((TransitionSystemVertex)((DefaultGraphCell)view.getCell()).getUserObject()).getPropositions();
+			propositionsText = "";
+			for ( Proposition proposition : propositions ) 
+				propositionsText = propositionsText + proposition.getName() + ", ";
+			if ( propositionsText.length() != 0 )
+				propositionsText = propositionsText.substring( 0, propositionsText.length() - 2 );
+			propositionsText += " ";
+		}
 		
 		@Override
 		public Component getRendererComponent(JGraph graph, CellView view, boolean sel, boolean focus, boolean preview, DisplayMode displayMode) {
 			DefaultVertexRenderer component = (DefaultVertexRenderer)super.getRendererComponent(graph, view, sel, focus, preview, displayMode);
-			
+			setPropositionsText( view );
 			return component;
 		}
 
 		@Override
 		public void paint(Graphics g) {
-			ArrayList<Proposition> propositions = ((TransitionSystemVertex)((DefaultGraphCell)view.getCell()).getUserObject()).getPropositions();
-			String propositionsString = "";
-			for ( Proposition proposition : propositions ) 
-				propositionsString = propositionsString + proposition.getName() + ", ";
-			if ( propositionsString.length() != 0 )
-				propositionsString = propositionsString.substring( 0, propositionsString.length() - 2 );
-			propositionsString += " ";
 			super.paint( g );
-			JLabel label = new JLabel( propositionsString );
+			JLabel label = new JLabel( propositionsText );
 
 			label.setBounds( super.getBounds() );
 			label.setVerticalAlignment( JLabel.TOP );
@@ -107,13 +104,4 @@ public class TransitionSystemVertex extends LabeledGraphVertex implements GraphP
 		}
 		
 	}
-
-	public void propertyChanged(Object graphSource, PropertyChangeEvent e) {
-		if ( graphSource == graph )
-			propositions = null;
-	}
-
-
-
-	
 }

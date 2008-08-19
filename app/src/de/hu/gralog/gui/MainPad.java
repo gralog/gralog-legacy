@@ -114,6 +114,7 @@ import de.hu.gralog.gui.views.ExecuteAlgorithmsView;
 import de.hu.gralog.gui.views.GraphPropertyEditorView;
 import de.hu.gralog.gui.views.OverviewPanelView;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.util.WeakListenerList;
 
 public class MainPad extends JFrame {
 		
@@ -168,9 +169,10 @@ public class MainPad extends JFrame {
 	}
 	
 	private static MainPad mainPad = new MainPad();
-		
+
 	public FileNewAction[] FILE_NEW_ACTIONS;
 	
+	private static final boolean REVERT_ENABLED = false;
 	private static final PluginManager PLUGIN_MANAGER = new PluginManager();
 	private static final JarLoader CLASS_LOADER = new JarLoader( "file://", MainPad.class.getClassLoader() );
 	
@@ -200,14 +202,14 @@ public class MainPad extends JFrame {
 	private ButtonGroup buttonGroupToolBar = new ButtonGroup();
 	private EditorState editorState = EditorState.SELECT;
 	
-	private ArrayList editorStateListeners = new ArrayList();
+	private WeakListenerList<EditorStateListener> editorStateListeners = new WeakListenerList<EditorStateListener>();
 	
 	static {
 		MainPadViewMap views = new MainPadViewMap( VIEWS );
 		rootWindow = DockingUtil.createRootWindow( views, false );
 		rootWindow.getRootWindowProperties().addSuperObject( THEME.getRootWindowProperties() );
 		rootWindow.getRootWindowProperties().getDockingWindowProperties().setTitleProvider( new LengthLimitedDockingWindowTitleProvider( 10 )
- );
+		);
 		
 		rootWindow.addListener( new MainPadViewListener() );
 //		MainPadViewListener mainPadViewListener = new MainPadViewListener();
@@ -453,6 +455,7 @@ public class MainPad extends JFrame {
 		file.add( FILE_SAVE_AS_ACTION );
 		file.add( FILE_SAVE_ALL_ACTION );
 		file.add( FILE_REVERT_ACTION );
+		FILE_REVERT_ACTION.setEnabled( REVERT_ENABLED );
 		file.addSeparator();
 		file.add( FILE_RENAME_ACTION );
 		file.addSeparator();
@@ -695,17 +698,16 @@ public class MainPad extends JFrame {
 	}
 	
 	protected void fireEditorStateChanged( EditorState from, EditorState to) {
-		for (int i = 0;i < editorStateListeners.size(); i++)
-			((EditorStateListener)editorStateListeners.get( i )).editorStateChanged( from, to );
+		for ( EditorStateListener l : editorStateListeners.getListeners() )
+			l.editorStateChanged( from, to );
 	}
 	
 	public void addEditorStateListener( EditorStateListener l ) {
-		if ( ! editorStateListeners.contains( l ) )
-			editorStateListeners.add( l );
+		editorStateListeners.addListener( l );
 	}
 	
 	public void removeEditorStateListener( EditorStateListener l ) {
-		editorStateListeners.remove( l );
+		editorStateListeners.removeListener( l );
 	}
 	
 	public void showView( View view ) {
@@ -771,5 +773,9 @@ public class MainPad extends JFrame {
 
 	public void documentGraphReplaced(GJGraph oldGraph, GJGraph newGraph) {
 		// do nothing
+	}
+	
+	public boolean isRevertEnabled() {
+		return REVERT_ENABLED;
 	}
 }

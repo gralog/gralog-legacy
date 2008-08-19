@@ -1218,7 +1218,7 @@ public class AnnealingLayoutAlgorithm extends JGraphLayoutAlgorithm implements G
  */
     private void setAttribute(CellView view,String key, Object obj){
         if( view.getAttributes() == null )
-            view.changeAttributes(new AttributeMap());
+            view.changeAttributes(null, new AttributeMap());
         Map attributes = view.getAttributes();
         attributes.put(key,obj);
     }

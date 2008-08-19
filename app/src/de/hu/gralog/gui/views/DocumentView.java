@@ -53,4 +53,9 @@ public class DocumentView extends View implements DocumentListener {
 	public void documentReverted(Document document) {
 		
 	}
+
+	public void documentClosed(Document document) {
+		// TODO Auto-generated method stub
+		
+	}
 }

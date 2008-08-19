@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import net.infonode.docking.OperationAbortedException;
 import de.hu.gralog.app.InputOutputException;
@@ -32,10 +31,11 @@ import de.hu.gralog.gui.GUndoManager;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.UndoManagerListener;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.util.WeakListenerList;
 
 public class Document implements UndoManagerListener, DocumentContentListener {
 	
-	private final  ArrayList<DocumentListener> documentListeners = new ArrayList<DocumentListener>();
+	private final  WeakListenerList<DocumentListener> documentListeners = new WeakListenerList<DocumentListener>();
 	private static int newDocIdx = 1;
 	
 	private int docIdx;
@@ -159,17 +159,20 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 //				fireDocumentReverted(  );
 //				fireDocumentModifiedStatusChanged();
 //			} else {
-				content.clear();
-				undoManager.discardAllEdits();
-				fireDocumentReverted(  );
-				fireDocumentModifiedStatusChanged();
+				try {
+					content.clear();
+					undoManager.discardAllEdits();
+					fireDocumentReverted(  );
+					fireDocumentModifiedStatusChanged();
+				} catch( InputOutputException e ) {
+					throw new UserException( "unable to revert document", e );
+				}
 			//}
 		}
 	}
 
 	private void fireDocumentComponentReplaced( ) {
-		for (int i = 0; i < documentListeners.size();i++) {
-			DocumentListener l = (DocumentListener)documentListeners.get( i );
+		for ( DocumentListener l : documentListeners.getListeners() ) {
 			l.documentComponentReplaced( this );
 		}
 	}
@@ -183,26 +186,26 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 	}
 	
 	private void fireDocumentModifiedStatusChanged(  ) {
-		for (int i = 0; i < documentListeners.size();i++) {
-			DocumentListener l = (DocumentListener)documentListeners.get( i );
+		for ( DocumentListener l : documentListeners.getListeners() )
 			l.documentModifiedStatusChanged( this );
-		}
 	}
 	
 	private void fireDocumentReverted(  ) {
-		for (int i = 0; i < documentListeners.size();i++) {
-			DocumentListener l = (DocumentListener)documentListeners.get( i );
+		for ( DocumentListener l : documentListeners.getListeners() )
 			l.documentReverted( this );
-		}
+	}
+	
+	private void fireDocumentClosed(  ) {
+		for ( DocumentListener l : documentListeners.getListeners() )
+			l.documentClosed( this );
 	}
 	
 	public void addDocumentListener(DocumentListener l) {
-		if (!documentListeners.contains( l ))
-			documentListeners.add( l );
+		documentListeners.addListener( l );
 	}
 
 	public void removeDocumentListener(DocumentListener l) {
-		documentListeners.remove( l );
+		documentListeners.removeListener( l );
 	}
 
 		
@@ -216,5 +219,9 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 
 	public void componentReplaced() {
 		fireDocumentComponentReplaced();
+	}
+	
+	public void close() {
+		fireDocumentClosed();
 	}
 }

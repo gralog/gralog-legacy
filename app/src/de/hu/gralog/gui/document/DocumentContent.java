@@ -52,7 +52,7 @@ public abstract class DocumentContent {
 	public abstract DocumentContent read(FileFormat format, InputStream in) throws InputOutputException;
 	public abstract void write(FileFormat format, OutputStream out) throws InputOutputException;
 	
-	public abstract void clear();
+	public abstract void clear() throws InputOutputException;
 	public abstract void registerUndoManager( UndoManager undoManager );
 	
 	protected void fireComponentReplaced() {

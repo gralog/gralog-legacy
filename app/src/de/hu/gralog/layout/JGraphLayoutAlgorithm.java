@@ -42,6 +42,8 @@ import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.VertexView;
 
+import de.hu.gralog.jgraph.JGraphFixDirtyRegion;
+
 /**
  *
  */
@@ -255,7 +257,7 @@ public abstract class JGraphLayoutAlgorithm {
 									JGraphLayoutAlgorithm layout,
 									Object[] dynamic_cells,
 									Object[] static_cells ) {
-		JGraph localGraph = new JGraph(sourceGraph.getModel());
+		JGraph localGraph = new JGraphFixDirtyRegion(sourceGraph.getModel() );
 		localGraph.setBounds(sourceGraph.getBounds());
 		GraphLayoutCache cache = localGraph.getGraphLayoutCache();
 		cache.setLocalAttributes(LAYOUT_ATTRIBUTES);

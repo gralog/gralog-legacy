@@ -19,6 +19,8 @@
 
 package de.hu.gralog.jgrapht.ext;
 
+import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import java.beans.IndexedPropertyChangeEvent;
 import java.beans.IndexedPropertyDescriptor;
 import java.beans.IntrospectionException;
@@ -27,17 +29,26 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.undo.UndoableEdit;
+
+import org.jgraph.event.GraphModelEvent;
+import org.jgraph.event.GraphModelListener;
 import org.jgraph.graph.AttributeMap;
+import org.jgraph.graph.ConnectionSet;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphConstants;
+import org.jgraph.graph.GraphLayoutCache;
+import org.jgraph.graph.ParentMap;
 import org.jgrapht.ext.JGraphModelAdapter;
 
 import de.hu.gralog.app.UserException;
@@ -59,21 +70,27 @@ import de.hu.gralog.jgrapht.event.GraphPropertyListener;
  */
 public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E> {
 
+	private boolean undoDisabled = true;
+	
 	public static final Object NULL_VALUE = new Object();
 	
 	private GraphPropertyListener graphPropertyListener;
 	
-	protected DefaultCellFactory cellFactory = new DefaultCellFactory();
 	private final GraphPropertyListenableGraph graph;
 	
 	public JGraphViewableGraphModelAdapter(GraphPropertyListenableGraph jGraphTGraph) {
-		super(jGraphTGraph, ElementAttributes.getVertexAttributes(  ), ElementAttributes.getEdgeAttributes( jGraphTGraph ), new MyCellFactory() );
+		this( jGraphTGraph, null );
+	}
+	
+	public JGraphViewableGraphModelAdapter( GraphPropertyListenableGraph jGraphTGraph, Hashtable<V,Point> vertexPositions ) {
+		super(jGraphTGraph, ElementAttributes.getVertexAttributes(  ), ElementAttributes.getEdgeAttributes( jGraphTGraph ), new MyCellFactory<V,E>( vertexPositions ) );
 		this.graph = jGraphTGraph;
 
 		graphPropertyListener = new MyGraphPropertyListener();
 		jGraphTGraph.addGraphPropertyListener( graphPropertyListener );
-		
+		undoDisabled = false;
 	}
+
     
     private class MyGraphPropertyListener implements GraphPropertyListener {
 
@@ -107,32 +124,52 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
 			postEdit( edit );
 			fireGraphChanged(JGraphViewableGraphModelAdapter.this, edit );
 		}
+
+		public void propertyChanged(Object graphSource, PropertyChangeEvent e, Object[] elementsToUpdateView) {
+			propertyChanged( graphSource, e );
+			if ( elementsToUpdateView != null )
+				cellsChanged( getCellsForUserObjects( elementsToUpdateView ));
+		}
     	
     }
     
-    public DefaultCellFactory getCellFactory() {
-    	return cellFactory;
+    public Object[] getCellsForUserObjects( Object[] userObjects ) {
+    	ArrayList cells = new ArrayList();
+    	
+    	for ( Object userObject : userObjects ) {
+    		Object cell = getVertexCell( userObject );
+    		if ( cell == null )
+    			cell = getEdgeCell( (E)userObject );
+    		if ( cell != null )
+    			cells.add( cell );
+    	}
+    	
+    	return cells.toArray();
     }
     
     public Object[] getEdgeCells() {
     	Iterator it = getCellIterator();
     	Vector edges = new Vector();
+    	
     	while ( it.hasNext() ) {
     		Object cell = it.next();
     		if ( isEdge( cell ) )
     			edges.add( cell );
     	}
+    	
     	return edges.toArray();
     }
     
     public Object[] getVertexCells() {
     	Iterator it = getCellIterator();
+    	
     	Vector vertices = new Vector();
     	while ( it.hasNext() ) {
     		Object cell = it.next();
-    		if ( !isPort( cell ) && !isEdge( cell ) )
+    		if ( isVertex( this, cell ) )
     			vertices.add( cell );
     	}
+    	
     	return vertices.toArray();
     }
     
@@ -140,8 +177,12 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
     	return new CellIterator();
     }
     
-    
-    
+    public DefaultGraphCell getGraphCell( Object userObject ) {
+    	if ( userObject instanceof DefaultEdge )
+    		return this.getEdgeCell( (E)userObject );
+    	return getVertexCell( userObject );
+    }
+
     private class CellIterator implements Iterator {
 
     	private Vector queue;
@@ -176,12 +217,32 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
      * @since Dec 12, 2003
      */
     public static class MyCellFactory<VV,EE> implements CellFactory<VV,EE>, Serializable {
-        
+    
+    	private Hashtable<VV, Point> vertexPositions;
+    	
+    	public MyCellFactory( Hashtable<VV, Point> vertexPositions ) {
+    		this.vertexPositions = vertexPositions;
+    	}
+    	
+    	public void clearVertexPositions() {
+    		vertexPositions = null;
+    	}
+    	
         /**
          * @see org._3pq.jgrapht.ext.JGraphModelAdapter.CellFactory#createVertexCell(Object)
          */
         public DefaultGraphCell createVertexCell( VV jGraphTVertex ) {
-            return new DefaultGraphCell( jGraphTVertex, new AttributeMap() );
+        	AttributeMap cellAttributes = new AttributeMap();
+        	Rectangle2D.Double bounds = new Rectangle2D.Double( 50, 50, 40, 40 );
+        	if ( vertexPositions != null ) {
+        		Point position = vertexPositions.get( jGraphTVertex );
+        		if ( position != null )
+        			bounds.setRect( position.getX(), position.getY(), bounds.getWidth(), bounds.getHeight() );
+        		else
+        			clearVertexPositions();
+        	}
+        	GraphConstants.setBounds( cellAttributes, bounds );
+            return new DefaultGraphCell( jGraphTVertex, cellAttributes );
         }
 
 
@@ -190,7 +251,7 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
 		}
     }
 
-	protected Map handleAttributes(Map attributes) {
+/*	protected Map handleAttributes(Map attributes) {
 		if (attributes != null) {
 			Hashtable undo = new Hashtable(attributes.size());
 			Iterator it = attributes.entrySet().iterator();
@@ -227,9 +288,112 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
 		}
 		return null;
 	}
+*/   
     
+    
+    /**
+	 * Extends DefaultGraphModel insert method to check for large changes and
+	 * sets the <code>undoDisabled</code> flag to true. Disabling the undo
+	 * provides large performance and memory footprint advantages on huge
+	 * inserts.
+	 */
+	public void insert(Object[] roots, Map attributes, ConnectionSet cs,
+			ParentMap pm, UndoableEdit[] edits) {
+		GraphModelEdit edit = createEdit(roots, null, attributes, cs, pm, edits);
+		if (edit != null) {
+			edit.execute(); // fires graphChangeEvent
+			if (edits != null) {
+				for (int i = 0; i < edits.length; i++)
+					if (edits[i] instanceof GraphLayoutCache.GraphLayoutCacheEdit)
+						((GraphLayoutCache.GraphLayoutCacheEdit) edits[i])
+								.execute();
+			}
+			if (!undoDisabled) {
+				postEdit(edit); // fires undoableedithappened
+			}
+		}
+	}
+
+	/**
+	 * Applies <code>attributes</code> to the cells specified as keys. Returns
+	 * the <code>attributes</code> to undo the change.
+	 */
+	protected Map handleAttributes(Map attributes) {
+		if ( !undoDisabled )
+			return super.handleAttributes( attributes );
+		if (attributes != null) {
+			Iterator it = attributes.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry entry = (Map.Entry) it.next();
+				Object cell = entry.getKey();
+				Map deltaNew = (Map) entry.getValue();
+				AttributeMap attr = getAttributes(cell);
+				
+				if (attr != null) {
+					attr.applyMap(deltaNew);
+				}
+				// Handle new values
+				Object newValue = deltaNew.get(GraphConstants.VALUE);
+				if (newValue != null) {
+					valueForCellChanged(cell, newValue);
+				}
+			}
+		}
+		return null; 
+	}
+
     @Override
 	public Object valueForCellChanged(Object cell, Object newValue) {
+    	if ( undoDisabled ) {
+    		try {
+    			AttributeMap valueMap = (AttributeMap)newValue;
+    			for ( Object bean : valueMap.keySet() ) {
+    				AttributeMap propertyMap = (AttributeMap)valueMap.get( bean );
+    				Hashtable<String, PropertyDescriptor> propertyDescriptors = new Hashtable<String, PropertyDescriptor>();
+    				for ( PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo( bean.getClass() ).getPropertyDescriptors() )
+    					propertyDescriptors.put( propertyDescriptor.getName(), propertyDescriptor );
+    				
+    				for ( String propertyName : (Set<String>)propertyMap.keySet() ) {
+    					if ( propertyDescriptors.get( propertyName ) instanceof IndexedPropertyDescriptor ) {
+    						IndexedPropertyDescriptor descriptor = (IndexedPropertyDescriptor)propertyDescriptors.get( propertyName );
+    						IndexedPropertyValue propertyValue = (IndexedPropertyValue)propertyMap.get( propertyName );
+    						
+    						graph.removeGraphPropertyListener( graphPropertyListener );
+    						
+    						descriptor.getIndexedWriteMethod().invoke( bean, new Object[] { new Integer( propertyValue.index ), propertyValue.value } );
+    						
+    						graph.addGraphPropertyListener( graphPropertyListener );
+    					} else {
+    						PropertyDescriptor descriptor = propertyDescriptors.get( propertyName );
+    						Object propertyValue = propertyMap.get( propertyName );
+    						
+    						if ( propertyValue == NULL_VALUE )
+    							propertyValue = null;
+    						
+    						graph.removeGraphPropertyListener( graphPropertyListener );
+    						
+    						descriptor.getWriteMethod().invoke( bean, new Object[] { propertyValue } );
+    						
+    						graph.addGraphPropertyListener( graphPropertyListener );
+    					}
+    				}
+    			}
+    		} catch (IntrospectionException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (IllegalArgumentException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (IllegalAccessException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (InvocationTargetException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    		return null;
+    	}
+    	
     	AttributeMap undo = new AttributeMap();
     	
     	try {
@@ -377,4 +541,85 @@ public class JGraphViewableGraphModelAdapter<V,E> extends JGraphModelAdapter<V,E
 			this.value = value;
 		}
 	}
+	
+	public Hashtable<V, Point> getVertexPositions() {
+		Hashtable<V, Point> vertexPositions = new Hashtable<V, Point>();
+		
+		for ( Object cell : getVertexCells() ) {
+			V userObject = (V)getValue( cell );
+			Rectangle2D bounds = GraphConstants.getBounds( ((DefaultGraphCell)cell).getAttributes() );
+			vertexPositions.put( userObject, new Point( (int)bounds.getX(), (int)bounds.getY() ) );
+		}
+		return vertexPositions;
+	}
+	
+	/*
+	 * Notify all listeners that have registered interest for notification on
+	 * this event type. The event instance is lazily created using the
+	 * parameters passed into the fire method.
+	 * 
+	 * @see EventListenerList
+	 */
+	protected void fireGraphChanged(Object source,
+			GraphModelEvent.GraphModelChange edit) {
+		// Guaranteed to return a non-null array
+		Object[] listeners = listenerList.getListenerList();
+		GraphModelEvent e = null;
+		// Process the listeners last to first, notifying
+		// those that are interested in this event
+		for (int i = listeners.length - 2; i >= 0; i -= 2) {
+			if (listeners[i] == GraphModelListener.class) {
+				// Lazily create the event:
+				if (e == null)
+					e = new GraphModelEvent(source, edit);
+				GraphModelListener listener = ((GraphModelListener) listeners[i + 1]);
+				
+				listener.graphChanged(e);
+		
+			}
+		}
+	}
+
+	protected GraphModelEdit createEdit(Object[] inserted, Object[] removed,
+			Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] edits) {
+		GraphModelEdit edit = new GraphModelEdit(inserted, removed, attributes,
+				cs, pm);
+		if (edit != null) {
+			if (edits != null)
+				for (int i = 0; i < edits.length; i++)
+					edit.addEdit(edits[i]);
+			edit.end();
+		}
+		return edit;
+	}
+	
+	protected GraphModelEdit createRemoveEdit(Object[] cells) {
+		// Remove from GraphStructure
+		ConnectionSet cs = ConnectionSet.create(this, cells, true);
+		// Remove from Group Structure
+		ParentMap pm = ParentMap.create(this, cells, true, false);
+		// Construct Edit
+		GraphModelEdit edit = createEdit(null, cells, null, cs, pm, null);
+		if (edit != null)
+			edit.end();
+		return edit;
+	}
+	
+	public class GraphModelEdit extends DefaultGraphModel.GraphModelEdit {
+
+		private HashMap<GraphLayoutCache, Rectangle2D> dirtyRegionCache = new HashMap<GraphLayoutCache, Rectangle2D>();
+		
+		public GraphModelEdit(Object[] inserted, Object[] removed, Map attributes, ConnectionSet connectionSet, ParentMap parentMap) {
+			super(inserted, removed, attributes, connectionSet, parentMap);
+		}
+		
+		public void putDirtyRegion( GraphLayoutCache cache, Rectangle2D dirtyRegion ) {
+			dirtyRegionCache.put( cache, dirtyRegion );
+		}
+		
+		public Rectangle2D getDirtyRegion( GraphLayoutCache cache ) {
+			return dirtyRegionCache.get( cache );
+		}
+	}
+	
 }

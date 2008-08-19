@@ -1531,7 +1531,7 @@ public class GEMLayoutAlgorithm extends JGraphLayoutAlgorithm implements GraphMo
                         
                         if( relatives.size() > 0 ){
                             if( views[i].getAttributes() == null )
-                                views[i].changeAttributes(new AttributeMap());
+                                views[i].changeAttributes(null, new AttributeMap());
                                 
                             views[i].getAttributes().put(KEY_POSITION,
                                                   computeBarycenter(relatives));

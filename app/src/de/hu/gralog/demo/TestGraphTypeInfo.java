@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import org.jgrapht.graph.DefaultEdge;
 
-import de.hu.gralog.graph.DirectedGraph;
 import de.hu.gralog.graph.GraphTypeInfo;
 import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.gralog.graph.LabeledGraphVertex;

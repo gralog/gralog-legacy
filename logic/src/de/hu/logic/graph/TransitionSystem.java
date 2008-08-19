@@ -23,6 +23,7 @@ import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import de.hu.gralog.jgrapht.graph.GraphType;
 public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, TransitionSystemEdge> implements PropertyChangeListener {
 	
 	private ArrayList<Proposition> propositions = new ArrayList<Proposition>();
+	private transient HashMap<TransitionSystemVertex, ArrayList<Proposition>> vertexPropositionsCache = new HashMap<TransitionSystemVertex,ArrayList<Proposition>>();
 	
 	public TransitionSystem() {
 		super(  GraphType.MULTI_GRAPH, TransitionSystemVertex.class, TransitionSystemEdge.class );
@@ -66,7 +68,9 @@ public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, Tran
 			propositions.add( index, proposition );
 			proposition.addPropertyChangeListener( this );
 		}
-		fireGraphPropertyChange( this, new IndexedPropertyChangeEvent( this, "propositions", oldProposition, proposition, index ) );
+		PropertyChangeEvent event = new IndexedPropertyChangeEvent( this, "propositions", oldProposition, proposition, index );
+		updateVertexPropositionsCache( event );
+		fireGraphPropertyChange( this,  event);
 	}
 	
 	public Proposition getProposition( String name ) {
@@ -78,10 +82,14 @@ public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, Tran
 	}
 	
 	public ArrayList<Proposition> getPropositions( TransitionSystemVertex vertex ) {
-		ArrayList<Proposition> propositions = new ArrayList<Proposition>();
-		for ( Proposition proposition : this.propositions ) {
-			if ( proposition.containsVertex( vertex ) )
-				propositions.add( proposition );
+		ArrayList<Proposition> propositions = vertexPropositionsCache.get( vertex );
+		if ( propositions == null ) {
+			propositions = new ArrayList<Proposition>();
+			for ( Proposition proposition : this.propositions ) {
+				if ( proposition.containsVertex( vertex ) )
+					propositions.add( proposition );
+			}
+			vertexPropositionsCache.put( vertex, propositions );
 		}
 		return propositions;
 	}
@@ -124,7 +132,51 @@ public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, Tran
 		return true;
 	}
 
+	protected ArrayList<TransitionSystemVertex> updateVertexPropositionsCache( Proposition proposition, TransitionSystemVertex oldVertex, TransitionSystemVertex newVertex ) {
+		boolean remove = true;
+		TransitionSystemVertex vertex = oldVertex;
+		if ( vertex == null ) {
+			vertex = newVertex;
+			remove = false;
+		}
+		
+		ArrayList<Proposition> vertexPropositions = vertexPropositionsCache.get( vertex );
+		if ( vertexPropositions != null ) {
+			if ( remove )
+				vertexPropositions.remove( proposition );
+			else
+				vertexPropositionsCache.remove( vertex );
+		}
+		
+		ArrayList<TransitionSystemVertex> changedVertices = new ArrayList<TransitionSystemVertex>(  );
+		changedVertices.add( vertex );
+		return changedVertices;
+	}
+	
+	protected ArrayList<TransitionSystemVertex> updateVertexPropositionsCache( Proposition oldProposition, Proposition newProposition ) {
+		if ( oldProposition == null )
+			return null;
+		ArrayList<TransitionSystemVertex> changedVertices = new ArrayList<TransitionSystemVertex>();
+		for ( TransitionSystemVertex vertex : oldProposition.getVertexes() ) {
+			changedVertices.add( vertex );
+			ArrayList<Proposition> vertexPropositions = vertexPropositionsCache.get( vertex );
+			if ( vertexPropositions != null )
+				vertexPropositions.remove( oldProposition );
+		}
+		return changedVertices;
+	}
+	
+	protected ArrayList<TransitionSystemVertex> updateVertexPropositionsCache( PropertyChangeEvent evt ) {
+		if ( evt.getSource().getClass() == Proposition.class )
+			return updateVertexPropositionsCache( (Proposition)evt.getSource(), (TransitionSystemVertex) evt.getOldValue(), (TransitionSystemVertex) evt.getNewValue() );
+		return updateVertexPropositionsCache( (Proposition) evt.getOldValue(), (Proposition) evt.getNewValue() );
+	}
+	
 	public void propertyChange(PropertyChangeEvent evt) {
-		fireGraphPropertyChange( this, evt );
+		ArrayList<TransitionSystemVertex> changedVertices = null; 
+		if ( evt.getSource().getClass() != TransitionSystemVertex.class )
+			changedVertices = updateVertexPropositionsCache( evt );
+		
+		fireGraphPropertyChange( this, evt, changedVertices.toArray() );
 	}
 }

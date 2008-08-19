@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="C:/Dokumente und Einstellungen/Sebastian/workspace/gralog-parity/dist/parity.jar"/>
+    <options buildIfNeeded="true" compress="false" descriptionLocation="/gralog-parity/dist/parity.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" useSourceFolders="false"/>
+    <manifest generateManifest="false" manifestLocation="/gralog-finitegames/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=gralog-parity/src"/>
+        <file path="/gralog-parity/MANIFEST.MF"/>
+    </selectedElements>
+</jardesc>

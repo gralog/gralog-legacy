@@ -63,6 +63,7 @@ import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.jgraph.GJGraphUtil;
 
 public class ExecuteAlgorithmsView extends View implements ActionListener, ListSelectionListener {
 
@@ -93,7 +94,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 		algorithmChooserPanel.setLayout( new BoxLayout( algorithmChooserPanel, BoxLayout.X_AXIS ) );
 		algorithmChooserPanel.setBorder( BorderFactory.createTitledBorder( "Choose Algorithm" ) );
 		
-		algorithmChooser = new JComboBox( new AlgorithmsComboBoxModel( algorithms ) );
+		algorithmChooser =  new JComboBox( new AlgorithmsComboBoxModel( algorithms ) );
 		algorithmChooser.setBorder( BorderFactory.createEmptyBorder( 0, 5, 0, 5) );
 		algorithmChooser.addItemListener( new ComboBoxItemListener() );
 		
@@ -187,7 +188,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 						Graph graph = (Graph)value;
 						for ( Document document : MainPad.getInstance().getDesktop().getOpenDocuments() ) {
 							if ( document.getContent() instanceof GJGraphDocumentContent && document.getGraph().getGraphT() == graph ) {
-								GJGraph jgraph = document.getGraph().clone();
+								GJGraph jgraph = GJGraphUtil.getGJGraphCopy( document.getGraph() );
 								jgraphs.put( jgraph.getGraphT(), jgraph );
 								propertyDescriptor.getWriteMethod().invoke( preparedAlgorithm, new Object[] { jgraph.getGraphT() } );
 								algorithmSettings.put( propertyDescriptor.getName(), document.toString() );

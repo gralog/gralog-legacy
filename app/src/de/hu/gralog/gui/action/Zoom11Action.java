@@ -20,13 +20,30 @@
 package de.hu.gralog.gui.action;
 
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
+
+import org.jgraph.graph.GraphConstants;
 
 import de.hu.gralog.gui.MainPad;
 
 public class Zoom11Action extends AbstractAction {
 
+	protected static Set LAYOUT_ATTRIBUTES = new HashSet();
+	
+	/**
+	 * @return
+	 */
+	static {
+		LAYOUT_ATTRIBUTES.add(GraphConstants.BOUNDS);
+		LAYOUT_ATTRIBUTES.add(GraphConstants.POINTS);
+		LAYOUT_ATTRIBUTES.add(GraphConstants.LABELPOSITION);
+		LAYOUT_ATTRIBUTES.add(GraphConstants.ROUTING);
+	}
+
+	
 	public Zoom11Action(  ) {
 		super( "1:1", MainPad.createImageIcon( "stock_zoom-1.png") );
 	}

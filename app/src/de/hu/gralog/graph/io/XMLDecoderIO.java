@@ -86,7 +86,9 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 	
 	protected GJGraph readGraph( InputStream in ) {
 		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getClassLoader() );
-		return (GJGraph)dec.readObject();
+		GJGraph graph = (GJGraph)dec.readObject();
+		graph.getGModel().cellsChanged( graph.getGModel().getVertexCells() );
+		return graph;
 	}
 	
 	public void writeGJGraphDocumentContent(GJGraphDocumentContent content,

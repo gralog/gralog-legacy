@@ -6,7 +6,8 @@
 
 package de.hu.logic.parser;
 
-import java_cup.runtime.*;
+import java_cup.runtime.DefaultSymbolFactory;
+import java_cup.runtime.SymbolFactory;
 import de.hu.logic.modal.Formula;
 
 /** CUP v0.11a beta 20060608 generated parser.

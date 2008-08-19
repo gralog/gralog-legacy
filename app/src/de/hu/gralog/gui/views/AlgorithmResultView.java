@@ -30,7 +30,7 @@ import java.awt.event.ItemListener;
 import java.beans.Customizer;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -58,16 +58,19 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import net.infonode.docking.View;
+import de.hu.gralog.app.InputOutputException;
+import de.hu.gralog.app.UserException;
 import de.hu.gralog.graph.alg.AlgorithmResultContent;
 import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
 import de.hu.gralog.graph.alg.AlgorithmResultInfo;
 import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
-import de.hu.gralog.graph.io.XMLDecoderIO;
 import de.hu.gralog.gui.HTMLEditorPane;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.AlgorithmResultDocumentContent;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
+import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.jgraph.GJGraphUtil;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraphModeListener;
 import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
@@ -77,7 +80,7 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 public class AlgorithmResultView extends View implements EditorDesktopViewListener, DocumentListener {
 	
 	private static final JLabel NO_RESULT = new JLabel( "no result" );
-	private Hashtable<Document, JPanel> panels = new Hashtable<Document, JPanel>();
+	private HashMap<Document, JPanel> panels = new HashMap<Document, JPanel>();
 	
 	public AlgorithmResultView() {
 		super("AlgorithmResult", null, NO_RESULT );
@@ -402,7 +405,12 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			JButton openGraphInNewDocument = new JButton( new AbstractAction( "Open As Graph", null ) {
 
 				public void actionPerformed(ActionEvent e) {
-					MainPad.getInstance().getDesktop().openDocument( new XMLDecoderIO().getDataCopy( info.getGraph() ) );
+					try {
+						GJGraph graph = GJGraphUtil.getGJGraphCopy( info.getGraph() );
+						MainPad.getInstance().getDesktop().openDocument(  graph );
+					} catch( InputOutputException i ) {
+						MainPad.getInstance().handleUserException( new UserException( "unable to open as graph", i ) );
+					}
 				}
 				
 			} );
@@ -683,5 +691,9 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			panels.remove( document );
 			currentDocumentSelectionChanged();
 		}
+	}
+
+	public void documentClosed(Document document) {
+		panels.remove( document );
 	}
 }

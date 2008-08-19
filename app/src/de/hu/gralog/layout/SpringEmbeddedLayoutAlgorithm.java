@@ -611,7 +611,7 @@ public class SpringEmbeddedLayoutAlgorithm extends JGraphLayoutAlgorithm {
             if (cell == null) {
                 continue;
             } else if (cell instanceof EdgeView) {
-                cell.update();
+                cell.update( null );
             } else if (cell instanceof VertexView) {
                 // get the current view object
                 VertexView vertex = (VertexView) cell;
@@ -635,7 +635,7 @@ public class SpringEmbeddedLayoutAlgorithm extends JGraphLayoutAlgorithm {
                 // update the view
                 AttributeMap vertAttrib = new AttributeMap();
                 GraphConstants.setBounds(vertAttrib, newPosition);
-                vertex.changeAttributes(vertAttrib);
+                vertex.changeAttributes(null, vertAttrib);
                 // The statement above fixes a bug in the original code
 
                 viewMap.put(cells[loop], vertAttrib);
@@ -659,7 +659,7 @@ public class SpringEmbeddedLayoutAlgorithm extends JGraphLayoutAlgorithm {
 
          * below. This fixes a bug in the original code.
          */
-        vert.changeAttributes(vertAttrib);
+        vert.changeAttributes(null, vertAttrib);
     }
 
     private Rectangle2D getVertexPosition(CellView vert, String PosField) {
@@ -682,7 +682,7 @@ public class SpringEmbeddedLayoutAlgorithm extends JGraphLayoutAlgorithm {
          * seemingly redundant call to CellView.setAttributes msut be made
          * below. This fixes a bug in the original code.
          */
-        vert.changeAttributes(vertAttrib);
+        vert.changeAttributes(null, vertAttrib);
 
         return (result);
     }

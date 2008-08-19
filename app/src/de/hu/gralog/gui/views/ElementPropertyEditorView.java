@@ -24,7 +24,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -43,17 +43,17 @@ import de.hu.gralog.jgraph.GJGraph;
 public class ElementPropertyEditorView extends View implements EditorDesktopViewListener, DocumentListener {
 	
 	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "elements not editable" );
-	private Hashtable<Document, Hashtable<Component,JPanel>> panels = new Hashtable<Document, Hashtable<Component,JPanel>>();
+	private HashMap<Document, HashMap<Component,JPanel>> panels = new HashMap<Document, HashMap<Component,JPanel>>();
 		
 	public ElementPropertyEditorView(  ) {
 		super( "Element Properties", null, NO_PROPERTIES_AVAIBLE );
 	}
 	
 	protected JPanel getPanel( Document document ) {
-		Hashtable<Component, JPanel> components = panels.get( document );
+		HashMap<Component, JPanel> components = panels.get( document );
 		if ( components == null ) {
 			document.addDocumentListener( this );
-			components = new Hashtable<Component, JPanel>();
+			components = new HashMap<Component, JPanel>();
 			panels.put( document, components );
 		}
 		JPanel panel = components.get( document.getContent().getComponent() );
@@ -148,6 +148,10 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 			else	
 				cl.show(cards, CARD_EDGES );
 		}
+	}
+
+	public void documentClosed(Document document) {
+		panels.remove( document );
 	}
 	
 }

@@ -20,7 +20,7 @@
 package de.hu.gralog.gui.views;
 
 import java.awt.Component;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,7 +35,7 @@ import de.hu.gralog.gui.document.DocumentListener;
 public class OverviewPanelView extends View implements EditorDesktopViewListener, DocumentListener {
 
 	private static final JLabel NO_OVERVIEW_AVAIBLE = new JLabel( "no overview avaible" );
-	private Hashtable<Document, Hashtable<Component,JPanel>> panels = new Hashtable<Document, Hashtable<Component,JPanel>>();
+	private HashMap<Document, HashMap<Component,JPanel>> panels = new HashMap<Document, HashMap<Component,JPanel>>();
 	
 	public OverviewPanelView() {
 		super("Overview", null, NO_OVERVIEW_AVAIBLE );
@@ -50,10 +50,10 @@ public class OverviewPanelView extends View implements EditorDesktopViewListener
 	}
 
 	protected JPanel getPanel( Document document ) {
-		Hashtable<Component, JPanel> components = panels.get( document );
+		HashMap<Component, JPanel> components = panels.get( document );
 		if ( components == null ) {
 			document.addDocumentListener( this );
-			components = new Hashtable<Component, JPanel>();
+			components = new HashMap<Component, JPanel>();
 			panels.put( document, components );
 		}
 		JPanel panel = components.get( document.getContent().getComponent() );
@@ -90,5 +90,9 @@ public class OverviewPanelView extends View implements EditorDesktopViewListener
 	public void documentReverted(Document document) {
 		// 
 		
+	}
+
+	public void documentClosed(Document document) {
+		panels.remove( document );
 	}
 }

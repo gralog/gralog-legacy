@@ -259,6 +259,10 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 			}
 		}
 
+		public void propertyChanged(Object arg0, PropertyChangeEvent arg1, Object[] arg2) {
+			propertyChanged( arg0, arg1 );
+		}
+
 	}
 	
 	private class ChoosePropositionComboBoxModel extends AbstractListModel implements ComboBoxModel, GraphPropertyListener {
@@ -291,6 +295,10 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 				chooseProposition.repaint();
 			}
 			fireContentsChanged(this, 0, getSize() );
+		}
+
+		public void propertyChanged(Object arg0, PropertyChangeEvent arg1, Object[] arg2) {
+			propertyChanged( arg0, arg1 );
 		}
 	}
 

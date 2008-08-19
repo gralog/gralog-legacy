@@ -24,4 +24,5 @@ public interface DocumentListener {
 	public void documentModifiedStatusChanged( Document document );
 	public void documentComponentReplaced( Document document );
 	public void documentReverted( Document document );
+	public void documentClosed( Document document );
 }

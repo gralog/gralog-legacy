@@ -22,6 +22,7 @@ package de.hu.gralog.jgraph;
 import java.awt.Component;
 
 import org.jgraph.JGraph;
+import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.CellViewRenderer;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.EdgeRenderer;
@@ -36,7 +37,6 @@ public class GEdgeView extends EdgeView {
 		super(cell);
 		this.graph = graph;
 	}
-
 	
 	EdgeRenderer getEdgeRenderer() {
 		return graph.getEdgeRenderer();
@@ -50,4 +50,10 @@ public class GEdgeView extends EdgeView {
 	public Component getRendererComponent(JGraph graph, boolean selected, boolean focus, boolean preview ) {
 		return this.graph.getEdgeRenderer().getRendererComponent( this.graph, this, selected, focus, preview, this.graph.getCellDisplayMode( ((DefaultGraphCell)getCell()).getUserObject()) );
 	}
+	
+	@Override
+	protected AttributeMap createAttributeMap() {
+		return AttributeMap.emptyAttributeMap;
+	}
+
 }

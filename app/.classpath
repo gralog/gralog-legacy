@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/finitegames.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/parity.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logic.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dfa.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dagwidth.jar" sourcepath="/games-dag-width/src"/>
-	<classpathentry exported="true" kind="lib" path="lib/nba.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/idw-gpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/BrowserLauncher2-10rc4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/java-cup-11a.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/java-cup-11a-runtime.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gralog-core.jar"/>
-	<classpathentry kind="output" path="build"/>
+	<classpathentry path="src" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true" kind="con"/>
+	<classpathentry sourcepath="/gralog-finitegames/src" path="lib/finitegames.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/parity.jar" exported="true" kind="lib"/>
+	<classpathentry sourcepath="/gralog-logic/src" path="lib/logic.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/dfa.jar" exported="true" kind="lib"/>
+	<classpathentry sourcepath="/games-dag-width/src" path="lib/dagwidth.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/nba.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/idw-gpl.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/BrowserLauncher2-10rc4.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/java-cup-11a.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/java-cup-11a-runtime.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/jdom.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/gralog-core.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/jgraph.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/jgrapht-jdk1.5.jar" exported="true" kind="lib"/>
+	<classpathentry path="build" kind="output"/>
 </classpath>

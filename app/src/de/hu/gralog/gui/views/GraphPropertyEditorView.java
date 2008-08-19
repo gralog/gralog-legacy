@@ -26,7 +26,7 @@ import java.beans.Customizer;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyChangeEvent;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -47,17 +47,17 @@ import de.hu.gralog.jgrapht.event.GraphPropertyListener;
 public class GraphPropertyEditorView extends View implements EditorDesktopViewListener, DocumentListener {
 	
 	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "graph not editable" );
-	private Hashtable<Document, Hashtable<Component,JPanel>> panels = new Hashtable<Document, Hashtable<Component,JPanel>>();
+	private HashMap<Document, HashMap<Component,JPanel>> panels = new HashMap<Document, HashMap<Component,JPanel>>();
 		
 	public GraphPropertyEditorView(  ) {
 		super( "Graph Properties", null, NO_PROPERTIES_AVAIBLE );
 	}
 	
 	protected JPanel getPanel( Document document ) {
-		Hashtable<Component, JPanel> components = panels.get( document );
+		HashMap<Component, JPanel> components = panels.get( document );
 		if ( components == null ) {
 			document.addDocumentListener( this );
-			components = new Hashtable<Component, JPanel>();
+			components = new HashMap<Component, JPanel>();
 			panels.put( document, components );
 		}
 		JPanel panel = components.get( document.getContent().getComponent() );
@@ -144,6 +144,14 @@ public class GraphPropertyEditorView extends View implements EditorDesktopViewLi
 			if ( graphSource instanceof GraphWithEditableElements )
 				fireTableDataChanged();
 		}
+
+		public void propertyChanged(Object graphSource, PropertyChangeEvent e, Object[] elementsToUpdateView) {
+			propertyChanged( graphSource, e );
+		}
+	}
+
+	public void documentClosed(Document document) {
+		panels.remove( document );
 	}
 
 }

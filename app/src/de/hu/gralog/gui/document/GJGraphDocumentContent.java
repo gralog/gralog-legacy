@@ -26,10 +26,12 @@ import javax.swing.JScrollPane;
 import javax.swing.undo.UndoManager;
 
 import de.hu.gralog.app.InputOutputException;
-import de.hu.gralog.graph.io.XMLDecoderIO;
+import de.hu.gralog.graph.io.XMLDecoderIOFast;
 import de.hu.gralog.gui.FileFormat;
 import de.hu.gralog.gui.GraphEditor;
+import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.jgraph.GJGraphUtil;
 
 public class GJGraphDocumentContent extends DocumentContent {
 
@@ -38,7 +40,7 @@ public class GJGraphDocumentContent extends DocumentContent {
 	protected static final FileFormat[] FILE_FORMATS = { XML_DECODER_FILE_FORMAT };
 	
 	private GJGraph graph;
-	private GJGraphDocumentContent initialState;
+	private InputStream initialStateGraph;
 	private UndoManager undoManager;
 	
 	public GJGraphDocumentContent() {
@@ -46,14 +48,14 @@ public class GJGraphDocumentContent extends DocumentContent {
 	}
 	
 	public GJGraphDocumentContent( GJGraph graph ) {
-		this( graph, true );
+		this( graph, MainPad.getInstance().isRevertEnabled() );
 	}
 	
-	public GJGraphDocumentContent( GJGraph graph, boolean copy ) {
+	private GJGraphDocumentContent( GJGraph graph, boolean copy ) {
 		this.graph = graph;
 		init();
 		if ( copy )
-			initialState = new GJGraphDocumentContent( new XMLDecoderIO().getDataCopy( graph ), false );
+			initialStateGraph = GJGraphUtil.getGJGraphAsStream( graph );
 	}
 
 	protected void init() {
@@ -68,14 +70,14 @@ public class GJGraphDocumentContent extends DocumentContent {
 	@Override
 	public DocumentContent read(FileFormat format, InputStream in) throws InputOutputException {
 		if ( format == XML_DECODER_FILE_FORMAT )
-			return new XMLDecoderIO().readGJGraphDocumentContent( in );
+			return new XMLDecoderIOFast().readGJGraphDocumentContent( in );
 		return null;
 	}
 
 	@Override
 	public void write(FileFormat format, OutputStream out) throws InputOutputException {
 		if ( format == XML_DECODER_FILE_FORMAT )
-			new XMLDecoderIO().writeGJGraphDocumentContent( this, out );
+			new XMLDecoderIOFast().writeGJGraphDocumentContent( this, out );
 	}
 
 	@Override
@@ -85,10 +87,9 @@ public class GJGraphDocumentContent extends DocumentContent {
 	}
 	
 	@Override
-	public void clear() {
-		XMLDecoderIO xmlIO = new XMLDecoderIO();
+	public void clear() throws InputOutputException {
+		graph = GJGraphUtil.getGJGraphFromStream( initialStateGraph );
 		
-		graph = xmlIO.getDataCopy( initialState.graph );
 		component = null;
 		init();
 		registerUndoManager( undoManager );
