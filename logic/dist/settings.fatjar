@@ -1,14 +1,14 @@
 #Fat Jar Configuration File
-#Wed Aug 20 11:19:33 BST 2008
+#Wed Aug 20 15:45:48 BST 2008
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=dist\\logic.jar
+jarname=dist/logic.jar
 manifest.mergeall=true
 manifest.mainclass=de.hu.gralog.Gralog
 manifest.file=MANIFEST.MF
 jarname.isextern=false
 onejar.expand=
-excludes=<po|gralog-logic>~CVS/;<jar|java-cup-11a.jar>;<jar|gralog-core.jar>;<jar|parity.jar>;<jar|finitegames.jar>;<jar|jgraph.jar>;<jar|jgrapht-jdk1.5.jar>
+excludes=<jar|java-cup-11a.jar>;<jar|gralog-core.jar>;<jar|parity.jar>;<jar|finitegames.jar>;<jar|jgraph.jar>;<jar|jgrapht-jdk1.5.jar>
 includes=

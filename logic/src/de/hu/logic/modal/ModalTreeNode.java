@@ -13,33 +13,28 @@ import de.hu.logic.graph.Proposition;
  * @author kreutzer
  *
  */
-public class DummyTreeNode implements EvaluationTreeNode 
+public class ModalTreeNode implements EvaluationTreeNode 
 {
 
 	String _name;
 	ArrayList<EvaluationTreeNode> _list;
-	Proposition _prop;
-	DummyEvaluation _eval;
+	TreeNodeEvaluation _eval;
 	Proposition _res;
 	
-	public DummyTreeNode(String name, Proposition res, DummyEvaluation eval)
+	public ModalTreeNode(String name, TreeNodeEvaluation eval)
 	{
-		System.out.println("Const");
 		_name = name;
-		_list = new ArrayList<EvaluationTreeNode>(10);
+		_list = new ArrayList<EvaluationTreeNode>();
 		_eval = eval;
-		_res = res;
+		_res = null;
 	}
+
+	
+	
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildren()
 	 */
-	public List<EvaluationTreeNode> getChildren() 
-	{
-		System.out.println("Get Children");
-		for (int i=0;i<10;i++)
-		{
-			_list.add(new DummyTreeNode(_name + ":"+i, _res, _eval));
-		}
+	public List<EvaluationTreeNode> getChildren() {
 		return _list;
 	}
 
@@ -47,8 +42,7 @@ public class DummyTreeNode implements EvaluationTreeNode
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildrenCount()
 	 */
 	public int getChildrenCount() {
-
-		return 10;
+		return _list.size();
 	}
 
 	/* (non-Javadoc)
@@ -62,7 +56,15 @@ public class DummyTreeNode implements EvaluationTreeNode
 	 * @see de.hu.logic.general.EvaluationTreeNode#getResult()
 	 */
 	public Proposition getResult() {
+//		if(_res==null)
+			
 		return _res;
 	}
+	
+	public void setResult(Proposition res)
+	{
+		_res = res;
+	}
 
+	
 }
