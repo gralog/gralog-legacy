@@ -102,12 +102,12 @@ public class ModalTreeNode implements EvaluationTreeNode
 		}
 		else
 		{
-			_inter.put(getIdent(), new Proposition("false"));
+			_res = new Proposition("false");
 			System.out.println("ident " + getIdent());
 			for(int i=1;i<=_stage; i++)
 			{
-				_res = _eval.recursiveEvaluate(_f, _inter);
 				_inter.put(getIdent(), _res);
+				_res = _eval.recursiveEvaluate(_f, _inter);
 			}
 		}
 
