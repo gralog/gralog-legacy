@@ -1,4 +1,4 @@
-/*
+/**
  * Created on 2006 by Stephan Kreutzer
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
