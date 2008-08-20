@@ -159,7 +159,7 @@ public class EvaluateMueKalkuel implements Algorithm {
 				SetEvaluation eval = new SetEvaluation();
 				Proposition rp = eval.evaluate( transitionSystem, formula );
 				
-				Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertexes() ), new HashSet() );
+				Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertices() ), new HashSet() );
 				subgraphs.put( EVALUATION_SG, subgraph );
 			} catch (EvaluationException e) {
 				e.printStackTrace();

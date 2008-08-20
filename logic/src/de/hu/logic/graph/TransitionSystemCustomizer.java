@@ -226,11 +226,11 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 					vertexes = new ArrayList<TransitionSystemVertex>();
 				else {
 					if ( in )
-						vertexes = getProposition().getVertexes();
+						vertexes = getProposition().getVertices();
 					else {
 						Set<TransitionSystemVertex> vertexSet = new HashSet<TransitionSystemVertex>( transitionSystem.vertexSet() );
 						if ( getProposition() != null )
-							vertexSet.removeAll( getProposition().getVertexes() );
+							vertexSet.removeAll( getProposition().getVertices() );
 						vertexes = new ArrayList<TransitionSystemVertex>( vertexSet );
 					}
 				}
@@ -347,7 +347,7 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 			outList.clearSelection();
 		}
 		if ( e.getActionCommand().equals( ALL_TO_OUT_LIST ) ) {
-			for ( TransitionSystemVertex vertex : new ArrayList<TransitionSystemVertex>( getProposition( ).getVertexes() ) )
+			for ( TransitionSystemVertex vertex : new ArrayList<TransitionSystemVertex>( getProposition( ).getVertices() ) )
 				getProposition().removeVertex( vertex );
 			inList.clearSelection();
 			outList.clearSelection();

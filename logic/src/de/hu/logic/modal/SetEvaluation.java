@@ -141,7 +141,7 @@ public class SetEvaluation
 		case Formula.bottom: rel = new Proposition("false"); break;
 		case Formula.top:  
 			rel = new Proposition("true"); 
-			rel.setVertexes( t.vertexSet() );
+			rel.setVertices( t.vertexSet() );
 			break;
 		case Formula.proposition: 
 			rel =  interpretation(f.ident());
@@ -219,7 +219,7 @@ public class SetEvaluation
 			return rel;
 		case Formula.nu: 
 			rel = new Proposition(f.ident());
-			rel.setVertexes(t.vertexSet());		// init greatest fixed-point induction
+			rel.setVertices(t.vertexSet());		// init greatest fixed-point induction
 			_interp.put(f.ident(), rel);
 			old = new Proposition("old");
 			i=0;

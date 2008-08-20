@@ -33,7 +33,7 @@ public class PropositionBeanInfo extends SimpleBeanInfo {
 	static {
 		try {
 			PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( "name", Proposition.class );
-			PROPERTY_DESCRIPTORS[1] = new IndexedPropertyDescriptor( "vertexes", Proposition.class, "getVertexesArray", "setVertexesArray", "getVertexesArray", "setVertexesArray" );
+			PROPERTY_DESCRIPTORS[1] = new IndexedPropertyDescriptor( "vertices", Proposition.class, "getVertexArray", "setVertexArray", "getVertexArray", "setVertexArray" );
 		} catch (IntrospectionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

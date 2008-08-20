@@ -33,7 +33,7 @@ public class Proposition implements NestedGraphPropertyBean {
 	
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 	private String name = "name";
-	private ArrayList<TransitionSystemVertex> vertexes = new ArrayList<TransitionSystemVertex>();
+	private ArrayList<TransitionSystemVertex> vertices = new ArrayList<TransitionSystemVertex>();
 	
 	public Proposition() {
 		this( "name" );
@@ -43,9 +43,9 @@ public class Proposition implements NestedGraphPropertyBean {
 		this.name = name;
 	}
 	
-	protected Proposition( String name, ArrayList<TransitionSystemVertex> vertexes ) {
+	protected Proposition( String name, ArrayList<TransitionSystemVertex> vertices ) {
 		this.name = name;
-		this.vertexes = new ArrayList<TransitionSystemVertex>( vertexes );
+		this.vertices = new ArrayList<TransitionSystemVertex>( vertices );
 	}
 
 	public String getName() {
@@ -58,75 +58,75 @@ public class Proposition implements NestedGraphPropertyBean {
 		propertyChangeSupport.firePropertyChange( "name", oldName, name );
 	}
 	
-	public TransitionSystemVertex getVertexesArray( int index ) {
-		if ( index >= vertexes.size() )
+	public TransitionSystemVertex getVertexArray( int index ) {
+		if ( index >= vertices.size() )
 			return null;
-		return vertexes.get( index );
+		return vertices.get( index );
 	}
 	
-	public TransitionSystemVertex[] getVertexesArray() {
-		return vertexes.toArray( new TransitionSystemVertex[ vertexes.size() ] );
+	public TransitionSystemVertex[] getVertexArray() {
+		return vertices.toArray( new TransitionSystemVertex[ vertices.size() ] );
 	}
 	
-	public void setVertexesArray( TransitionSystemVertex[] vertexes ) {
-		this.vertexes = new ArrayList<TransitionSystemVertex>();
-		for ( TransitionSystemVertex vertex : vertexes )
-			this.vertexes.add( vertex );
+	public void setVertexArray( TransitionSystemVertex[] vertices ) {
+		this.vertices = new ArrayList<TransitionSystemVertex>();
+		for ( TransitionSystemVertex vertex : vertices )
+			this.vertices.add( vertex );
 	}
 	
-	public void setVertexesArray( int index, TransitionSystemVertex vertex ) {
+	public void setVertexArray( int index, TransitionSystemVertex vertex ) {
 		TransitionSystemVertex oldVertex = null;
-		if ( index < vertexes.size() )
-			oldVertex = vertexes.get( index );
+		if ( index < vertices.size() )
+			oldVertex = vertices.get( index );
 		if ( vertex == null )
-			vertexes.remove( index );
+			vertices.remove( index );
 		else
-			vertexes.add( index, vertex );
-		propertyChangeSupport.fireIndexedPropertyChange( "vertexes", index, oldVertex, vertex );
+			vertices.add( index, vertex );
+		propertyChangeSupport.fireIndexedPropertyChange( "vertices", index, oldVertex, vertex );
 	}
 	
 	public boolean containsVertex( TransitionSystemVertex vertex ) {
-		return vertexes.contains( vertex );
+		return vertices.contains( vertex );
 	}
 		
 	public void addVertex( TransitionSystemVertex vertex ) {
-		setVertexesArray( vertexes.size(), vertex );
+		setVertexArray( vertices.size(), vertex );
 	}
 	
 	public void removeVertex( TransitionSystemVertex vertex ) {
-		setVertexesArray( vertexes.indexOf( vertex ), null );
+		setVertexArray( vertices.indexOf( vertex ), null );
 	}
 	
 	/**
 	 * Sets the content of the relation to be "set".
 	 * @param set New content of the relation
 	 */
-	public void setVertexes(Set<TransitionSystemVertex> vertexes )
+	public void setVertices(Set<TransitionSystemVertex> vertexes )
 	{
-		this.vertexes = new ArrayList<TransitionSystemVertex>( vertexes );
+		this.vertices = new ArrayList<TransitionSystemVertex>( vertexes );
 	}
 	
 	/**
 	 * Sets the content of the relation to be "set".
 	 * @param set New content of the relation
 	 */
-	public void setVertexes(ArrayList<TransitionSystemVertex> vertexes )
+	public void setVertices(ArrayList<TransitionSystemVertex> vertexes )
 	{
-		this.vertexes = new ArrayList<TransitionSystemVertex>( vertexes );
+		this.vertices = new ArrayList<TransitionSystemVertex>( vertexes );
 	}
 	
 	
 	
-	public ArrayList<TransitionSystemVertex> getVertexes() {
-		return vertexes;
+	public ArrayList<TransitionSystemVertex> getVertices() {
+		return vertices;
 	}
 	
 	public Proposition copy( ) {
-		return new Proposition( name, vertexes );
+		return new Proposition( name, vertices );
 	}
 	
 	public boolean equalContent( Proposition proposition ) {
-		return vertexes.equals( proposition.vertexes );
+		return vertices.equals( proposition.vertices );
 	}
 	
 	/**
@@ -138,11 +138,11 @@ public class Proposition implements NestedGraphPropertyBean {
 	public Proposition union(Proposition R)
 	{
 		Proposition set = new Proposition("(" + name + " \\cup " + R.name + ")");
-		set.setVertexes( vertexes );
+		set.setVertices( vertices );
 		
-		for ( TransitionSystemVertex t : R.getVertexes() ) {
-			if ( ! set.getVertexes().contains( t ) )
-				set.getVertexes().add( t );
+		for ( TransitionSystemVertex t : R.getVertices() ) {
+			if ( ! set.getVertices().contains( t ) )
+				set.getVertices().add( t );
 		}
 		return set;
 	}
@@ -156,8 +156,8 @@ public class Proposition implements NestedGraphPropertyBean {
 	public Proposition intersection(Proposition R)
 	{
 		Proposition set = new Proposition("(" + name + " \\cap " + R.name + ")");
-		set.setVertexes( vertexes );
-		set.getVertexes().retainAll( R.getVertexes() );
+		set.setVertices( vertices );
+		set.getVertices().retainAll( R.getVertices() );
 		return set;
 	}
 	
@@ -172,8 +172,8 @@ public class Proposition implements NestedGraphPropertyBean {
 	{
 		Set<TransitionSystemVertex> set = new HashSet<TransitionSystemVertex>(universe);
 		Proposition rel = new Proposition("neg " + name );
-		rel.setVertexes(set);
-		rel.getVertexes().removeAll(vertexes);
+		rel.setVertices(set);
+		rel.getVertices().removeAll(vertices);
 		return rel;
 	}
 	

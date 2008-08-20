@@ -40,7 +40,7 @@ public class TransitionSystemTypeInfo extends GraphTypeInfo {
 		Proposition[] props = transSys.getPropositions();
 		for( int i = 0; i < props.length; i++ ) {
 			Proposition newProp = new Proposition( props[i].getName() );
-			for( TransitionSystemVertex v : props[i].getVertexes() ) {
+			for( TransitionSystemVertex v : props[i].getVertices() ) {
 				newProp.addVertex( (TransitionSystemVertex) vMap.get(v) );
 			}
 			newTransSys.addProposition(newProp);

@@ -157,7 +157,7 @@ public class TransitionSystem extends DirectedGraph<TransitionSystemVertex, Tran
 		if ( oldProposition == null )
 			return null;
 		ArrayList<TransitionSystemVertex> changedVertices = new ArrayList<TransitionSystemVertex>();
-		for ( TransitionSystemVertex vertex : oldProposition.getVertexes() ) {
+		for ( TransitionSystemVertex vertex : oldProposition.getVertices() ) {
 			changedVertices.add( vertex );
 			ArrayList<Proposition> vertexPropositions = vertexPropositionsCache.get( vertex );
 			if ( vertexPropositions != null )

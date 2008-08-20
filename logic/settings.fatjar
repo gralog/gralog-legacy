@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Sat Jun 30 19:41:39 CEST 2007
+#Wed Aug 20 13:22:16 BST 2008
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<jar|gralog-core.jar>
+excludes=<jar|gralog-core.jar>;<jar|parity.jar>;<jar|finitegames.jar>;<jar|jgraph.jar>;<jar|jgrapht-jdk1.5.jar>
 includes=
