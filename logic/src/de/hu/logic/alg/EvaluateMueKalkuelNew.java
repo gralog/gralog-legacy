@@ -46,7 +46,7 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 import de.hu.logic.general.EvaluationTreeNode;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
-import de.hu.logic.modal.DummyEvaluation;
+import de.hu.logic.modal.TreeNodeEvaluation;
 import de.hu.logic.modal.EvaluationException;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.parser.FormulaList;
@@ -143,7 +143,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 		}
 
 		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) {
-			this( transitionSystem, new DummyEvaluation().evaluate( transitionSystem, formula ) );
+			this( transitionSystem, new TreeNodeEvaluation().evaluate( transitionSystem, formula ) );
 			this.formula = formula;
 			System.out.println( "construct1" );
 		}

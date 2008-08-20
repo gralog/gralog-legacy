@@ -40,16 +40,17 @@ import de.hu.logic.graph.TransitionSystemVertex;
  */
 public class TreeNodeEvaluation
 {
-	HashMap<String,Proposition> _interp;
+	Interpretation _interp;
 	TransitionSystem t; 
 	
 	private HashSet<String> _sig;	// used only internally in the checkSignatures method
 	
-	Proposition interpretation(String name)
+
+	Proposition interpretation(String name, Interpretation inter)
 	{
 		Proposition p;
-		if(_interp.containsKey(name))
-			return _interp.get(name);
+		if(inter.containsKey(name))
+			return inter.get(name);
 		else if((p=t.getProposition(name)) != null) 
 		{
 			return p.copy();
@@ -58,25 +59,36 @@ public class TreeNodeEvaluation
 			return null;
 	}
 
+
+	/*Proposition interpretation(String name)
+	{
+		return interpretation(name, _interp);
+	}*/
+
+
 	
-	
-	/** The main method of the class. Call this method to evaluate the formula f in the transition system trans. 
+	/** The main method of the class.
+	 * This method first checks whether the signature of the transition system and of the formula
+	 * are compatible. If they are, it generates an initial ModalTreeNode.  
 	 * 
 	 * @param trans Transition system
 	 * @param f Formula to evaluate
 	 * @return Returns the relation containing the set of vertices at which the formula becomes true.
 	 * @throws EvaluationException Exception thrown if for some reason the formula cannot be evaluated in the system. See EvaluationException class description for the various reasons why this can happen.
 	 */
-	public ModalTreeNode evaluate(TransitionSystem trans, Formula f) throws EvaluationException
+	public ModalTreeNode evaluate(TransitionSystem trans, Formula f) //throws EvaluationException
 	{
 		t = trans;
-		_interp = new HashMap<String,Proposition>();
+		_interp = new Interpretation();
 		_sig = new HashSet<String>(t.getSignature());
+		try{
 		checkSignatures(f);
-//		Proposition res = recursiveEvaluate(f);
-//		switch(f.type())
-		return null;
+		}
+		catch(Exception e)
+		{ System.err.println("Exception: " + e.getMessage()); }
+		ModalTreeNode t = new ModalTreeNode(f, this);
 		
+		return t;
 	}
 	
 
@@ -86,8 +98,10 @@ public class TreeNodeEvaluation
 	 * @param f Formula
 	 * @return returns the set of vertices satisfying the formula. 
 	 */
-	protected Proposition recursiveEvaluate(Formula f)
+	protected Proposition recursiveEvaluate(Formula f, Interpretation inter)
 	{
+		System.out.println("recursiveEvaluate: " + f.toString());
+
 		Proposition rel=null, r=null;
 		switch(f.type())
 		{
@@ -99,30 +113,30 @@ public class TreeNodeEvaluation
 			rel.setVertices( t.vertexSet() );
 			break;
 		case Formula.proposition: 
-			rel =  interpretation(f.ident());
+			rel =  interpretation(f.ident(), inter);
 			break;
 		case Formula.and:
-			r = recursiveEvaluate(f.rightSubf());
-			rel = recursiveEvaluate(f.leftSubf());
+			r = recursiveEvaluate(f.rightSubf(), inter);
+			rel = recursiveEvaluate(f.leftSubf(), inter);
 			return rel.intersection(r);
 		case Formula.or: 
-			r = recursiveEvaluate(f.rightSubf());
-			rel = recursiveEvaluate(f.leftSubf());
+			r = recursiveEvaluate(f.rightSubf(), inter);
+			rel = recursiveEvaluate(f.leftSubf(), inter);
 			return rel.union(r);
 		case Formula.neg:
-			rel = recursiveEvaluate(f.subf());
+			rel = recursiveEvaluate(f.subf(), inter);
 			return rel.negate(t.vertexSet());
 		case Formula.diamond:		// no break. both cases treated simultaneously 
 		case Formula.box:
 			boolean box = false;
 			if(f.type() == Formula.box)
 				box = true;
-			r = recursiveEvaluate(f.subf());
+			r = recursiveEvaluate(f.subf(), inter);
 			rel = new Proposition("");
 			Iterator<TransitionSystemVertex> iter = t.vertexSet().iterator();
 			Iterator<TransitionSystemEdge> out;
 			boolean boxAll = true;
-			TransitionSystemVertex u,v;
+			TransitionSystemVertex u;
 			TransitionSystemEdge edge;
 			while(iter.hasNext())
 			{
@@ -157,37 +171,38 @@ public class TreeNodeEvaluation
 			}
 			break;
 		case Formula.mu:
+			System.out.println("mu ");
 			rel = new Proposition(f.ident());
-			_interp.put(f.ident(), rel);
+			inter.put(f.ident(), rel);
 			Proposition old = new Proposition("0");
 			int i=0;
 			do
 			{
 				i++;
 				old = rel.copy();
-				rel = recursiveEvaluate(f.subf());
+				rel = recursiveEvaluate(f.subf(), inter);
 				rel.setName(String.valueOf(i));
-				_interp.put(f.ident(), rel);
+				inter.put(f.ident(), rel);
 			}
 			while(!old.equalContent(rel));
-			_interp.remove(f.ident());	// remove the fixed-point variable from the interpretation
+			inter.remove(f.ident());	// remove the fixed-point variable from the interpretation
 			return rel;
 		case Formula.nu: 
 			rel = new Proposition(f.ident());
 			rel.setVertices(t.vertexSet());		// init greatest fixed-point induction
-			_interp.put(f.ident(), rel);
+			inter.put(f.ident(), rel);
 			old = new Proposition("0");
 			i=0;
 			do
 			{
 				i++;
 				old = rel.copy();
-				rel = recursiveEvaluate(f.subf());
+				rel = recursiveEvaluate(f.subf(), inter);
 				rel.setName(String.valueOf(i));
-				_interp.put(f.ident(), rel);
+				inter.put(f.ident(), rel);
 			}
 			while(!old.equalContent(rel));
-			_interp.remove(f.ident());	// remove the fixed-point variable from the interpretation
+			inter.remove(f.ident());	// remove the fixed-point variable from the interpretation
 			return rel;
 		}
 		return rel;

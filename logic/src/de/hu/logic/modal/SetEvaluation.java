@@ -40,7 +40,7 @@ import de.hu.logic.graph.TransitionSystemVertex;
  */
 public class SetEvaluation
 {
-	HashMap<String,Proposition> _interp;
+	Interpretation _interp;
 	TransitionSystem t; 
 	
 	private HashSet<String> _sig;	// used only internally in the checkSignatures method
@@ -68,7 +68,7 @@ public class SetEvaluation
 	public Proposition evaluate(TransitionSystem trans, Formula f) throws EvaluationException
 	{
 		t = trans;
-		_interp = new HashMap<String,Proposition>();
+		_interp = new Interpretation();
 		_sig = new HashSet<String>(t.getSignature());
 		checkSignatures(f);
 		return recursiveEvaluate(f);
@@ -167,7 +167,7 @@ public class SetEvaluation
 			Iterator<TransitionSystemVertex> iter = t.vertexSet().iterator();
 			Iterator<TransitionSystemEdge> out;
 			boolean boxAll = true;
-			TransitionSystemVertex u,v;
+			TransitionSystemVertex u;
 			TransitionSystemEdge edge;
 			while(iter.hasNext())
 			{
