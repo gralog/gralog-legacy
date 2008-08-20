@@ -21,7 +21,9 @@ package de.hu.gralog.graph.alg;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
 import javax.swing.event.UndoableEditListener;
 
@@ -262,6 +264,29 @@ public class AlgorithmResult implements Serializable {
 	 */
 	public AlgorithmResultContentTreeNode getContentTree() {
 		return contentTree;
+	}
+	
+	Set<Graph> getAllGraphs() {
+		HashSet<Graph> graphs = new HashSet<Graph>();
+		if ( this.graph != null )
+			graphs.add( graph );
+		graphs.addAll( getAllGraphsFromContents() );
+		return graphs;
+	}
+	
+	Set<Graph> getAllGraphsFromContents() {
+		HashSet<Graph> graphs = new HashSet<Graph>();
+		if ( getSingleContent() != null && getSingleContent().getGraph() != null )
+			graphs.add( getSingleContent().getGraph() );
+		if ( getContentList() != null ) {
+			for ( AlgorithmResultContent content : getContentList() ) {
+				if ( content.getGraph() != null )
+					graphs.add( content.getGraph() );
+			}
+		}
+		if ( getContentTree() != null )
+			graphs.addAll( getContentTree().getAllGraphs() );
+		return graphs;
 	}
 	
 	void fireCurrentContentChanged() {

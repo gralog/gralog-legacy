@@ -7,6 +7,10 @@
 package de.hu.gralog.graph.alg;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.jgrapht.Graph;
 
 /**
  * This class extends {@link AlgorithmResultContent} in order to form a tree of contents. 
@@ -16,8 +20,8 @@ import java.util.ArrayList;
  */
 public class AlgorithmResultContentTreeNode extends AlgorithmResultContent {
 
-	protected ArrayList<AlgorithmResultContentTreeNode> children = new ArrayList<AlgorithmResultContentTreeNode>();
-	protected AlgorithmResultContentTreeNode parent = null;
+	protected transient ArrayList<AlgorithmResultContentTreeNode> children = new ArrayList<AlgorithmResultContentTreeNode>();
+	protected transient AlgorithmResultContentTreeNode parent = null;
 	
 	/**
 	 * An empty Contructor
@@ -53,4 +57,13 @@ public class AlgorithmResultContentTreeNode extends AlgorithmResultContent {
 		return parent;
 	}
 	
+	protected Set<Graph> getAllGraphs() {
+		HashSet<Graph> graphs = new HashSet<Graph>();
+		if ( getGraph() != null )
+			graphs.add( getGraph() );
+		for ( AlgorithmResultContentTreeNode content : getChildren() ) {
+			graphs.addAll( content.getAllGraphs() );
+		}
+		return graphs;
+	}
 }
