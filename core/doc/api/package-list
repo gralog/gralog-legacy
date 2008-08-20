@@ -8,3 +8,4 @@ de.hu.gralog.jgrapht.event
 de.hu.gralog.jgrapht.graph
 de.hu.gralog.jgrapht.traverse
 de.hu.gralog.jgrapht.vertex
+de.hu.gralog.util
