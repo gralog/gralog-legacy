@@ -5,6 +5,7 @@ package de.hu.logic.general;
 
 import java.util.List;
 
+import de.hu.gralog.app.UserException;
 import de.hu.logic.graph.Proposition;
 
 /**
@@ -17,20 +18,20 @@ public interface EvaluationTreeNode
 	 * 
 	 * @return Result of the evaluation
 	 */
-	Proposition getResult();
+	Proposition getResult()  throws UserException;
 	
 	/** 
 	 * 
 	 * @return name of the current node
 	 */
-	String getName();
+	String getName()  throws UserException;
 	
 	/** 
 	 * 
 	 * @return returns a list containing EvaluationTreeNodes for the children.
 	 */
-	List<EvaluationTreeNode> getChildren();
+	List<EvaluationTreeNode> getChildren()  throws UserException;
 	
-	int getChildrenCount();
+	int getChildrenCount()  throws UserException;
 	
 }
