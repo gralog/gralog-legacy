@@ -1,5 +1,5 @@
 /**
- * Created on 2008 by Stephan Kreutzer
+ * Created 2008 by Stephan Kreutzer
  *
  * Copyright 2008 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
