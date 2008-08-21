@@ -19,10 +19,10 @@
 
 package de.hu.logic.modal;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import de.hu.logic.general.EvaluationException;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.graph.TransitionSystemEdge;

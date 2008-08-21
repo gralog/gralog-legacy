@@ -17,7 +17,7 @@
  *
  */
 
-package de.hu.logic.modal;
+package de.hu.logic.general;
 
 /**
  * Exception thrown during evaluation of formulae
@@ -26,9 +26,9 @@ package de.hu.logic.modal;
  */
 public class EvaluationException extends Exception {
 
-	static final long serialVersionUID = 000100;
+	static public final long serialVersionUID = 000100;
 	
-	static final int SIGNATURE_MISMATCH = 0;
+	static public final int SIGNATURE_MISMATCH = 0;
 	
 	
 	int _type;

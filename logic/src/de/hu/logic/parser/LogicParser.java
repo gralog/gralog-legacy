@@ -57,7 +57,14 @@ public class LogicParser
 		
 		Scanner scan = new de.hu.logic.parser.Scanner(new StringBufferInputStream(formula), sf);
 		Parser p = new Parser(scan, sf);
-		Symbol s = p.parse();
-		return (FormulaList) s.value;
+		try{
+			Symbol s = p.parse();
+			return (FormulaList) s.value;
+		}
+		catch(Exception e)
+		{
+			System.out.println("Parse Error: " + e.getMessage());
+			return null;
+		}
 	}
 }

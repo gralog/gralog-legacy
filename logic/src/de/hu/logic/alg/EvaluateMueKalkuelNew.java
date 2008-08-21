@@ -24,7 +24,6 @@ import java.beans.Encoder;
 import java.beans.Expression;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,12 +42,12 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.SubgraphFactory;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.logic.general.EvaluationException;
 import de.hu.logic.general.EvaluationTreeNode;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
-import de.hu.logic.modal.TreeNodeEvaluation;
-import de.hu.logic.modal.EvaluationException;
 import de.hu.logic.modal.Formula;
+import de.hu.logic.modal.TreeNodeEvaluation;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.LogicParser;
 import de.hu.logic.parser.ParseException;
@@ -142,7 +141,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 			}
 		}
 
-		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) {
+		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) throws EvaluationException {
 			this( transitionSystem, new TreeNodeEvaluation().evaluate( transitionSystem, formula ) );
 			this.formula = formula;
 			System.out.println( "construct1" );
@@ -154,7 +153,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 			System.out.println( "construct2" );
 		}
 		
-		private void computeSubgraphs() {
+		private void computeSubgraphs() throws EvaluationException {
 			subgraphs = new Hashtable<String, Subgraph>();
 			Proposition rp = evaluationTreeNode.getResult();
 			
@@ -165,14 +164,15 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws EvaluationException {
 			if ( subgraphs == null )
 				computeSubgraphs();
 			return super.getDisplaySubgraphs(modes);
 		}
 
 		@Override
-		public ArrayList<AlgorithmResultContentTreeNode> getChildren() {
+		public ArrayList<AlgorithmResultContentTreeNode> getChildren() throws UserException 
+		{
 			if ( !childrenBuild ) {
 				for ( EvaluationTreeNode child : evaluationTreeNode.getChildren() )
 					addChild( new MueKalkulAlgorithmResultContentTreeNode( transitionSystem, child ) );
@@ -190,7 +190,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 			return graphs;
 		}
 
-		public String toString() {
+		public String toString()  {
 			return evaluationTreeNode.getName();
 		}
 	}
