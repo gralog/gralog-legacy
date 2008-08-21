@@ -21,6 +21,8 @@ package de.hu.logic.modal;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.hu.gralog.app.UserException;
 import de.hu.logic.general.EvaluationException;
@@ -75,9 +77,9 @@ public class TreeNodeEvaluation
 	 * @param trans Transition system
 	 * @param f Formula to evaluate
 	 * @return Returns the relation containing the set of vertices at which the formula becomes true.
-	 * @throws UserException Exception thrown if for some reason the formula cannot be evaluated in the system. See EvaluationException class description for the various reasons why this can happen.
-	 */
-	public ModalTreeNode evaluate(TransitionSystem trans, Formula f) throws EvaluationException
+	 * @throws UserException Exception thrown if for some reason the formula cannot be evaluated in the system. 
+	 * 	 */
+	public ModalTreeNode evaluate(TransitionSystem trans, Formula f) throws UserException
 	{
 		t = trans;
 		_interp = new Interpretation();
@@ -89,11 +91,64 @@ public class TreeNodeEvaluation
 	}
 	
 
+	protected List<Proposition> topLevelEvaluate(Formula f, Interpretation inter)
+	{
+		if(!(f.type() == Formula.mu || f.type() == Formula.nu))
+		{
+			return null;
+		}
+		LinkedList<Proposition> list = new LinkedList<Proposition>();
+		
+		Proposition rel = null, old=null;
+		
+		if(f.type() == Formula.mu)
+		{
+			rel = new Proposition(f.ident());
+			inter.put(f.ident(), rel);
+			old = new Proposition("0");
+			int i=0;
+			do
+			{
+				list.add(old);
+				i++;
+				old = rel.copy();
+				rel = recursiveEvaluate(f.subf(), inter);
+				rel.setName(String.valueOf(i));
+				inter.put(f.ident(), rel);
+			}
+			while(!old.equalContent(rel));
+			inter.remove(f.ident());	// remove the fixed-point variable from the interpretation
+		}
+		else
+		{ 
+			rel = new Proposition(f.ident());
+			rel.setVertices(t.vertexSet());		// init greatest fixed-point induction
+			inter.put(f.ident(), rel);
+			old = new Proposition("0");
+			int i=0;
+			do
+			{
+				i++;
+				list.add(old);
+				old = rel.copy();
+				rel = recursiveEvaluate(f.subf(), inter);
+				rel.setName(String.valueOf(i));
+				inter.put(f.ident(), rel);
+			}
+			while(!old.equalContent(rel));
+			inter.remove(f.ident());	// remove the fixed-point variable from the interpretation
+		}
+		
+		return list;
+	}
+	
+	
 	/**
-	 * The main evaluation function. The method evaluate checks the signature first and then calls this method to 
-	 * do the actual evaluation.
+	 * The main evaluation function doing the actual evaluation. An important feature is that 
+	 * if f is a fixed point formula then the result contains the number of stages in its name.
+	 * This is used, e.g. in ModalTreeNode, to recover the number of stages.
 	 * @param f Formula
-	 * @return returns the set of vertices satisfying the formula. 
+	 * @return returns the set of vertices satisfying the formula. See above for conditions on the name.
 	 */
 	protected Proposition recursiveEvaluate(Formula f, Interpretation inter)
 	{
@@ -212,7 +267,7 @@ public class TreeNodeEvaluation
 	 * @return true if the formula matches the signature of the transition system.
 	 * @throws EvaluationException Throws an exception in case of an error.
 	 */
-	protected boolean checkSignatures(Formula f) throws EvaluationException
+	protected boolean checkSignatures(Formula f) throws UserException
 	{
 		_sig = new HashSet<String>(t.getSignature());
 		return checkSignaturesRec(f);
@@ -224,7 +279,7 @@ public class TreeNodeEvaluation
 	 * substitutions have been performed. 
 	 * @return true if the signature of the formula and the TS are distinct, false otherwise
 	 */
-	private boolean checkSignaturesRec(Formula f) throws EvaluationException
+	private boolean checkSignaturesRec(Formula f) throws UserException
 	{
 		switch(f.type())
 		{
@@ -234,7 +289,7 @@ public class TreeNodeEvaluation
 		case Formula.proposition: 
 			if(!_sig.contains(f.ident()))
 			{
-				throw new EvaluationException(EvaluationException.SIGNATURE_MISMATCH, "Signature mismatch: proposition " + f.ident() + " is not declared!");
+				throw new UserException("Signature mismatch: proposition " + f.ident() + " is not declared!");
 			}
 			return true; 
 		case Formula.and:
@@ -252,8 +307,7 @@ public class TreeNodeEvaluation
 				return checkSignaturesRec(f.subf());
 			}
 			else
-				throw new EvaluationException(EvaluationException.SIGNATURE_MISMATCH, "Signature mismatch: proposition " + f.ident() + " is defined multiple times.");
-//				throw new UserException("Signature mismatch: proposition " + f.ident() + " is defined multiple times.");
+				throw new UserException("Signature mismatch: proposition " + f.ident() + " is defined multiple times.");
 		default: return true;
 		}
 	}

@@ -140,7 +140,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 			}
 		}
 
-		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) throws EvaluationException {
+		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) throws UserException {
 			this( transitionSystem, new TreeNodeEvaluation().evaluate( transitionSystem, formula ) );
 			this.formula = formula;
 		}

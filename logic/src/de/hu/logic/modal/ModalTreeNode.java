@@ -4,28 +4,52 @@
 package de.hu.logic.modal;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.hu.gralog.app.UserException;
-import de.hu.logic.general.EvaluationException;
 import de.hu.logic.general.EvaluationTreeNode;
 import de.hu.logic.graph.Proposition;
 
+
 /**
- * @author Stephan Kreutzer
+ * @author Stephan Kreutzer 
  *
+ * This class implements the tree nodes in the evaluation algorithm for the mu calculus
+ * based on a tree display. The main feature of the class is that results for a tree node are generated "on the fly"
+ * at least to some degree.
+ * 
+ * The general procedure is as follows.
+ * 
+ * Every ModalTreeNode has a result field _res which contains the result of the current
+ * formula and stage. If the node is selected it is this result that is being shown. The
+ * result is obtained from the tree node by a call to getResult(). If the result has not been
+ * computed, getResult() computes the result by a call to the evaluation algorithm given to the 
+ * ModalTreeNode object as parameter to the constructor. Based on the formula type and the result 
+ * the number of children is computed (initialiseChildrenCount()).
+ * 
+ * The list of children is computed once the tree node is expanded. This generates a call to getChildren().
+ * This method generates ModalTreeNodes for its children and also computes the results for
+ * the children. This is done for performance reasons as in fixed point inductions the 
+ * result for the child corresponding to stage n+1 can easily be computed from the result for stage
+ * n. Setting the result for the children (using setResult()) triggers the computation of the 
+ * "number of children" for the children of the current node but it does not trigger the "getChildren()". This is to
+ * avoid resursively generate all intermediate results which might consuming too much memory.
+ * 
  */
 public class ModalTreeNode implements EvaluationTreeNode 
 {
 
-	String _name;
-	ArrayList<EvaluationTreeNode> _list;
-	TreeNodeEvaluation _eval;
-	Proposition _res;
-	Formula _f;
-	Interpretation _inter = new Interpretation();
-	int _stage = -1;
-	String _ident = "";
+	String _name;		// the name to be displayed at the tree node.
+	ArrayList<EvaluationTreeNode> _childrenList = null;	//the list of children.	
+	TreeNodeEvaluation _eval;	// the evaluation algorithm to be used
+	Proposition _res;			// the result of the evaluation of the current formula 
+	Formula _f;					// the current formula
+	Interpretation _inter = new Interpretation();	// the context in which the current formula is evaluated
+	int _stage = -1;				// the number of the fixed point stage of the current formula
+	String _ident = "";				// the fixed point variable to be used if _stage != -1 
+	int _noChildren = -1; 	// number of children of the current node
+	
 	
 
 	/**
@@ -41,7 +65,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 		_f = f;
 		_eval = eval;
 		_res = null;
-		_list = null;
+		_childrenList = null;
 	}
 
 
@@ -58,24 +82,53 @@ public class ModalTreeNode implements EvaluationTreeNode
 		_f = f;
 		_eval = eval;
 		_res = null;
-		_list = null;
+		_childrenList = null;
 	}
 
+	/**
+	 * sets the context, i.e. interpretation of the free variables, in which the current formula
+	 * is to be evaluated.
+	 * 
+	 * @param inter Interpretation object providing an interpretation for the free variables
+	 */
 	public void setInterpretation(Interpretation inter)
 	{
 		_inter = inter;
 	}
 	
+	/**
+	 * Suppose we have a formula \mu X. \phi. The tree node corresponding to stage n of the iteration
+	 * on \phi has to know the fixed point variable the fixed point iteration refers to. This
+	 * is stored in the _ident variable and can be set using this method setIdent.
+	 * 
+	 * @param ident The name of the fixed point variable.
+	 */
 	public void setIdent(String ident)
 	{
 		_ident = ident;
 	}
 	
+	
+	/**
+	 * Suppose we have a formula \mu X. \phi. The tree node corresponding to stage n of the iteration
+	 * on \phi has to know the fixed point variable the fixed point iteration refers to. This
+	 * is stored in the _ident variable and can be obtained using this method getIdent.
+	 * 
+	 * @result The name of the fixed point variable.
+	 */
 	public String getIdent()
 	{
 		return _ident;
 	}
 	
+	
+	/**
+	 * Suppose we have a formula \mu X. \phi. The tree node corresponding to stage n of the iteration
+	 * on \phi has to know the stage of the iteration it refers to. This
+	 * is stored in the _stage variable and can be set using this method.
+	 * 
+	 * @result The name of the fixed point variable.
+	 */
 	public void setStage(int stage)
 	{
 		_stage = stage;
@@ -84,18 +137,56 @@ public class ModalTreeNode implements EvaluationTreeNode
 
 	
 	/**
+	 * A helper method returning true if f is a fixed point formula.
+	 * @param f
+	 * @return returns true if f is a fixed point formula.
+	 */
+	Boolean isFPFormula(Formula f)
+	{
+		return ((f.type() == Formula.mu) ||(f.type() == Formula.nu)); 
+	}
+
+	/**
 	 * Internal method used to compute the result of the current node as well as the list of children.
 	 * For efficiency, this version performs a "look ahead" evaluation, i.e. the parent node generates the results of the
 	 * children, at least for those children reflecting stages of a fixed point evaluation.
 	 * In this way, we can generate the result for the child of stage n+1 based on the result at stage n.
-	 * @throws EvaluationException
+	 * @throws UserException
 	 */
-/*	void initialiseResultChildren() throws EvaluationException
+	void initialiseResult() throws UserException
 	{
-		//System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		_res = _eval.recursiveEvaluate(_f, _inter);
+		initialiseChildrenCount();
+	}
+	
+	/**
+	 * Assumes that _res  has been set.
+	 *
+	 */
+	void initialiseChildrenCount()
+	{
+		if(isFPFormula(_f))
+			_noChildren = Integer.parseInt(_res.getName());
+		else if((_f.type() == Formula.and) || (_f.type() == Formula.or))
+			_noChildren = 2;
+		else if((_f.type() == Formula.box) || (_f.type() == Formula.neg) || (_f.type() == Formula.diamond))
+			_noChildren = 1;
+		else
+			_noChildren = 0;
+	}
+
+	/**
+	 * Internal method used to compute the result of the current node as well as the list of children.
+	 * For efficiency, this version performs a "look ahead" evaluation, i.e. the parent node generates the results of the
+	 * children, at least for those children reflecting stages of a fixed point evaluation.
+	 * In this way, we can generate the result for the child of stage n+1 based on the result at stage n.
+	 * @throws UserException
+	 */
+	void initialiseChildren() throws UserException
+	{
 
 		// check wether the result has already been computed or set
-		if(_res == null)
+/*		if(_res == null)
 		{
 			if(_stage == -1) 	
 					// we are not in a case where we have to evaluate a certain 
@@ -121,15 +212,15 @@ public class ModalTreeNode implements EvaluationTreeNode
 					_res = _eval.recursiveEvaluate(_f, _inter);
 				}
 			}
-		}
+		}*/
 
 		//System.out.println("result computed " + _res.getName());
 		
 		ModalTreeNode node; 
 
-		if(_stage == 0)
+		if(_stage == 0)	// stage 0 has no successors as the stage is empty
 		{
-			_list = new ArrayList<EvaluationTreeNode>(0);
+			_childrenList = new ArrayList<EvaluationTreeNode>(0);
 			
 		}
 		else
@@ -139,51 +230,55 @@ public class ModalTreeNode implements EvaluationTreeNode
 			case Formula.bottom: // no break
 			case Formula.top:	// no break
 			case Formula.proposition: 
-				_list = new ArrayList<EvaluationTreeNode>(0);
+				_childrenList = new ArrayList<EvaluationTreeNode>(0);
 				break;
 			case Formula.and:
 			case Formula.or:
-				_list = new ArrayList<EvaluationTreeNode>(2);
+				_childrenList = new ArrayList<EvaluationTreeNode>(2);
 				node = new ModalTreeNode(_f.leftSubf(), _eval);
 				node.setInterpretation(_inter);
 				node.setResult(_eval.recursiveEvaluate(_f.leftSubf(), _inter));
-				_list.add(node);
+				_childrenList.add(node);
 				node = new ModalTreeNode(_f.rightSubf(), _eval);
 				node.setInterpretation(_inter);
 				node.setResult(_eval.recursiveEvaluate(_f.rightSubf(), _inter));
-				_list.add(node);
+				_childrenList.add(node);
 				break;
 			case Formula.neg: 
 			case Formula.diamond:		// no break. both cases treated simultaneously 
 			case Formula.box:
-				_list = new ArrayList<EvaluationTreeNode>(1);
+				_childrenList = new ArrayList<EvaluationTreeNode>(1);
 				node = new ModalTreeNode(_f.subf(), _eval);
 				node.setInterpretation(_inter);
 				node.setResult(_eval.recursiveEvaluate(_f.subf(), _inter));
-				_list.add(node);
+				_childrenList.add(node);
 				break;
 			case Formula.mu:
 			case Formula.nu:
 				int stages = Integer.parseInt(_res.getName());
 				//System.out.println("mu:" + stages);
-				_list = new ArrayList<EvaluationTreeNode>(stages);
+				_childrenList = new ArrayList<EvaluationTreeNode>(stages);
+				List<Proposition> list = _eval.topLevelEvaluate(_f, _inter);
+				Iterator<Proposition> iter = list.iterator();
+				
 				for (int i=0;i<stages; i++)
 				{
 					node   = new ModalTreeNode(_f.subf(), _eval);
 					node.setStage(i);
 					node.setInterpretation((Interpretation)_inter.clone());
 					node.setIdent(_f.ident());
-					_list.add(node);
+					node.setResult(iter.next());
+					_childrenList.add(node);
 				}
 				break;
 			}
 		}
 	}
-*/
 
-	void initialiseResultChildren()
+
+/*	void initialiseResultChildren()
 	{
-		System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+//		System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
 		if(_stage == -1) 	
 				// we are not in a case where we have to evaluate a certain 
 				// number of stages
@@ -215,7 +310,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 
 		if(_stage == 0)
 		{
-			_list = new ArrayList<EvaluationTreeNode>(0);
+			_childrenList = new ArrayList<EvaluationTreeNode>(0);
 			
 		}
 		else
@@ -225,89 +320,97 @@ public class ModalTreeNode implements EvaluationTreeNode
 			case Formula.bottom: // no break
 			case Formula.top:	// no break
 			case Formula.proposition: 
-				_list = new ArrayList<EvaluationTreeNode>(0);
+				_childrenList = new ArrayList<EvaluationTreeNode>(0);
 				break;
 			case Formula.and:
 			case Formula.or:
-				_list = new ArrayList<EvaluationTreeNode>(2);
+				_childrenList = new ArrayList<EvaluationTreeNode>(2);
 				node = new ModalTreeNode(_f.leftSubf(), _eval);
 				node.setInterpretation(_inter);
-				_list.add(node);
+				_childrenList.add(node);
 				node = new ModalTreeNode(_f.rightSubf(), _eval);
 				node.setInterpretation(_inter);
-				_list.add(node);
+				_childrenList.add(node);
 				break;
 			case Formula.neg: 
 			case Formula.diamond:		// no break. both cases treated simultaneously 
 			case Formula.box:
-				_list = new ArrayList<EvaluationTreeNode>(1);
+				_childrenList = new ArrayList<EvaluationTreeNode>(1);
 				node = new ModalTreeNode(_f.subf(), _eval);
 				node.setInterpretation(_inter);
-				_list.add(node);
+				_childrenList.add(node);
 				break;
 			case Formula.mu:
 			case Formula.nu:
 				int stages = Integer.parseInt(_res.getName());
 				//System.out.println("mu:" + stages);
-				_list = new ArrayList<EvaluationTreeNode>(stages);
+				_childrenList = new ArrayList<EvaluationTreeNode>(stages);
 				for (int i=0;i<stages; i++)
 				{
 					node   = new ModalTreeNode(_f.subf(), _eval);
 					node.setStage(i);
 					node.setInterpretation((Interpretation)_inter.clone());
 					node.setIdent(_f.ident());
-					_list.add(node);
+					_childrenList.add(node);
 				}
 				break;
 			}
 		}
 	}
-
+*/
 
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildren()
 	 */
 	
-	public List<EvaluationTreeNode> getChildren() throws EvaluationException {
-		if(_list == null)
-			initialiseResultChildren();
-		return _list;
+	public List<EvaluationTreeNode> getChildren() throws UserException {
+		System.out.println("getChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		if(_childrenList == null)
+			initialiseChildren();
+		return _childrenList;
 		
 	}
 
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildrenCount()
 	 */
-	public int getChildrenCount()  throws EvaluationException {
-		if(_list == null)
-			initialiseResultChildren();
-		return _list.size();
+	public int getChildrenCount()  throws UserException {
+		System.out.println("getChildrenCount of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		if(_noChildren == -1)
+			initialiseResult();
+		return _noChildren;
 	}
 
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getName()
 	 */
 	public String getName() {
-		return _name;
+		if(_stage == 0)
+			return "empty";
+		else
+			return _name;
 	}
 
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getResult()
 	 */
-	public Proposition getResult()  throws EvaluationException {
+	public Proposition getResult()  throws UserException 
+	{
+//		System.out.println("getResult of " + getName() + " at stage " + _stage + " with ident " + _ident);
 		if(_res == null)
-			initialiseResultChildren();
+			initialiseResult();
 		return _res;
 	}
 	
 	/**
-	 * Method to set the result field of the node.
+	 * Method to set the result field of the node. Updates the childrenCount.
 	 * 
 	 * @param res Result 
 	 */
 	public void setResult(Proposition res)
 	{
 		_res = res;
+		initialiseChildrenCount();
 	}
 	
 }
