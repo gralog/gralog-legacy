@@ -19,10 +19,10 @@
 
 package de.hu.logic.modal;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import de.hu.gralog.app.UserException;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.graph.TransitionSystemEdge;
@@ -74,7 +74,7 @@ public class TreeNodeEvaluation
 	 * @param trans Transition system
 	 * @param f Formula to evaluate
 	 * @return Returns the relation containing the set of vertices at which the formula becomes true.
-	 * @throws EvaluationException Exception thrown if for some reason the formula cannot be evaluated in the system. See EvaluationException class description for the various reasons why this can happen.
+	 * @throws UserException Exception thrown if for some reason the formula cannot be evaluated in the system. See EvaluationException class description for the various reasons why this can happen.
 	 */
 	public ModalTreeNode evaluate(TransitionSystem trans, Formula f) //throws EvaluationException
 	{
@@ -100,7 +100,7 @@ public class TreeNodeEvaluation
 	 */
 	protected Proposition recursiveEvaluate(Formula f, Interpretation inter)
 	{
-		System.out.println("recursiveEvaluate: " + f.toString());
+		//System.out.println("recursiveEvaluate: " + f.toString());
 
 		Proposition rel=null, r=null;
 		switch(f.type())
@@ -171,7 +171,7 @@ public class TreeNodeEvaluation
 			}
 			break;
 		case Formula.mu:
-			System.out.println("mu ");
+			//System.out.println("mu ");
 			rel = new Proposition(f.ident());
 			inter.put(f.ident(), rel);
 			Proposition old = new Proposition("0");
@@ -215,7 +215,7 @@ public class TreeNodeEvaluation
 	 * @return true if the formula matches the signature of the transition system.
 	 * @throws EvaluationException Throws an exception in case of an error.
 	 */
-	protected boolean checkSignatures(Formula f) throws EvaluationException
+	protected boolean checkSignatures(Formula f) throws UserException
 	{
 		_sig = new HashSet<String>(t.getSignature());
 		return checkSignaturesRec(f);
@@ -227,7 +227,7 @@ public class TreeNodeEvaluation
 	 * substitutions have been performed. 
 	 * @return true if the signature of the formula and the TS are distinct, false otherwise
 	 */
-	private boolean checkSignaturesRec(Formula f) throws EvaluationException
+	private boolean checkSignaturesRec(Formula f) throws UserException
 	{
 		switch(f.type())
 		{
@@ -237,7 +237,8 @@ public class TreeNodeEvaluation
 		case Formula.proposition: 
 			if(!_sig.contains(f.ident()))
 			{
-				throw new EvaluationException(EvaluationException.SIGNATURE_MISMATCH, "Signatures do not match as proposition " + f.ident() + " is not declared");
+				//throw new UserException(EvaluationException.SIGNATURE_MISMATCH, "Signatures do not match as proposition " + f.ident() + " is not declared");
+				throw new UserException("Signature mismatch: proposition " + f.ident() + " is not declared.");
 			}
 			return true; 
 		case Formula.and:
@@ -255,7 +256,8 @@ public class TreeNodeEvaluation
 				return checkSignaturesRec(f.subf());
 			}
 			else
-				throw new EvaluationException(EvaluationException.SIGNATURE_MISMATCH, "Proposition " + f.ident() + " is defined multiple times.");
+//				throw new EvaluationException(EvaluationException.SIGNATURE_MISMATCH, "Proposition " + f.ident() + " is defined multiple times.");
+				throw new UserException("Signature mismatch: proposition " + f.ident() + " is defined multiple times.");
 		default: return true;
 		}
 	}

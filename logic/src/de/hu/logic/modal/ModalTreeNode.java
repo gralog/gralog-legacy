@@ -4,13 +4,11 @@
 package de.hu.logic.modal;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import de.hu.gralog.app.UserException;
 import de.hu.logic.general.EvaluationTreeNode;
 import de.hu.logic.graph.Proposition;
-import de.hu.logic.graph.TransitionSystemEdge;
-import de.hu.logic.graph.TransitionSystemVertex;
 
 /**
  * @author kreutzer
@@ -83,9 +81,9 @@ public class ModalTreeNode implements EvaluationTreeNode
 		_name = "Stage " + stage + ": " + _f.toString();
 	}
 
-	void initialiseResultChildren()
+	void initialiseResultChildren() throws UserException
 	{
-		System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		//System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
 		if(_stage == -1) 	
 				// we are not in a case where we have to evaluate a certain 
 				// number of stages
@@ -96,14 +94,14 @@ public class ModalTreeNode implements EvaluationTreeNode
 		}
 		else if(_stage == 0)
 		{
-			System.out.println(getIdent());
+			//System.out.println(getIdent());
 			_res = new Proposition("false");
 			_inter.put(_ident, _res);
 		}
 		else
 		{
 			_res = new Proposition("false");
-			System.out.println("ident " + getIdent());
+			//System.out.println("ident " + getIdent());
 			for(int i=1;i<=_stage; i++)
 			{
 				_inter.put(getIdent(), _res);
@@ -111,7 +109,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 			}
 		}
 
-		System.out.println("result computed " + _res.getName());
+		//System.out.println("result computed " + _res.getName());
 		
 		ModalTreeNode node; 
 
@@ -150,7 +148,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 			case Formula.mu:
 			case Formula.nu:
 				int stages = Integer.parseInt(_res.getName());
-				System.out.println("mu:" + stages);
+				//System.out.println("mu:" + stages);
 				_list = new ArrayList<EvaluationTreeNode>(stages);
 				for (int i=0;i<stages; i++)
 				{
@@ -166,10 +164,94 @@ public class ModalTreeNode implements EvaluationTreeNode
 	}
 
 
+/*	void initialiseResultChildren()
+	{
+		//System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		if(_stage == -1) 	
+				// we are not in a case where we have to evaluate a certain 
+				// number of stages
+		{
+					// this is an optimisation as generateChildren for fixed point formulas
+					// also generates the result
+			_res = _eval.recursiveEvaluate(_f, _inter);
+		}
+		else if(_stage == 0)
+		{
+			//System.out.println(getIdent());
+			_res = new Proposition("false");
+			_inter.put(_ident, _res);
+		}
+		else
+		{
+			_res = new Proposition("false");
+			//System.out.println("ident " + getIdent());
+			for(int i=1;i<=_stage; i++)
+			{
+				_inter.put(getIdent(), _res);
+				_res = _eval.recursiveEvaluate(_f, _inter);
+			}
+		}
+
+		//System.out.println("result computed " + _res.getName());
+		
+		ModalTreeNode node; 
+
+		if(_stage == 0)
+		{
+			_list = new ArrayList<EvaluationTreeNode>(0);
+			
+		}
+		else
+		{
+			switch(_f.type())
+			{
+			case Formula.bottom: // no break
+			case Formula.top:	// no break
+			case Formula.proposition: 
+				_list = new ArrayList<EvaluationTreeNode>(0);
+				break;
+			case Formula.and:
+			case Formula.or:
+				_list = new ArrayList<EvaluationTreeNode>(2);
+				node = new ModalTreeNode(_f.leftSubf(), _eval);
+				node.setInterpretation(_inter);
+				_list.add(node);
+				node = new ModalTreeNode(_f.rightSubf(), _eval);
+				node.setInterpretation(_inter);
+				_list.add(node);
+				break;
+			case Formula.neg: 
+			case Formula.diamond:		// no break. both cases treated simultaneously 
+			case Formula.box:
+				_list = new ArrayList<EvaluationTreeNode>(1);
+				node = new ModalTreeNode(_f.subf(), _eval);
+				node.setInterpretation(_inter);
+				_list.add(node);
+				break;
+			case Formula.mu:
+			case Formula.nu:
+				int stages = Integer.parseInt(_res.getName());
+				//System.out.println("mu:" + stages);
+				_list = new ArrayList<EvaluationTreeNode>(stages);
+				for (int i=0;i<stages; i++)
+				{
+					node   = new ModalTreeNode(_f.subf(), _eval);
+					node.setStage(i);
+					node.setInterpretation((Interpretation)_inter.clone());
+					node.setIdent(_f.ident());
+					_list.add(node);
+				}
+				break;
+			}
+		}
+	}
+/*
+
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildren()
 	 */
-	public List<EvaluationTreeNode> getChildren() {
+	
+	public List<EvaluationTreeNode> getChildren() throws UserException {
 		if(_list == null)
 			initialiseResultChildren();
 		return _list;
@@ -179,7 +261,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildrenCount()
 	 */
-	public int getChildrenCount() {
+	public int getChildrenCount()  throws UserException {
 		if(_list == null)
 			initialiseResultChildren();
 		return _list.size();
@@ -195,7 +277,9 @@ public class ModalTreeNode implements EvaluationTreeNode
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getResult()
 	 */
-	public Proposition getResult() {
+	public Proposition getResult()  throws UserException {
+		if(_res == null)
+			initialiseResultChildren();
 		return _res;
 	}
 	
