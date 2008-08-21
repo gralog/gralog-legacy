@@ -260,14 +260,23 @@ public class ModalTreeNode implements EvaluationTreeNode
 				_childrenList = new ArrayList<EvaluationTreeNode>(stages);
 				List<Proposition> list = _eval.fixedpointEvaluate(_f, _inter);
 				Iterator<Proposition> iter = list.iterator();
+
+				//System.out.println("List size: " + list.size() + " amd stage " + stages);
+				Interpretation inter = (Interpretation) _inter.clone();
+				Proposition prop = new Proposition("-1");
 				
 				for (int i=0;i<stages; i++)
 				{
 					node   = new ModalTreeNode(_f.subf(), _eval);
 					node.setStage(i);
-					node.setInterpretation((Interpretation)_inter.clone());
 					node.setIdent(_f.ident());
-					node.setResult(iter.next());
+					inter = (Interpretation) _inter.clone();
+					inter.put(_f.ident(), prop);
+					node.setInterpretation(inter);
+//					if(!iter.hasNext())
+						//System.out.println("iter is null");
+					prop = iter.next();
+					node.setResult(prop);
 					_childrenList.add(node);
 				}
 				break;
@@ -278,7 +287,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 
 /*	void initialiseResultChildren()
 	{
-//		System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+//		//System.out.println("initialiseResultChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
 		if(_stage == -1) 	
 				// we are not in a case where we have to evaluate a certain 
 				// number of stages
@@ -364,7 +373,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 	 */
 	
 	public List<EvaluationTreeNode> getChildren() throws UserException {
-		System.out.println("getChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		//System.out.println("getChilden of " + getName() + " at stage " + _stage + " with ident " + _ident);
 		if(_childrenList == null)
 			initialiseChildren();
 		return _childrenList;
@@ -375,7 +384,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildrenCount()
 	 */
 	public int getChildrenCount()  throws UserException {
-		System.out.println("getChildrenCount of " + getName() + " at stage " + _stage + " with ident " + _ident);
+		//System.out.println("getChildrenCount of " + getName() + " at stage " + _stage + " with ident " + _ident);
 		if(_noChildren == -1)
 			initialiseResult();
 		return _noChildren;

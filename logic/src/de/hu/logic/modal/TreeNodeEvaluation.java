@@ -102,6 +102,7 @@ public class TreeNodeEvaluation
 	 */
 	protected List<Proposition> fixedpointEvaluate(Formula f, Interpretation inter)
 	{
+		//System.out.println("fixedpointEvaluate: " + f.toString());
 		if(!(f.type() == Formula.mu || f.type() == Formula.nu))
 		{
 			return null;
@@ -112,15 +113,15 @@ public class TreeNodeEvaluation
 		
 		if(f.type() == Formula.mu)
 		{
-			rel = new Proposition(f.ident());
+			rel = new Proposition("0");
 			inter.put(f.ident(), rel);
-			old = new Proposition("0");
+//			old = new Proposition("0");
 			int i=0;
 			do
 			{
+				old = rel.copy();
 				list.add(old);
 				i++;
-				old = rel.copy();
 				rel = recursiveEvaluate(f.subf(), inter);
 				rel.setName(String.valueOf(i));
 				inter.put(f.ident(), rel);
