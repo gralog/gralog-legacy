@@ -18,20 +18,20 @@ public interface EvaluationTreeNode
 	 * 
 	 * @return Result of the evaluation
 	 */
-	Proposition getResult()  throws EvaluationException;
+	Proposition getResult()  throws UserException;
 	
 	/** 
 	 * 
 	 * @return name of the current node
 	 */
-	String getName()  throws EvaluationException;
+	String getName();
 	
 	/** 
 	 * 
 	 * @return returns a list containing EvaluationTreeNodes for the children.
 	 */
-	List<EvaluationTreeNode> getChildren()  throws EvaluationException;
+	List<EvaluationTreeNode> getChildren()  throws UserException;
 	
-	int getChildrenCount()  throws EvaluationException;
+	int getChildrenCount()  throws UserException;
 	
 }

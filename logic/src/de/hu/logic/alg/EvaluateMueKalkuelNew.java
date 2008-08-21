@@ -135,7 +135,6 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 			try {
 				Introspector.getBeanInfo( MueKalkulAlgorithmResultContentTreeNode.class ).getBeanDescriptor().setValue( "persistenceDelegate", new MueKalkulAlgorithmResultContentTreeNodePersistenceDelegate() );
 				Introspector.getBeanInfo( Formula.class ).getBeanDescriptor().setValue( "persistenceDelegate", new FormulaPersistenceDelegate() );
-				System.out.println( "set persistance delegates" );
 			} catch (IntrospectionException e) {
 				e.printStackTrace();
 			}
@@ -144,16 +143,14 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) throws EvaluationException {
 			this( transitionSystem, new TreeNodeEvaluation().evaluate( transitionSystem, formula ) );
 			this.formula = formula;
-			System.out.println( "construct1" );
 		}
 		
 		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, EvaluationTreeNode evaluationTreeNode ) {
 			this.evaluationTreeNode = evaluationTreeNode;
 			this.transitionSystem = transitionSystem;
-			System.out.println( "construct2" );
 		}
 		
-		private void computeSubgraphs() throws EvaluationException {
+		private void computeSubgraphs() throws UserException {
 			subgraphs = new Hashtable<String, Subgraph>();
 			Proposition rp = evaluationTreeNode.getResult();
 			
@@ -164,7 +161,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws EvaluationException {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
 			return super.getDisplaySubgraphs(modes);
@@ -183,14 +180,14 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 
 		
 		@Override
-		protected Set<Graph> getAllGraphs() {
+		protected Set<Graph> getAllGraphs() throws UserException {
 			HashSet<Graph> graphs = new HashSet<Graph>();
 			if ( getGraph() != null )
 				graphs.add( getGraph() );
 			return graphs;
 		}
 
-		public String toString()  {
+		public String toString() {
 			return evaluationTreeNode.getName();
 		}
 	}

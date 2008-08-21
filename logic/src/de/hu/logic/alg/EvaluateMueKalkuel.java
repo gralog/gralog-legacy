@@ -167,13 +167,13 @@ public class EvaluateMueKalkuel implements Algorithm {
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
 			return super.getDisplaySubgraphs(modes);
 		}
 		
-		public String toString() {
+		protected String getName() throws UserException {
 			return formula.toString();
 		}
 		
