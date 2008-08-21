@@ -258,7 +258,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 				int stages = Integer.parseInt(_res.getName());
 				//System.out.println("mu:" + stages);
 				_childrenList = new ArrayList<EvaluationTreeNode>(stages);
-				List<Proposition> list = _eval.topLevelEvaluate(_f, _inter);
+				List<Proposition> list = _eval.fixedpointEvaluate(_f, _inter);
 				Iterator<Proposition> iter = list.iterator();
 				
 				for (int i=0;i<stages; i++)

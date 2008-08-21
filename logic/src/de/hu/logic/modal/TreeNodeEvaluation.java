@@ -91,7 +91,16 @@ public class TreeNodeEvaluation
 	}
 	
 
-	protected List<Proposition> topLevelEvaluate(Formula f, Interpretation inter)
+	/**
+	 * But what this method does is the following.
+	 * If f is not a fixed point formula we do nothing. Otherwise, the fixed point iteration
+	 * defined by f is performed and the list of all stages is returned.
+	 * This can then be used by a ModalTreeNode object to generate its list of children.
+	 * @param f Formula
+	 * @param inter Context.
+	 * @return List of all stages of the fixed point iteration defined by f (or null if f is not a fixed-point formula).
+	 */
+	protected List<Proposition> fixedpointEvaluate(Formula f, Interpretation inter)
 	{
 		if(!(f.type() == Formula.mu || f.type() == Formula.nu))
 		{
