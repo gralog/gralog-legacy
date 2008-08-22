@@ -49,7 +49,7 @@ import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.modal.TreeNodeEvaluation;
 import de.hu.logic.parser.FormulaList;
-import de.hu.logic.parser.LogicParser;
+import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
 
 public class EvaluateMueKalkuelNew implements Algorithm {
@@ -98,7 +98,7 @@ public class EvaluateMueKalkuelNew implements Algorithm {
 			sb.append( "</formula>\n" );
 			sb.append( "</logic>" );
 			
-			FormulaList list = LogicParser.loadString( sb.toString() );
+			FormulaList list = ModalLogicParser.loadString( sb.toString() );
 			
 			list.printList();
 			

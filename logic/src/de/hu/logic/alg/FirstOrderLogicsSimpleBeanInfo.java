@@ -11,6 +11,9 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
+import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.GraphWithEditableElements;
+import de.hu.gralog.graph.UndirectedGraph;
 import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
 import de.hu.logic.graph.TransitionSystemTypeInfo;
 
@@ -40,10 +43,10 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 				);
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "transitionSystem", FirstOrderLogicsSimple.class, new TransitionSystemTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "structure", FirstOrderLogicsSimple.class, new FOGraphTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( 
 					"<html> " +
-					"The transitionsystem on which <b>formula</b> is evaluated. " +
+					"The structure on which <b>formula</b> is evaluated. " +
 					"</html>"
 					);
 			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "formula", FirstOrderLogicsSimple.class );
@@ -66,6 +69,33 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 	@Override
 	public PropertyDescriptor[] getPropertyDescriptors() {
 		return PROPERTY_DESCRIPTORS;
+	}
+	
+	public static class FOGraphTypeInfo extends GraphTypeInfo {
+
+		@Override
+		public String getName() {
+			return null;
+		}
+
+		@Override
+		public GraphWithEditableElements newInstance() {
+			
+			return null;
+		}
+
+		@Override
+		public boolean isInstance(GraphWithEditableElements graph) {
+			if ( graph instanceof UndirectedGraph ) {
+				// graph.createVertex() instanceof ...
+				return true;
+			}
+				
+			return false;
+		}
+		
+		
+		
 	}
 	
 }

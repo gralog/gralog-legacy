@@ -22,9 +22,11 @@ package de.hu.logic.parser;
 import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 
+import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.DefaultSymbolFactory;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
+import de.hu.gralog.app.UserException;
 
 /**
  * This class implements a few static methods used to load formulas from a file or standard in. It's 
@@ -44,20 +46,45 @@ public class FOLogicParser
 	 */
 	public static FOFormulaList loadFile(String filename) throws ParseException, FileNotFoundException, Exception 
 	{
-		SymbolFactory sf = new DefaultSymbolFactory();
+		SymbolFactory sf = new ComplexSymbolFactory();
 		FOScanner scan = new de.hu.logic.parser.FOScanner(new java.io.FileInputStream(filename), sf);
-		FOParser p = new FOParser(scan, sf);
-		Symbol s = p.parse();
+		FOParser p = new FOParser(scan, sf);;
+		Symbol s=null;
+		try
+		{
+			s = p.parse();
+		}
+		catch(Exception e)
+		{
+			if(p.hasError())
+				throw new UserException(p.getErrorMsg());
+			else
+				throw new UserException(e.getMessage());
+		}
 		return (FOFormulaList) s.value;
 	}
 	
 	public static FOFormulaList loadString(String formula) throws ParseException, FileNotFoundException, Exception 
 	{
-		SymbolFactory sf = new DefaultSymbolFactory();
+		SymbolFactory sf = new ComplexSymbolFactory();
 		
 		FOScanner scan = new de.hu.logic.parser.FOScanner(new StringBufferInputStream(formula), sf);
-		FOParser p = new FOParser(scan, sf);
-		Symbol s = p.parse();
+		FOParser p = new FOParser(scan, sf);;
+		Symbol s=null;
+		try
+		{
+			s = p.parse();
+		}
+		catch(Exception e)
+		{
+			if(p.hasError())
+				throw new UserException(p.getErrorMsg());
+			else
+				throw new UserException(e.getMessage());
+		}
 		return (FOFormulaList) s.value;
+/*		FOParser p = new FOParser(scan, sf);
+		Symbol s = p.parse();
+		return (FOFormulaList) s.value;*/
 	}
 }

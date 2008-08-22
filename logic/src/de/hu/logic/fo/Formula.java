@@ -22,7 +22,7 @@ package de.hu.logic.fo;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for all formulas.
@@ -51,7 +51,24 @@ public class Formula
 	Formula _sf, _rightSF;
 	int _type;
     String _ident, _ident2;
+    
+    /** 
+     * the _varList field is used by formulas that represent atoms (R(x, y, z)) to store the sequence 
+     * of variables
+     */
     ArrayList<String> _varList;
+	
+    /** 
+     * the _innerVarList field is used by fixed point formulas to represent the variables for the fixed point variable.
+     * e.g. [\lfp_{R, x, z} ...](a,b)  then x, z are the innerVarList.  a,b would appear in _varList  
+     */
+    ArrayList<String> _innerVarList;
+	
+    /** 
+     * the _freeVars field is used to store the list of free variables.
+     * It is initialised by a call to initFreeVars()
+     */
+    HashSet<String> _freeVars = null;
 	
 	
 	/**
@@ -126,6 +143,12 @@ public class Formula
 		_varList = varlist;
 	}
 	
+	/**
+	 * Constructor used for atomic formulas corresponding to a relation symbol ((R(x, y, z))
+	 * @param type Identifier for the formula, should be proposition
+	 * @param ident Name of the relation symbol (e.g. R)
+	 * @param varlist list, in fact sequence, of variables occurring in the relation.
+	 */
 	public Formula(int type, String ident, ArrayList<String> varlist)
 	{
 		_type = type;
@@ -149,6 +172,28 @@ public class Formula
 		_ident2 = s2;
 	}
 
+	/**
+	 * Constructor used for fixed point formulas. 
+	 * If [\lfp_{R, x, y, z} \phi]{x', y', z'} then the parameters mean the following (see parameter description)
+	 * @param type Type of the formula, e.g. Formula.lfp
+	 * @param ident Name of the fixed point variable (e.g. R)
+	 * @param innerVarList inner variable list, e.g. x, y, z
+	 * @param outerVars outer variable list, e.g. x', y', z'
+	 * @param f subformula
+	 */
+	public Formula(int type, String ident, ArrayList<String> innerVarList, ArrayList<String> outerVars, Formula f)
+	{
+		_type = type;
+		_ident = ident;
+		_varList = outerVars;
+		_innerVarList = innerVarList;
+		_sf = f;
+	}
+	
+	/**
+	 * This method returns the _varList field of the formula. See above for a description of _varList
+	 * @return _varList field.
+	 */
 	public ArrayList<String> getVarList()
 	{
 		return _varList;
@@ -186,26 +231,50 @@ public class Formula
 		{
 		case bottom: return "false"; //break;
 		case top: return "true"; //break;
-		case proposition: return _ident; //break;
+		case proposition:
+			StringBuffer str = new StringBuffer(_ident + "(");
+			for (int i =0; i<_varList.size(); i++)
+			{
+				str.append(_varList.get(i));
+				if(i+1<_varList.size())
+					str.append(", ");
+			}
+			str.append(")");
+			return str.toString(); //break;
 		case eq: return _ident + " = " + _ident2;
 		case and: return "("+leftSubf() + " and " + rightSubf() + ")"; //break;
 		case or: return "("+leftSubf() + " or " + rightSubf() + ")"; //break;
 		case neg: return "neg "+subf(); //break;
-		case exists: return "\\exists "+_ident+ subf(); //break;
-		case forall: return "\\forall "+_ident+ subf(); //break;
+		case exists: return "\\exists "+_ident+ " " + subf(); //break;
+		case forall: return "\\forall "+_ident+ " " +  subf(); //break;
 		case lfp:
-			StringBuffer str = new StringBuffer("\\lfp_{ "+_ident + ",");
-			Iterator<String> iter = _varList.iterator();
+		case ifp:
+			if(_type == lfp)
+				str = new StringBuffer("[\\lfp_{ "+_ident + ",");
+			else
+				str = new StringBuffer("[\\ifp_{ "+_ident + ",");
+			Iterator<String> iter = _innerVarList.iterator();
 			while(iter.hasNext())
 			{
 			    str.append(iter.next());
 			    if(iter.hasNext())
 			    	str.append(", ");
 			    else
-			    	str.append(" ] ");
+			    	str.append(" } ");
 			    
 			}
 			str.append(subf());
+			str.append(" ](");
+			iter = _varList.iterator();
+			while(iter.hasNext())
+			{
+			    str.append(iter.next());
+			    if(iter.hasNext())
+			    	str.append(", ");
+			    else
+			    	str.append(" ) ");
+			    
+			}			
 			return str.toString(); //break;
 //		case nu: return "\\nu "+_ident + "." + subf(); //break;
 		case sub: return "\\sub(" + _ident + ")";
@@ -224,8 +293,10 @@ public class Formula
 	}
 
 	
+	
 	private boolean recValid(HashSet<String> fpvar, boolean neg)
 	{
+		//TODO: still the old routine from modal logics
 		switch(_type)
 		{
 		case bottom: 
@@ -251,5 +322,71 @@ public class Formula
 			return subf().recValid(new_fpvar, neg);
 		}
 		return true;
+	}
+
+	/**
+	 * Returns the set of free variables and initialises the set if it has not been initialised before.
+	 * @return Set of free variables
+	 */
+	public Set freeVars()
+	{
+		if(_freeVars == null)
+			initFreeVars();
+		return _freeVars;
+	}
+	/** 
+	 * Computes the list of free variables and stores it in _freeVars.
+	 *
+	 */
+	public void initFreeVars()
+	{
+		switch(_type)
+		{
+		case bottom: 
+		case top: 
+			_freeVars = null;
+			break;
+		case proposition:
+			_freeVars = new HashSet<String>(this._varList);
+			break;
+		case eq: 
+			_freeVars = new HashSet<String>(2);
+			_freeVars.add(_ident);
+			_freeVars.add(_ident2);
+			break;
+		case and: 
+		case or: 
+			leftSubf().initFreeVars();
+			rightSubf().initFreeVars();
+			_freeVars = new HashSet<String>(leftSubf().freeVars());
+			_freeVars.addAll(rightSubf().freeVars());
+			break;
+		case Formula.neg:  
+			_freeVars = (HashSet<String>) subf().freeVars();
+			break;
+		case exists: 
+		case forall:
+			_freeVars = (HashSet<String>) subf().freeVars();
+			_freeVars.remove(_ident);
+			break;
+		case lfp:
+		case ifp:
+			_freeVars = new HashSet<String>(subf().freeVars());
+			_freeVars.removeAll(_innerVarList);
+			_freeVars.addAll(_varList);
+			break;
+		}
+	}
+	
+	/** returns the width of the formula, i.e. the number of free variables.
+	 * 
+	 * @return width of the formula
+	 */
+	public int width()
+	{
+		if(_freeVars == null)
+			initFreeVars();
+		return _freeVars.size();
+		
 	}
 }

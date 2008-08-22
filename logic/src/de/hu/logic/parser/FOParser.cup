@@ -3,51 +3,88 @@ package de.hu.logic.parser;
 import java_cup.runtime.*;
 import de.hu.logic.fo.Formula;
 import java.util.ArrayList;
+import de.hu.gralog.app.UserException;
 
 parser code {:
 
 	FOFormulaList flist = new FOFormulaList();	
+	
+	String errorMsg = null;
 
 	public static void main(String args[]) throws Exception {
-		SymbolFactory sf = new DefaultSymbolFactory();
+		SymbolFactory sf = new ComplexSymbolFactory();
 		FOFormulaList list;
 		if (args.length==0) 
+		{
 		    list = (FOFormulaList) (new FOParser(new FOScanner(System.in,sf),sf)).parse().value;
+     		list.printList();
+		}
 		else 
 		{
-		System.out.println("Reading file " + args[0]);
-		list = (FOFormulaList) (new FOParser(new FOScanner(new java.io.FileInputStream(args[0]),sf),sf)).parse().value;
+		FOParser parse = new FOParser(new FOScanner(new java.io.FileInputStream(args[0]),sf),sf);
+		list = (FOFormulaList) parse.parse().value;
+/*		FOParser parse = new FOParser(new FOScanner(new java.io.FileInputStream(args[0]),sf),sf);
+		list = (FOFormulaList) (parse.parse().value);
+		if(parse.hasError())
+		   System.out.println(parse.getErrorMsg());
+		else
+		   list.printList();*/
+//		list = (FOFormulaList) (new FOParser(new FOScanner(new java.io.FileInputStream(args[0]),sf),sf)).parse().value;
+     		list.printList();
 		}
-		list.printList();
 	}
 	
-	 public void report_error(String message, Object info)
-	 {
-	   System.out.println("SK: Error: " + message + "\nInfo: " + info.toString());
-	 }
-	 
+	public Boolean hasError()
+	{
+	  return errorMsg == null;
+	}
+	
+	public String getErrorMsg()
+	{
+	   if(errorMsg == null)
+	      return "no error";
+	   else
+	      return errorMsg;
+	}
+	
 	 public void syntax_error(Symbol cur_token)
 	 {
-	   System.out.println("SK: Syntax Error at symbol: " + cur_token.toString());
+	   if(errorMsg == null)
+	       errorMsg = "Syntax Error: " + cur_token.toString();
 	 }
-	 
-	 public void report_fatal_error(String message, Object info)
+
+	 public void report_fatal_error(String message, Object info) throws Exception
 	 {
-	   System.out.println("SK: Fatal Error at symbol: " + cur_token.toString());
+	   throw new Exception("Fatal parsing error: " + message + "\n" + info.toString());
+	 }
+
+	 
+/*	 public void report_fatal_error(String message, Object info)
+	 {
+	   if(errorMsg == null)
+            errorMsg = "Fatal Error: " + cur_token.toString();
 	 }
 	 
+	 
+	 public void report_error(String message, Object info)
+	 {
+	   if(errorMsg == null)
+           errorMsg = "Error: " + message + "\nInfo: " + info.toString();
+	 }
 	 
 	 public void unrecovered_syntax_error(Symbol cur_token)
 	 {
-	   System.out.println("SK: Unrecovered Error at symbol: " + cur_token.toString());
+	   if(errorMsg == null)
+  	   	   errorMsg = "Unrecovered Error at symbol: " + cur_token.toString();
 	 }
 	 
-	 
+	 */
 	 
 :}
 
-terminal COMMA, LT,GT, LP, RP, EQ, SLASH, DOT, LOGIC, FORMULA, TYPE, NAME;			// ",", "<", ">","[", "]", "=", "/", "." and keywords "logic", "formula", "type", "name".
-terminal LFP, GFP, IFP, DFP, NU, BOT, TOP, WEDGE,VEE,NEG, LBRACE, RBRACE, SUB, EXISTS, FORALL;						// \lfp, \gfp, \ifp, \dfp, \nu \bot, \top, \wedge, \vee, \neg, (, ), \sub, \exists, \forall
+terminal US, COMMA, LT,GT, LP, RP, EQ, SLASH, DOT, LOGIC, FORMULA, TYPE, NAME;			// "_", ",", "<", ">","[", "]", "=", "/", "." and keywords "logic", "formula", "type", "name".
+terminal LCB, RCB;		// left curyly brace {, }
+terminal LFP, GFP, IFP, DFP, BOT, TOP, WEDGE,VEE,NEG, LBRACE, RBRACE, SUB, EXISTS, FORALL;						// \lfp, \gfp, \ifp, \dfp, \nu \bot, \top, \wedge, \vee, \neg, (, ), \sub, \exists, \forall
 terminal String STRING;
 
 
@@ -100,18 +137,17 @@ formula ::=
 			  STRING:s	EQ STRING:s2		// a proposition
 			  {: RESULT = new Formula(Formula.eq, s, s2); :}
 			|
-			  proposition
-//			  STRING:s			// a proposition
-//			  {: RESULT = new Formula(Formula.proposition, s); :}
-//			|
+			  proposition:f
+			  {: RESULT = f; :}
+			|
 			  BOT
 			  {: RESULT = new Formula(Formula.bottom, ""); :} 
 			| 
 			  TOP
 			  {: RESULT = new Formula(Formula.top, ""); :} 
-			|
-			  SUB LBRACE STRING:s RBRACE			// a substitution
-			  {: RESULT = new Formula(Formula.sub, s); :}
+//			|
+//			  SUB LBRACE STRING:s RBRACE			// a substitution
+//			  {: RESULT = new Formula(Formula.sub, s); :}
 			|
 			  LBRACE booleanlist:f RBRACE
 			  {: RESULT = f; :}
@@ -125,8 +161,11 @@ formula ::=
 			  FORALL STRING:s formula:f
 			  {: RESULT = new Formula(Formula.forall, s, f); :}
 			|
-//			  LT STRING:s GT formula:f
-//			  {: RESULT = new Formula(Formula.diamond, s, f); :}
+			  LP LFP US LCB STRING:s COMMA varlist:l RCB formula:f RP LBRACE varlist:l2 RBRACE
+			  {: RESULT = new Formula(Formula.lfp, s, l, l2, f); :}
+			|
+			  LP IFP US LCB STRING:s COMMA varlist:l RCB formula:f RP LBRACE varlist:l2 RBRACE
+			  {: RESULT = new Formula(Formula.ifp, s, l, l2, f); :}
 //			|
 //			  LP STRING:s RP formula:f
 //			  {: RESULT = new Formula(Formula.box, s, f); :}

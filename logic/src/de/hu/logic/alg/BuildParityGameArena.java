@@ -11,7 +11,7 @@ import de.hu.logic.general.EvaluationException;
 import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.parser.FormulaList;
-import de.hu.logic.parser.LogicParser;
+import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
 
 public class BuildParityGameArena implements Algorithm {
@@ -59,7 +59,7 @@ public class BuildParityGameArena implements Algorithm {
 			sb.append( "</formula>\n" );
 			sb.append( "</logic>" );
 			
-			FormulaList list = LogicParser.loadString( sb.toString() );
+			FormulaList list = ModalLogicParser.loadString( sb.toString() );
 			
 //			list.printList();
 			

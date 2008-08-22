@@ -27,33 +27,36 @@ import de.hu.gralog.app.UserException;
 <YYINITIAL> 
 {
 "<"	{ return sf.newSymbol("<",FOSym.LT); }
-">"	{ return sf.newSymbol("<",FOSym.GT); }
-"[" { return sf.newSymbol("<",FOSym.LP); }
-"]" { return sf.newSymbol("<",FOSym.RP); }
-"("	{ return sf.newSymbol("<",FOSym.LBRACE); }
-")"	{ return sf.newSymbol("<",FOSym.RBRACE); }
-"="	{ return sf.newSymbol("<",FOSym.EQ); }
-"/"	{ return sf.newSymbol("<",FOSym.SLASH); }
-"."	{ return sf.newSymbol("<",FOSym.DOT); }
-","	{ return sf.newSymbol("<",FOSym.COMMA); }
+">"	{ return sf.newSymbol(">",FOSym.GT); }
+"[" { return sf.newSymbol("[",FOSym.LP); }
+"]" { return sf.newSymbol("]",FOSym.RP); }
+"("	{ return sf.newSymbol("(",FOSym.LBRACE); }
+")"	{ return sf.newSymbol(")",FOSym.RBRACE); }
+"{"	{ return sf.newSymbol("{",FOSym.LCB); }
+"}"	{ return sf.newSymbol("}",FOSym.RCB); }
+"="	{ return sf.newSymbol("=",FOSym.EQ); }
+"/"	{ return sf.newSymbol("/",FOSym.SLASH); }
+"."	{ return sf.newSymbol(".",FOSym.DOT); }
+","	{ return sf.newSymbol(",",FOSym.COMMA); }
+"_"	{ return sf.newSymbol("-",FOSym.US); }
 
-"logic"	{ return sf.newSymbol("<",FOSym.LOGIC); }
-"formula"	{ return sf.newSymbol("<",FOSym.FORMULA); }
-"type"	{ return sf.newSymbol("<",FOSym.TYPE); }
-"name"	{ return sf.newSymbol("<",FOSym.NAME); }
+"logic"	{ return sf.newSymbol("logic",FOSym.LOGIC); }
+"formula"	{ return sf.newSymbol("formula",FOSym.FORMULA); }
+"type"	{ return sf.newSymbol("type",FOSym.TYPE); }
+"name"	{ return sf.newSymbol("name",FOSym.NAME); }
 
-"\\sub"  { return sf.newSymbol("<",FOSym.SUB); }
-"\\lfp"	{ return sf.newSymbol("<",FOSym.LFP); }
-"\\gfp"	{ return sf.newSymbol("<",FOSym.GFP); }
-"\\ifp"	{ return sf.newSymbol("<",FOSym.LFP); }
-"\\dfp"	{ return sf.newSymbol("<",FOSym.GFP); }
-"\\neg"	{ return sf.newSymbol("<",FOSym.NEG); }
-"\\and"	{ return sf.newSymbol("<",FOSym.WEDGE); }
-"\\or"	{ return sf.newSymbol("<",FOSym.VEE); }
-"\\bot"	{ return sf.newSymbol("<",FOSym.BOT); }
-"\\top"	{ return sf.newSymbol("<",FOSym.TOP); }
-"\\exists"	{ return sf.newSymbol("<",FOSym.EXISTS); }
-"\\forall"	{ return sf.newSymbol("<",FOSym.FORALL); }
+"\\sub"  { return sf.newSymbol("\\sub",FOSym.SUB); }
+"\\lfp"	{ return sf.newSymbol("\\lfp",FOSym.LFP); }
+"\\gfp"	{ return sf.newSymbol("\\gfp",FOSym.GFP); }
+"\\ifp"	{ return sf.newSymbol("\\ifp",FOSym.IFP); }
+"\\dfp"	{ return sf.newSymbol("\\dfp",FOSym.DFP); }
+"\\neg"	{ return sf.newSymbol("\\neg",FOSym.NEG); }
+"\\and"	{ return sf.newSymbol("\\and",FOSym.WEDGE); }
+"\\or"	{ return sf.newSymbol("\\or",FOSym.VEE); }
+"\\bot"	{ return sf.newSymbol("\\bot",FOSym.BOT); }
+"\\top"	{ return sf.newSymbol("\\top",FOSym.TOP); }
+"\\exists"	{ return sf.newSymbol("\\exists",FOSym.EXISTS); }
+"\\forall"	{ return sf.newSymbol("\\forall",FOSym.FORALL); }
 
 \"  { string.setLength(0); yybegin(STRING); }
 [A-Za-z0-9]+ { string.setLength(0); string.append(yytext()); return sf.newSymbol("simple", FOSym.STRING, string.toString()); }

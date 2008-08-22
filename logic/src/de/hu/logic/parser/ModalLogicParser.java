@@ -22,6 +22,9 @@ package de.hu.logic.parser;
 import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 
+import de.hu.gralog.app.UserException;
+
+import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.DefaultSymbolFactory;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
@@ -32,7 +35,7 @@ import java_cup.runtime.SymbolFactory;
  * @author Stephan Kreutzer
  *
  */
-public class LogicParser 
+public class ModalLogicParser 
 {
 	/**
 	 * Loads a formula from a file. 
@@ -44,27 +47,41 @@ public class LogicParser
 	 */
 	public static FormulaList loadFile(String filename) throws ParseException, FileNotFoundException, Exception 
 	{
-		SymbolFactory sf = new DefaultSymbolFactory();
+		SymbolFactory sf = new ComplexSymbolFactory();
 		Scanner scan = new de.hu.logic.parser.Scanner(new java.io.FileInputStream(filename), sf);
 		Parser p = new Parser(scan, sf);
-		Symbol s = p.parse();
+		Symbol s=null;
+		try
+		{
+			s = p.parse();
+		}
+		catch(Exception e)
+		{
+			if(p.hasError())
+				throw new UserException(p.getErrorMsg());
+			else
+				throw new UserException(e.getMessage());
+		}
 		return (FormulaList) s.value;
 	}
 	
 	public static FormulaList loadString(String formula) throws ParseException, FileNotFoundException, Exception 
 	{
-		SymbolFactory sf = new DefaultSymbolFactory();
+		SymbolFactory sf = new ComplexSymbolFactory();
 		
 		Scanner scan = new de.hu.logic.parser.Scanner(new StringBufferInputStream(formula), sf);
 		Parser p = new Parser(scan, sf);
+		Symbol s=null;
 		try{
-			Symbol s = p.parse();
-			return (FormulaList) s.value;
+			s = p.parse();
 		}
 		catch(Exception e)
 		{
-			System.out.println("Parse Error: " + e.getMessage());
-			return null;
+			if(p.hasError())
+				throw new UserException(p.getErrorMsg());
+			else
+				throw new UserException(e.getMessage());
 		}
+		return (FormulaList) s.value;
 	}
 }

@@ -31,19 +31,23 @@ import de.hu.logic.graph.Proposition;
  * @author Stephan Kreutzer 
  *
  */
-public class FOTreeNode implements EvaluationTreeNode {
+public class FOTreeNode implements FOEvaluationTreeNode {
 
-	String _name;
-	public FOTreeNode(String name)
+	Formula _f;
+	FOEvaluation _eval;
+	boolean _root=false;
+	
+	public FOTreeNode(Formula f, FOEvaluation eval)
 	{
-	   _name = name;	
+	   _f = f;
+	   _eval = eval;
 	}
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getChildren()
 	 */
-	public List<EvaluationTreeNode> getChildren() throws UserException {
+	public List<FOEvaluationTreeNode> getChildren() throws UserException {
 		// TODO Auto-generated method stub
-		return new ArrayList<EvaluationTreeNode>();
+		return new ArrayList<FOEvaluationTreeNode>();
 	}
 
 	/* (non-Javadoc)
@@ -59,15 +63,20 @@ public class FOTreeNode implements EvaluationTreeNode {
 	 */
 	public String getName() {
 		// TODO Auto-generated method stub
-		return _name;
+		return _f.toString();
 	}
 
 	/* (non-Javadoc)
 	 * @see de.hu.logic.general.EvaluationTreeNode#getResult()
 	 */
-	public Proposition getResult() throws UserException {
-		// TODO Auto-generated method stub
-		return new Proposition();
+	public Relation getResult() throws UserException {
+		return _eval.recursiveEvaluate(_f);
 	}
+	
+	void root(boolean root)
+	{
+		_root = root;
+	}
+
 
 }

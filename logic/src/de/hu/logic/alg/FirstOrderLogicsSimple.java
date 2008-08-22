@@ -33,6 +33,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.Subgraph;
 
 import de.hu.gralog.app.UserException;
+import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.gralog.graph.alg.Algorithm;
 import de.hu.gralog.graph.alg.AlgorithmResult;
 import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
@@ -42,10 +43,10 @@ import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
 import de.hu.gralog.jgrapht.graph.SubgraphFactory;
 import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 import de.hu.logic.fo.FOEvaluation;
+import de.hu.logic.fo.FOEvaluationTreeNode;
 import de.hu.logic.fo.Formula;
-import de.hu.logic.general.EvaluationTreeNode;
-import de.hu.logic.graph.Proposition;
-import de.hu.logic.graph.TransitionSystem;
+import de.hu.logic.fo.Relation;
+import de.hu.logic.graph.StructureAdaptorFactory;
 import de.hu.logic.parser.FOFormulaList;
 import de.hu.logic.parser.FOLogicParser;
 import de.hu.logic.parser.ParseException;
@@ -53,19 +54,19 @@ import de.hu.logic.parser.ParseException;
 public class FirstOrderLogicsSimple implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
-	private TransitionSystem transitionSystem;
+	private GraphWithEditableElements structure;
 	private String formula;
 	
 	public FirstOrderLogicsSimple() {
 		super();
 	}
 	
-	public TransitionSystem getTransitionSystem() {
-		return transitionSystem;
+	public GraphWithEditableElements getStructure() {
+		return structure;
 	}
 
-	public void setTransitionSystem(TransitionSystem transitionSystem) {
-		this.transitionSystem = transitionSystem;
+	public void setStructure(GraphWithEditableElements structure) {
+		this.structure = structure;
 	}
 	
 	public String getFormula() {
@@ -79,8 +80,8 @@ public class FirstOrderLogicsSimple implements Algorithm {
 	public AlgorithmResult execute() throws InvalidPropertyValuesException, UserException {
 		InvalidPropertyValuesException pe = new InvalidPropertyValuesException();
 		
-		if ( getTransitionSystem() == null )
-			pe.addPropertyError( "transitionSystem",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
+		if ( getStructure() == null )
+			pe.addPropertyError( "structure",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		if ( getFormula() == null )
 			pe.addPropertyError( "formula",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
@@ -100,16 +101,17 @@ public class FirstOrderLogicsSimple implements Algorithm {
 			list.printList();
 			//list.printList();
 			
-			//Formula f = list.substituteMain();
-			de.hu.logic.fo.Formula f=null;
+			Formula f = list.getMainFormula();
+			if(f.width() > 1)
+				throw new UserException("Sorry, currently we only support formulas with at most one free variable");
 			
-			AlgorithmResult result = new AlgorithmResult( getTransitionSystem() );
+			AlgorithmResult result = new AlgorithmResult( getStructure() );
 			
 			DisplaySubgraphMode displayMode = new DisplaySubgraphMode();
 			displayMode.setVertexDisplayMode( DisplayMode.HIGH1, DisplayMode.SHOW );
 			result.addDisplaySubgraphMode( EVALUATION_SG, displayMode );
 			
-			result.setContentTree( new SimpleFOAlgorithmResultContentTreeNode(  getTransitionSystem(), f ) );
+			result.setContentTree( new SimpleFOAlgorithmResultContentTreeNode(  getStructure(), f ) );
 			
 			return result;
 			/*} catch (EvaluationException e) {
@@ -125,8 +127,8 @@ public class FirstOrderLogicsSimple implements Algorithm {
 	
 	public static class SimpleFOAlgorithmResultContentTreeNode extends AlgorithmResultContentTreeNode {
 		
-		private EvaluationTreeNode evaluationTreeNode;
-		private TransitionSystem transitionSystem;
+		private FOEvaluationTreeNode evaluationTreeNode;
+		private GraphWithEditableElements transitionSystem;
 		private Formula formula;
 		private transient boolean childrenBuild = false;
 		
@@ -139,23 +141,25 @@ public class FirstOrderLogicsSimple implements Algorithm {
 			}
 		}
 
-		public SimpleFOAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) throws UserException {
-			this( transitionSystem, new FOEvaluation().evaluate( transitionSystem, formula ) );
+		public SimpleFOAlgorithmResultContentTreeNode( GraphWithEditableElements transitionSystem, Formula formula ) throws UserException {
+//			this.transitionSystem = transitionSystem;
+			
+			this( transitionSystem, new FOEvaluation().initialise( StructureAdaptorFactory.generateAdaptor(transitionSystem), formula ) );
 			this.formula = formula;
 		}
 		
-		public SimpleFOAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, EvaluationTreeNode evaluationTreeNode ) {
+		public SimpleFOAlgorithmResultContentTreeNode( GraphWithEditableElements transitionSystem, FOEvaluationTreeNode evaluationTreeNode ) {
 			this.evaluationTreeNode = evaluationTreeNode;
 			this.transitionSystem = transitionSystem;
 		}
 		
 		private void computeSubgraphs() throws UserException {
 			subgraphs = new Hashtable<String, Subgraph>();
-			Proposition rp = evaluationTreeNode.getResult();
+			Relation rp = evaluationTreeNode.getResult();
 			
 			if ( rp == null )
-				rp = new Proposition();
-			Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertices() ), new HashSet() );
+				rp = new Relation("",true);
+			Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertexSet() ), new HashSet() );
 			subgraphs.put( EVALUATION_SG, subgraph );
 		}
 		
@@ -170,7 +174,7 @@ public class FirstOrderLogicsSimple implements Algorithm {
 		public ArrayList<AlgorithmResultContentTreeNode> getChildren() throws UserException 
 		{
 			if ( !childrenBuild ) {
-				for ( EvaluationTreeNode child : evaluationTreeNode.getChildren() )
+				for ( FOEvaluationTreeNode child : evaluationTreeNode.getChildren() )
 					addChild( new SimpleFOAlgorithmResultContentTreeNode( transitionSystem, child ) );
 				childrenBuild = true;
 			}
