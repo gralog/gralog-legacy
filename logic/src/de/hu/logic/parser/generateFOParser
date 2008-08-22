@@ -1,0 +1,3 @@
+~/local/lib/jflex/bin/jflex FOScanner.jflex &&\
+echo -e "\n\n Generating Parser\n\n" &&  \
+java -jar ~/development/Gralog-logic/lib/java-cup-11a.jar -symbols FOSym -parser FOParser FOParser.cup

@@ -1,0 +1,176 @@
+package de.hu.logic.parser;
+
+import java_cup.runtime.*;
+import de.hu.logic.fo.Formula;
+import java.util.ArrayList;
+
+parser code {:
+
+	FOFormulaList flist = new FOFormulaList();	
+
+	public static void main(String args[]) throws Exception {
+		SymbolFactory sf = new DefaultSymbolFactory();
+		FOFormulaList list;
+		if (args.length==0) 
+		    list = (FOFormulaList) (new FOParser(new FOScanner(System.in,sf),sf)).parse().value;
+		else 
+		{
+		System.out.println("Reading file " + args[0]);
+		list = (FOFormulaList) (new FOParser(new FOScanner(new java.io.FileInputStream(args[0]),sf),sf)).parse().value;
+		}
+		list.printList();
+	}
+	
+	 public void report_error(String message, Object info)
+	 {
+	   System.out.println("SK: Error: " + message + "\nInfo: " + info.toString());
+	 }
+	 
+	 public void syntax_error(Symbol cur_token)
+	 {
+	   System.out.println("SK: Syntax Error at symbol: " + cur_token.toString());
+	 }
+	 
+	 public void report_fatal_error(String message, Object info)
+	 {
+	   System.out.println("SK: Fatal Error at symbol: " + cur_token.toString());
+	 }
+	 
+	 
+	 public void unrecovered_syntax_error(Symbol cur_token)
+	 {
+	   System.out.println("SK: Unrecovered Error at symbol: " + cur_token.toString());
+	 }
+	 
+	 
+	 
+:}
+
+terminal COMMA, LT,GT, LP, RP, EQ, SLASH, DOT, LOGIC, FORMULA, TYPE, NAME;			// ",", "<", ">","[", "]", "=", "/", "." and keywords "logic", "formula", "type", "name".
+terminal LFP, GFP, IFP, DFP, NU, BOT, TOP, WEDGE,VEE,NEG, LBRACE, RBRACE, SUB, EXISTS, FORALL;						// \lfp, \gfp, \ifp, \dfp, \nu \bot, \top, \wedge, \vee, \neg, (, ), \sub, \exists, \forall
+terminal String STRING;
+
+
+non terminal FOFormulaList file, formula_list;
+non terminal String logictagopen;
+non terminal logictagclose;
+non terminal FOFormulaList formulatag;
+non terminal String formulatagopen;
+non terminal formulatagclose;
+non terminal Formula formula, booleanlist, veelist, wedgelist, proposition;
+non terminal ArrayList<String> varlist;
+
+//non terminal Integer expr;
+
+//precedence left PLUS;
+//precedence left TIMES;
+
+
+file ::=  logictagopen:s formula_list:fl logictagclose
+			{: fl.setType(s); System.out.println("file"); RESULT = fl;  :}
+			;	
+
+logictagopen ::= LT LOGIC TYPE EQ STRING:s GT
+				{: RESULT = s; :}
+				;
+logictagclose ::= LT SLASH LOGIC GT;
+
+formula_list ::= formula_list:fl formulatag:f
+					{: fl.addAll(f); RESULT = fl; :}
+				| 
+					formulatag:fl
+					{: RESULT = fl; :}
+				;
+
+formulatag ::= formulatagopen:s formula:f formulatagclose
+					{: FOFormulaList fl = new FOFormulaList(); fl.addFormula(s,f); RESULT = fl; :}
+				;
+
+formulatagopen ::=    LT FORMULA GT
+						{: RESULT = "main"; :}
+                   | 
+                      LT FORMULA NAME EQ STRING:s GT
+                      {: RESULT = s; :}
+                   ;
+                      
+formulatagclose ::=  LT SLASH FORMULA GT;
+
+                      
+formula ::= 
+			  STRING:s	EQ STRING:s2		// a proposition
+			  {: RESULT = new Formula(Formula.eq, s, s2); :}
+			|
+			  proposition
+//			  STRING:s			// a proposition
+//			  {: RESULT = new Formula(Formula.proposition, s); :}
+//			|
+			  BOT
+			  {: RESULT = new Formula(Formula.bottom, ""); :} 
+			| 
+			  TOP
+			  {: RESULT = new Formula(Formula.top, ""); :} 
+			|
+			  SUB LBRACE STRING:s RBRACE			// a substitution
+			  {: RESULT = new Formula(Formula.sub, s); :}
+			|
+			  LBRACE booleanlist:f RBRACE
+			  {: RESULT = f; :}
+			|
+			  NEG formula:f
+			  {: RESULT = new Formula(Formula.neg, f); :}
+			|
+			  EXISTS STRING:s formula:f
+			  {: RESULT = new Formula(Formula.exists, s, f); :}
+			|
+			  FORALL STRING:s formula:f
+			  {: RESULT = new Formula(Formula.forall, s, f); :}
+			|
+//			  LT STRING:s GT formula:f
+//			  {: RESULT = new Formula(Formula.diamond, s, f); :}
+//			|
+//			  LP STRING:s RP formula:f
+//			  {: RESULT = new Formula(Formula.box, s, f); :}
+//			|
+//			  MU STRING:s DOT formula:f
+//			  {: RESULT = new Formula(Formula.mu, s,f); :}
+//			|
+//			  NU STRING:s DOT formula:f
+//			  {: RESULT = new Formula(Formula.nu, s,f);  :}
+			;
+
+proposition ::= STRING:s LBRACE varlist:l RBRACE
+              {: RESULT = new Formula(Formula.proposition, s, l);  :}
+              ;
+              
+varlist ::=  varlist:l COMMA STRING:s              
+			  {: l.add(s); RESULT = l; :}
+			  	|
+			  	  STRING:s
+			  {: RESULT = new ArrayList<String>(1); RESULT.add(s); :}
+			  ;
+			
+booleanlist ::=   formula:f
+				  {: RESULT = f; :}
+		        |
+  		          formula:left WEDGE wedgelist:right
+  		          {: RESULT = new Formula(Formula.and, left, right); :}
+                |
+                  formula:left VEE veelist:right
+  		          {: RESULT = new Formula(Formula.or, left, right); :}
+  		        ;
+                
+wedgelist ::= formula:left WEDGE wedgelist:right
+    		    {: RESULT = new Formula(Formula.and, left, right); :}
+              |
+              formula:f
+                {: RESULT = f; :}
+              ;
+
+
+veelist ::=   formula:left VEE veelist:right
+    		    {: RESULT = new Formula(Formula.or, left, right); :}
+              |
+              formula:f
+                {: RESULT = f; :}
+              ;
+

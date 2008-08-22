@@ -298,7 +298,7 @@ public class ModalTreeNode implements EvaluationTreeNode
 	 */
 	public String getName() {
 		if(_stage == 0)
-			return "empty";
+			return "Stage 0: empty";
 		else
 			return _name;
 	}

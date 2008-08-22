@@ -1,0 +1,255 @@
+/*
+ * Created on 2006 by Stephan Kreutzer
+ *
+ * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
+ *
+ * This file is part of Games.
+ *
+ * Games is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * Games is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Games; 
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
+ *
+ */
+
+package de.hu.logic.fo;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * Base class for all formulas.
+ * @author kreutzer
+ *
+ */
+public class Formula 
+{
+	public static final int bottom = 0;   // false
+	public static final int top = 1;      // true
+	public static final int proposition = 2;
+	public static final int and    = 3;
+	public static final int or = 4;
+	public static final int neg = 5;
+	public static final int exists = 6;
+	public static final int forall = 7;
+	public static final int lfp = 8;
+	public static final int gfp = 9;
+	public static final int ifp = 13;
+	public static final int dfp = 14;
+	public static final int eq = 10;		
+	public static final int var = 11;		// variables. _ident contains the variable name	
+	public static final int sub = 12;		// substitution. _ident contains the name of the formula to be substituted at this position. 
+	
+	
+	Formula _sf, _rightSF;
+	int _type;
+    String _ident, _ident2;
+    ArrayList<String> _varList;
+	
+	
+	/**
+	 * Constructor for atomic formulae (i.e. formulae without sub-formulae)
+	 * @param type Identifier for the formula, one of the defined types
+	 * @param ident Additional information. For proposition symbols this is the name of the symbol 
+	 */
+	public Formula(int type, String ident)
+	{
+		_type = type;
+		_ident = ident;
+		_varList = new ArrayList<String>();
+	}
+	
+	/**
+	 * Constructor for binary operators (i.e. formulae with two sub-formulae)
+	 * @param type Identifier for the formula, one of the defined types
+	 * @param left Left sub-formula 
+	 * @param right right sub-formula 
+	 */
+	public Formula(int type, Formula left, Formula right)
+	{
+		_type = type;
+		_sf = left;
+		_rightSF = right;
+		_varList = new ArrayList<String>();
+	}
+	
+	/**
+	 * Constructor for unary operators (i.e. neg)
+	 * @param sf sub-formula 
+	 */
+	public Formula(int type, Formula sf)
+	{
+		_type = type;
+		_sf = sf;
+		_ident = "";
+		_varList = new ArrayList<String>();
+	}
+	
+
+	/**
+	 * Constructor for first order quantifiers operators
+	 * they have one subformula and an additional identifier specifying the variable or
+	 * 
+	 * @param type Identifier for the formula, one of the defined types
+	 * @param sf   This parameter points to the sub-formula 
+	 * @param ident Additional information. For proposition symbols this is the name of the symbol
+	 */
+	public Formula(int type, String ident, Formula sf)
+	{
+		_type = type;
+		_sf = sf;
+		_ident = ident;
+	}
+	
+
+	/**
+	 * Constructor for first order quantifiers operators
+	 * they have one subformula and an additional identifier specifying the variable or
+	 * 
+	 * @param type Identifier for the formula, one of the defined types
+	 * @param sf   This parameter points to the sub-formula 
+	 * @param varlist variable list for fixed point operators
+	 * @param ident Additional information. For proposition symbols this is the name of the symbol
+	 */
+	public Formula(int type, String ident, ArrayList<String> varlist, Formula sf)
+	{
+		_type = type;
+		_sf = sf;
+		_ident = ident;
+		_varList = varlist;
+	}
+	
+	public Formula(int type, String ident, ArrayList<String> varlist)
+	{
+		_type = type;
+		_sf = null;
+		_ident = ident;
+		_varList = varlist;
+	}
+	
+
+	/**
+	 * Used for equality   "s1 = s2"
+	 * @param type Should be Formula.eq
+	 * @param s1 Variable 1
+	 * @param s2 Variable 
+	 */
+	public Formula(int type, String s1, String s2)
+	{
+		_type = type;
+		_sf = null;
+		_ident = s1;
+		_ident2 = s2;
+	}
+
+	public ArrayList<String> getVarList()
+	{
+		return _varList;
+	}
+	
+	public int type()
+	{
+		return _type; 
+	}
+	
+	public String ident()
+	{
+		return _ident;
+	}
+	
+	public Formula subf()
+	{
+		return _sf;
+	}
+	
+	public Formula leftSubf()
+	{
+		return _sf;
+	}
+	
+	public Formula rightSubf()
+	{
+		return _rightSF;
+	}
+	
+	
+	public String toString()
+	{
+		switch(_type)
+		{
+		case bottom: return "false"; //break;
+		case top: return "true"; //break;
+		case proposition: return _ident; //break;
+		case eq: return _ident + " = " + _ident2;
+		case and: return "("+leftSubf() + " and " + rightSubf() + ")"; //break;
+		case or: return "("+leftSubf() + " or " + rightSubf() + ")"; //break;
+		case neg: return "neg "+subf(); //break;
+		case exists: return "\\exists "+_ident+ subf(); //break;
+		case forall: return "\\forall "+_ident+ subf(); //break;
+		case lfp:
+			StringBuffer str = new StringBuffer("\\lfp_{ "+_ident + ",");
+			Iterator<String> iter = _varList.iterator();
+			while(iter.hasNext())
+			{
+			    str.append(iter.next());
+			    if(iter.hasNext())
+			    	str.append(", ");
+			    else
+			    	str.append(" ] ");
+			    
+			}
+			str.append(subf());
+			return str.toString(); //break;
+//		case nu: return "\\nu "+_ident + "." + subf(); //break;
+		case sub: return "\\sub(" + _ident + ")";
+		}
+		return "";
+	}
+	
+	/**
+	 * checks whether the formula is valid, i.e. whether no least or greatest fixed-point variable is used negatively
+	 * @return returns true if no variable is bound twice in the formula and no fixed-point variable is used negatively. Returns false otherwise.
+	 */
+	public boolean valid()
+	{
+		HashSet<String> set = new HashSet<String>();
+		return recValid(set, false);
+	}
+
+	
+	private boolean recValid(HashSet<String> fpvar, boolean neg)
+	{
+		switch(_type)
+		{
+		case bottom: 
+		case top: return true;
+		case proposition: 
+			if(fpvar.contains(_ident) && neg)
+				return false;
+			return true;
+		case and: 
+		case or: 
+			return (leftSubf().recValid(fpvar, neg) && rightSubf().recValid(fpvar, neg));
+		case Formula.neg:  
+			return subf().recValid(fpvar, !neg);
+		case exists: 
+		case forall:
+		case ifp:
+		case dfp:
+			return subf().recValid(fpvar, neg);
+		case lfp: 
+		case gfp:
+			HashSet<String> new_fpvar = new HashSet<String>(fpvar);
+			new_fpvar.add(_ident);
+			return subf().recValid(new_fpvar, neg);
+		}
+		return true;
+	}
+}
