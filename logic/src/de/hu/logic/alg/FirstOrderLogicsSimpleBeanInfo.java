@@ -23,22 +23,28 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 	private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
 	
 	static {
-		BEAN_DESCRIPTOR.setDisplayName( "Evaluate a First-Order, Least Fixed-Point or Inflationary Fixed-Point Logic Formula on a Transitionsystem" );
+		BEAN_DESCRIPTOR.setDisplayName( "Evaluate a First-Order Logic Formula on a Structure (Graph, Transition System, etc.)" );
 		BEAN_DESCRIPTOR.setShortDescription( 
 				"<html>" +
-				"This algorithm evaluates <b>formula</b> on <b>transitionSystem</b>. <br> " +
+				"This algorithm evaluates the given <i>formula</i> on the given <i>structure</i>. <br> " +
 				"<br>" +
-				"<b>Formular</b> is a Mue-Calculus-Formula with the following syntax: <br> " +
+				"Formulas can be written as: <br> " +
 				"<ul> " +
 				"<li><b>\\top</b> and <b>\\bot</b> stand for the formulas which are always true or always false.</li> " +
-				"<li>Every proposition which is also contained in <b>transitionSystem</b> (case-sensitive).</li> " +
+				"<li>atomic formulas are either equality written as \"<ident> = <ident>\", where identifiers <ident> can contain letters and numbers, "+
+				"or atomic formulas of the form \"R(x, y, z)\", where R is a relation symbol and x, y, z ist a list of variables.<br/>"+
+				"Admissible relation names depend on the structure. For undirected or directed graphs the edge relation is \"E\". For transition systems the "+
+				"edge relation is \"E\" also but in addition the names of all propositions can be used.</li> " +
 				"<li><b>\\and</b> and <b>\\or</b> stand for the logical and and or.</li> " +
-				"<li><b>&lt &gt</b> and <b>[]</b> stand for the diamond and box operators.</li> " +
+				"<li><b>\\exists</b> and <b>\\forall</b> stand for the existential and universal quantifiers.</li> " +
 				"</ul>" +
-				"All propositions contained in <b>formula</b> but not contained in <b>transitionSystem</b> are supposed to be empty. " +
-				"All maximal subformulas with <b>\\and</b> or <b>\\or</b> need enclosing parenthesises. " +
-				"So the formula <b>p \\and q \\and \r \\or q</b> " +
-				"needs at least the following parenthesises (( p \\and q \\and r ) \\or q)." +
+				"The precise grammar is<br/>"+
+				"formula ::= \\bot | \\top | <ident> = <ident> | <ident> '(' (<ident>,)*<ident> ')' | "+
+				"'(' (<formula> \\and)* <formula> \\and <formula> ')' | "+
+				"'(' (<formula> \\or)* <formula> \\or <formula> ')' | "+
+				"\\neg <formula> | "+
+				"\\exists <ident> <formula> | " +
+				"\\forall <ident> <formula>" +
 				"</html>" 
 				);
 		
@@ -46,13 +52,13 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "structure", FirstOrderLogicsSimple.class, new FOGraphTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( 
 					"<html> " +
-					"The structure on which <b>formula</b> is evaluated. " +
+					"The structure on which the <i>formula</i> is evaluated. " +
 					"</html>"
 					);
 			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "formula", FirstOrderLogicsSimple.class );
 			PROPERTY_DESCRIPTORS[1].setShortDescription( 
 					"<html> " +
-					"The Mu-Calculus formula to evaluate on <b>transitionSystem</b>. " +
+					"The first-order formula to be evaluated on the <i>structure</i>. " +
 					"</html>"
 					);
 
