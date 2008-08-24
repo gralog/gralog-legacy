@@ -3,6 +3,7 @@
  */
 package de.hu.logic.graph;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,6 +52,15 @@ public class UndirectedGraphAdaptor implements Structure
 	public Set<String> getSignature() 
 	{
 		return _signature;
+	}
+	
+	public boolean contains(String rel, ArrayList<Object> elems) throws Exception
+	{
+		if(!rel.equals("E"))
+			throw new Exception("Relation >"+rel+"< unknown.");
+		if(elems.size()<2)
+			throw new Exception("Not enough arguments to evaluate relation.");
+		return _graph.containsEdge(elems.get(0), elems.get(1));	
 	}
 	
 /*	public Relation getRelation(String name)

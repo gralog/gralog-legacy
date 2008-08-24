@@ -18,7 +18,8 @@
  */
 package de.hu.logic.fo;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -29,11 +30,56 @@ import java.util.Set;
 public class Interpretation 
 {
 	Structure _str;
+	HashMap<String,Object> _foVars;		// Map providing interpretation for first-order vars
+	HashMap<String, Relation> _soVars;	// second order variables
 	
 	public Interpretation(Structure str)
 	{
 		_str = str;
+		_foVars = new HashMap<String, Object>();
+		_soVars = new HashMap<String, Relation>();	}
+	
+	/**
+	 * Sets the interpretation for a first-order variable.
+	 * @param var
+	 * @param element
+	 */
+	public void setFOVar(String var, Object element)
+	{
+		_foVars.put(var, element);
 	}
 	
+	public Object getFO(String var)
+	{
+		return _foVars.get(var);
+	}
+
+	public Relation getSO(String var) 
+	{
+		return _soVars.get(var);
+	}
+
+	public void setSOVar(String var, Relation rel) {
+		_soVars.put(var, rel);
+	}
 	
+	public boolean contains(String relation, ArrayList<String> varlist) throws Exception
+	{
+				// get interpretation for the variables in varlist
+		ArrayList<Object> elemlist = new ArrayList<Object>(varlist.size());
+		for( String elem : varlist)
+		{
+			if(_foVars.containsKey(elem))
+				elemlist.add(_foVars.get(elem));
+			else
+				throw new Exception("Variable "+elem+" undefined.");
+		}
+		
+		if(_str.getSignature().contains(relation))
+		{
+			return _str.contains(relation, elemlist);
+		}
+		else
+			throw new Exception("Signature mismatch: Relation "+relation+" unknown.");
+	}
 }

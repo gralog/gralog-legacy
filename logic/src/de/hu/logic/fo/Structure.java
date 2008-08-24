@@ -19,6 +19,7 @@
 
 package de.hu.logic.fo;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 
@@ -35,4 +36,6 @@ public interface Structure
 	public Set getUniverse();
 	
 	public Set<String> getSignature();
+	
+	public boolean contains(String rel, ArrayList<Object> elems) throws Exception;
 }

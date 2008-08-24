@@ -70,7 +70,14 @@ public class FOTreeNode implements FOEvaluationTreeNode {
 	 * @see de.hu.logic.general.EvaluationTreeNode#getResult()
 	 */
 	public Relation getResult() throws UserException {
-		return _eval.recursiveEvaluate(_f);
+		try
+		{
+			return _eval.evaluate(_f, new Interpretation(_eval.getStructure()));
+		}
+		catch(Exception e)
+		{
+			throw new UserException("Program error: " + e.getMessage());
+		}
 	}
 	
 	void root(boolean root)

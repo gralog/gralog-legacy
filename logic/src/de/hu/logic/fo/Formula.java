@@ -25,8 +25,27 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Base class for all formulas.
- * @author kreutzer
+ * Formula class. Provides access to a first-order based formula (FO, LFP, IFP...)
+ * The various variables in the class have the following meaning:
+ * Let f be a formula.
+ * f._type indicates the type of the formula.
+ * switch(f._type)
+ * case bottom, top: f is false or true
+ * case proposition: f is atomic R(x, y, t)
+ * 		_ident contains the name of the relation (e.g. R)
+ * 		_varList contains the sequence of variables (e.g. x, y, t)
+ * case eq: f is of the form x = y
+ * 		_ident contains x
+ * 		_ident2 contains y
+ * case and, or: f is conjunction or disjunction f = f1 \and/\or f2
+ * 		_sf contains f1 and _rightSF contains f2
+ * case neg: f = \neg g
+ * 		_sf = g
+ * case exists, forall:  f = \exists x g  or f = \forall x g
+ * 		_ident contains x
+ * 		_sf contains g
+ * 
+ * @author Stephan Kreutzer
  *
  */
 public class Formula 
@@ -207,6 +226,11 @@ public class Formula
 	public String ident()
 	{
 		return _ident;
+	}
+	
+	public String ident2()
+	{
+		return _ident2;
 	}
 	
 	public Formula subf()

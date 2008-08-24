@@ -19,8 +19,12 @@
 
 package de.hu.logic.fo;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import de.hu.logic.graph.Proposition;
+import de.hu.logic.graph.TransitionSystemVertex;
 
 
 /**
@@ -36,6 +40,13 @@ public class Relation
 	
 	boolean _true;
 	
+	
+	public Relation(String name)
+	{
+		_name = name;
+		_set = new HashSet();
+		_arity = 1;
+	}
 	
 	public Relation(String name, boolean nullary)
 	{
@@ -54,6 +65,10 @@ public class Relation
 		_arity = 1;
 	}
 	
+	public void setVertexSet(Set set)
+	{
+		_set = set;
+	}
 	
 	public Set getVertexSet()
 	{
@@ -63,6 +78,10 @@ public class Relation
 			return _set;
 	}
 
+	public void addVertex(Object element)
+	{
+		_set.add(element);
+	}
 	/**
 	 * @return the _true
 	 */
@@ -77,5 +96,74 @@ public class Relation
 	public void set_true(boolean _true) {
 		this._true = _true;
 	}
+	
+	public String getName() {
+		return _name;
+	}
+	
+	public int getArity()
+	{
+		return _arity;
+	}
+	
+	public void setName( String name ) {
+		_name = name;
+	}
+	
+	
+	/**
+	 * This method computes the union of _this and the relation R and returns the new relation.
+	 * 
+	 * @param R Relation to take union with
+	 * @return the new relation.
+	 */
+	public Relation union(Relation R)
+	{
+		Relation set = new Relation("(" + _name + " \\cup " + R.getName() + ")");
+		set.setVertexSet( _set );
+		
+		for ( Object t : R.getVertexSet() ) {
+			if ( ! set.getVertexSet().contains( t ) )
+				set.getVertexSet().add( t );
+		}
+		return set;
+	}
+	
+	/**
+	 * This method computes the intersection of _this and the relation R and returns the new relation.
+	 * 
+	 * @param R Relation to take union with
+	 * @return the new relation.
+	 */
+	public Relation intersection(Relation R)
+	{
+		Relation set = new Relation("(" + _name + " \\cap " + R.getName() + ")");
+		set.setVertexSet( _set );
+		set.getVertexSet().retainAll( R.getVertexSet() );
+		return set;
+	}
+	
+	/**
+	 * This method computes the negation of _this within the specified set as universe. I.e. the result
+	 * consists of all elements in <i>universe</i> that are not in _this. 
+	 * 
+	 * @param universe The "universe" in which negation is performed
+	 * @return the new relation.
+	 */
+	public Relation negate(Set<TransitionSystemVertex> universe)
+	{
+		Set<Object> set = new HashSet<Object>(universe);
+		Relation rel = new Relation("neg " + _name );
+		rel.setVertexSet(set);
+		rel.getVertexSet().removeAll(_set);
+		return rel;
+	}
+	
+
+	public boolean equalContent( Relation rel ) {
+		return _set.equals( rel._set );
+	}
+	
+	
 
 }

@@ -1,14 +1,19 @@
 package de.hu.logic.fo;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Set;
 
-import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.logic.modal.Evaluation;
 
 public class FOEvaluation implements Evaluation 
 {
 	Structure _struct;
 	Interpretation _inter;
+	
+	public Structure getStructure()
+	{
+		return _struct;
+	}
 	
 	public FOTreeNode initialise(Structure t, Formula f)
 	{
@@ -20,29 +25,73 @@ public class FOEvaluation implements Evaluation
 		return node;
 	}
 	
-	public Relation recursiveEvaluate(Formula f)
+	public Relation evaluate(Formula f, Interpretation inter) throws Exception
 	{
+		Set<String> vars = f.freeVars();
+		if(vars.size() == 0)
+		{
+			Relation rel = new Relation("", true);
+			rel.set_true(recursiveEvaluate(f, inter));
+			return rel;
+		}
+		else
+		{
+			String free = (String) vars.iterator().next();
+			Relation rel = new Relation("", false);		// generate new unary relation
+			for( Object element : _struct.getUniverse())
+			{
+				inter.setFOVar(free, element);
+				if(recursiveEvaluate(f, inter))
+					rel.addVertex(element);
+			}
+			return rel;
+		}
+		
+	}
+	
+	public boolean recursiveEvaluate(Formula f, Interpretation inter) throws Exception
+	{
+		ArrayList<String> varlist;
 		switch(f.type())
 		{
-		case Formula.bottom: 
-		case Formula.top: 
+		case Formula.bottom:
+			return false;
+		case Formula.top:
+			return true;
 		case Formula.proposition:
-			break;
+			return inter.contains(f.ident(), f.getVarList());
 		case Formula.eq: 
-			break;
-		case Formula.and: 
+			Object v1 = inter.getFO(f.ident());
+			Object v2 = inter.getFO(f.ident2());
+			return v1==v2;
+		case Formula.and:
+			return recursiveEvaluate(f.leftSubf(), inter) && recursiveEvaluate(f.rightSubf(), inter);  
 		case Formula.or: 
-			break;
+			return recursiveEvaluate(f.leftSubf(), inter) || recursiveEvaluate(f.rightSubf(), inter);  
 		case Formula.neg:  
-			break;
-		case Formula.exists: 
+			return !recursiveEvaluate(f.subf(), inter);  
+		case Formula.exists:
+			System.out.println("Exists " + f.ident());
+			for( Object element : _struct.getUniverse())
+			{
+				System.out.println("Element" + element.toString());
+				inter.setFOVar(f.ident(), element);
+				if(recursiveEvaluate(f.subf(), inter))
+					return true;
+			}
+			return false;
 		case Formula.forall:
-			break;
+			for( Object element : _struct.getUniverse())
+			{
+				inter.setFOVar(f.ident(), element);
+				if(!recursiveEvaluate(f.subf(), inter))
+					return false;
+			}
+			return true;
 		case Formula.lfp:
 		case Formula.ifp:
-			break;
+			throw new Exception("Fixed point quantifiers not yet implemented");
 		}
-
-		return new Relation(f.toString(), _struct.getUniverse());
+		throw new Exception("Unhandled case in evaluation");
 	}
 }
