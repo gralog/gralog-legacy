@@ -358,6 +358,13 @@ public class Formula
 			initFreeVars();
 		return _freeVars;
 	}
+	
+	public String freeVar() throws Exception
+	{
+		if(width() != 1)
+			throw new Exception("Program error. Only call freeVar if there is a free variable");
+		return _freeVars.iterator().next();
+	}
 	/** 
 	 * Computes the list of free variables and stores it in _freeVars.
 	 *
@@ -400,6 +407,11 @@ public class Formula
 			_freeVars.addAll(_varList);
 			break;
 		}
+	}
+	
+	public boolean isBoolean()
+	{
+		return width() == 0;
 	}
 	
 	/** returns the width of the formula, i.e. the number of free variables.

@@ -82,4 +82,12 @@ public class Interpretation
 		else
 			throw new Exception("Signature mismatch: Relation "+relation+" unknown.");
 	}
+	
+	public Interpretation clone()
+	{
+		Interpretation inter = new Interpretation(_str);
+		inter._foVars = (HashMap<String, Object>)_foVars.clone();
+		inter._soVars = (HashMap<String, Relation>)_soVars.clone();
+		return inter;
+	}
 }

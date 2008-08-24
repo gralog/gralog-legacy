@@ -21,7 +21,7 @@ public class FOEvaluation implements Evaluation
 		_struct = t;
 		// here there should be a signature check. 
 		FOTreeNode node = new FOTreeNode(f, this);
-		
+		node.setRoot(true);
 		return node;
 	}
 	
@@ -49,6 +49,7 @@ public class FOEvaluation implements Evaluation
 		
 	}
 	
+
 	public boolean recursiveEvaluate(Formula f, Interpretation inter) throws Exception
 	{
 		ArrayList<String> varlist;
