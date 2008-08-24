@@ -14,18 +14,18 @@ import java.beans.SimpleBeanInfo;
 import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
 import de.hu.logic.graph.TransitionSystemTypeInfo;
 
-public class EvaluateMueKalkuelBeanInfo extends SimpleBeanInfo {
+public class EvaluateMuCalculusNewBeanInfo extends SimpleBeanInfo {
 
-	private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( EvaluateMueKalkuel.class );
+	private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( EvaluateMuCalculusNew.class );
 	private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
 	
 	static {
-		BEAN_DESCRIPTOR.setDisplayName( "Evaluate a Mu-Calculus-Formula on an Transitionsystem" );
+		BEAN_DESCRIPTOR.setDisplayName( "Evaluate a Mu-Calculus-Formula on a Transitionsystem" );
 		BEAN_DESCRIPTOR.setShortDescription( 
 				"<html>" +
 				"This algorithm evaluates <b>formula</b> on <b>transitionSystem</b>. <br> " +
 				"<br>" +
-				"<b>Formular</b> is a Mue-Calculus-Formula with the following syntax: <br> " +
+				"<b>Formular</b> is a Mu-Calculus-Formula with the following syntax: <br> " +
 				"<ul> " +
 				"<li><b>\\top</b> and <b>\\bot</b> stand for the formulas which are always true or always false.</li> " +
 				"<li>Every proposition which is also contained in <b>transitionSystem</b> (case-sensitive).</li> " +
@@ -40,13 +40,13 @@ public class EvaluateMueKalkuelBeanInfo extends SimpleBeanInfo {
 				);
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "transitionSystem", EvaluateMueKalkuel.class, new TransitionSystemTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "transitionSystem", EvaluateMuCalculusNew.class, new TransitionSystemTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( 
 					"<html> " +
 					"The transitionsystem on which <b>formula</b> is evaluated. " +
 					"</html>"
 					);
-			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "formula", EvaluateMueKalkuel.class );
+			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "formula", EvaluateMuCalculusNew.class );
 			PROPERTY_DESCRIPTORS[1].setShortDescription( 
 					"<html> " +
 					"The Mu-Calculus formula to evaluate on <b>transitionSystem</b>. " +

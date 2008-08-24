@@ -14,13 +14,13 @@ import java.beans.SimpleBeanInfo;
 import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
 import de.hu.logic.graph.TransitionSystemTypeInfo;
 
-public class EvaluateMueKalkuelNewBeanInfo extends SimpleBeanInfo {
+public class EvaluateMuCalculusBeanInfo extends SimpleBeanInfo {
 
-	private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( EvaluateMueKalkuelNew.class );
+	private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( EvaluateMuCalculus.class );
 	private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
 	
 	static {
-		BEAN_DESCRIPTOR.setDisplayName( "Evaluate a Mu-Calculus-Formula on an Transitionsystem" );
+		BEAN_DESCRIPTOR.setDisplayName( "Evaluate a Mu-Calculus-Formula on a Transitionsystem" );
 		BEAN_DESCRIPTOR.setShortDescription( 
 				"<html>" +
 				"This algorithm evaluates <b>formula</b> on <b>transitionSystem</b>. <br> " +
@@ -40,13 +40,13 @@ public class EvaluateMueKalkuelNewBeanInfo extends SimpleBeanInfo {
 				);
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "transitionSystem", EvaluateMueKalkuelNew.class, new TransitionSystemTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "transitionSystem", EvaluateMuCalculus.class, new TransitionSystemTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( 
 					"<html> " +
 					"The transitionsystem on which <b>formula</b> is evaluated. " +
 					"</html>"
 					);
-			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "formula", EvaluateMueKalkuelNew.class );
+			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "formula", EvaluateMuCalculus.class );
 			PROPERTY_DESCRIPTORS[1].setShortDescription( 
 					"<html> " +
 					"The Mu-Calculus formula to evaluate on <b>transitionSystem</b>. " +

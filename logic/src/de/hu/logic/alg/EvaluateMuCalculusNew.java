@@ -52,13 +52,13 @@ import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
 
-public class EvaluateMueKalkuelNew implements Algorithm {
+public class EvaluateMuCalculusNew implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
 	private TransitionSystem transitionSystem;
 	private String formula;
 	
-	public EvaluateMueKalkuelNew() {
+	public EvaluateMuCalculusNew() {
 		super();
 	}
 	
