@@ -72,10 +72,10 @@ public class FOEvaluation implements Evaluation
 		case Formula.neg:  
 			return !recursiveEvaluate(f.subf(), inter);  
 		case Formula.exists:
-			System.out.println("Exists " + f.ident());
+//			System.out.println("Exists " + f.ident());
 			for( Object element : _struct.getUniverse())
 			{
-				System.out.println("Element" + element.toString());
+//				System.out.println("Element" + element.toString());
 				inter.setFOVar(f.ident(), element);
 				if(recursiveEvaluate(f.subf(), inter))
 					return true;

@@ -375,7 +375,7 @@ public class Formula
 		{
 		case bottom: 
 		case top: 
-			_freeVars = null;
+			_freeVars = new HashSet<String>();
 			break;
 		case proposition:
 			_freeVars = new HashSet<String>(this._varList);
@@ -389,15 +389,21 @@ public class Formula
 		case or: 
 			leftSubf().initFreeVars();
 			rightSubf().initFreeVars();
+//			Set left, right;
+//			left = leftSubf().freeVars();
+//			right = rightSubf().freeVars();
+//			System.out.println("left: " + left);
+//			System.out.println("right: " + right);
 			_freeVars = new HashSet<String>(leftSubf().freeVars());
 			_freeVars.addAll(rightSubf().freeVars());
+//			System.out.println("left + right: " + _freeVars);
 			break;
 		case Formula.neg:  
-			_freeVars = (HashSet<String>) subf().freeVars();
+			_freeVars = new HashSet<String>(subf().freeVars());
 			break;
 		case exists: 
 		case forall:
-			_freeVars = (HashSet<String>) subf().freeVars();
+			_freeVars = new HashSet<String>( subf().freeVars() );
 			_freeVars.remove(_ident);
 			break;
 		case lfp:

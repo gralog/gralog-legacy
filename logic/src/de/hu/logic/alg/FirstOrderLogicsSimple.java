@@ -98,7 +98,6 @@ public class FirstOrderLogicsSimple implements Algorithm {
 			sb.append( "</logic>" );
 			
 			FOFormulaList list = FOLogicParser.loadString( sb.toString() );
-			list.printList();
 			//list.printList();
 			
 			Formula f = list.getMainFormula();
