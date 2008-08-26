@@ -314,7 +314,7 @@ public class FOTreeNode implements FOEvaluationTreeNode {
 			}
 			catch(Exception e)
 			{
-				throw new UserException("Program error: " + e.getMessage());
+				throw new UserException(e.getMessage());
 			}
 		}
 	}

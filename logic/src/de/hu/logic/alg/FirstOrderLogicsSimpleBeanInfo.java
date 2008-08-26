@@ -11,11 +11,12 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
+import de.hu.gralog.graph.DirectedGraph;
 import de.hu.gralog.graph.GraphTypeInfo;
 import de.hu.gralog.graph.GraphWithEditableElements;
 import de.hu.gralog.graph.UndirectedGraph;
 import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
-import de.hu.logic.graph.TransitionSystemTypeInfo;
+import de.hu.logic.graph.TransitionSystem;
 
 public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 
@@ -39,7 +40,7 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 				"<li><b>\\exists</b> and <b>\\forall</b> stand for the existential and universal quantifiers.</li> " +
 				"</ul>" +
 				"The precise grammar is<br/>"+
-				"formula ::= \\bot | \\top | <ident> = <ident> | <ident> '(' (<ident>,)*<ident> ')' | "+
+				"formula ::= \\bot | \\top | &lt;ident&gt; = <ident> | <ident> '(' (<ident>,)*<ident> ')' | "+
 				"'(' (<formula> \\and)* <formula> \\and <formula> ')' | "+
 				"'(' (<formula> \\or)* <formula> \\or <formula> ')' | "+
 				"\\neg <formula> | "+
@@ -92,7 +93,8 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 
 		@Override
 		public boolean isInstance(GraphWithEditableElements graph) {
-			if ( graph instanceof UndirectedGraph ) {
+			if ( graph instanceof UndirectedGraph || graph instanceof DirectedGraph || graph instanceof TransitionSystem) 
+			{
 				// graph.createVertex() instanceof ...
 				return true;
 			}

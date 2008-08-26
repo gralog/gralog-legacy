@@ -3,9 +3,12 @@
  */
 package de.hu.logic.graph;
 
-import de.hu.gralog.graph.DirectedGraph;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.graph.UndirectedGraph;
+import de.hu.logic.fo.Relation;
 import de.hu.logic.fo.Structure;
 
 /**
@@ -31,16 +34,32 @@ import de.hu.logic.fo.Structure;
  * @author Stephan Kreutzer 
  *
  */
-public class StructureAdaptorFactory {
-
-	public static Structure generateAdaptor(GraphWithEditableElements graph)
+public class DirectedGraphAdaptor implements Structure 
+{
+	GraphWithEditableElements _graph;
+	HashSet<String> _signature = new HashSet<String>(1);
+	
+	public DirectedGraphAdaptor(GraphWithEditableElements graph)
 	{
-		if(graph instanceof UndirectedGraph)
-			return new UndirectedGraphAdaptor(graph);
-		else if(graph instanceof TransitionSystem)
-			return new TransitionSystemAdaptor(graph);
-		else if(graph instanceof DirectedGraph)
-			return new DirectedGraphAdaptor(graph);
-		return null;
+		_graph = graph;
+		_signature.add("E");		// Undirected graphs only have the edge relation E
+	}
+
+	public Set getUniverse() {
+		return _graph.vertexSet();
+	}
+
+	public Set<String> getSignature() 
+	{
+		return _signature;
+	}
+	
+	public boolean contains(String rel, ArrayList<Object> elems) throws Exception
+	{
+		if(!rel.equals("E"))
+			throw new Exception("Relation >"+rel+"< unknown.");
+		if(elems.size()<2)
+			throw new Exception("Not enough arguments to evaluate relation.");
+		return _graph.containsEdge(elems.get(0), elems.get(1));	
 	}
 }

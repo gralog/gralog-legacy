@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.logic.fo.Relation;
 import de.hu.logic.fo.Structure;
 
 /**
@@ -34,15 +33,15 @@ import de.hu.logic.fo.Structure;
  * @author Stephan Kreutzer 
  *
  */
-public class UndirectedGraphAdaptor implements Structure 
+public class TransitionSystemAdaptor implements Structure 
 {
-	GraphWithEditableElements _graph;
+	TransitionSystem _graph;
 	HashSet<String> _signature = new HashSet<String>(1);
 	
-	public UndirectedGraphAdaptor(GraphWithEditableElements graph)
+	public TransitionSystemAdaptor(GraphWithEditableElements graph)
 	{
-		_graph = graph;
-		_signature.add("E");		// Undirected graphs only have the edge relation E
+		_graph = (TransitionSystem) graph;
+		_signature = new HashSet<String>(_graph.getSignature());	
 	}
 
 	public Set getUniverse() {
@@ -56,10 +55,25 @@ public class UndirectedGraphAdaptor implements Structure
 	
 	public boolean contains(String rel, ArrayList<Object> elems) throws Exception
 	{
-		if(!rel.equals("E"))
-			throw new Exception("Relation >"+rel+"< unknown.");
-		if(elems.size()<2)
-			throw new Exception("Not enough arguments to evaluate relation.");
-		return _graph.containsEdge(elems.get(0), elems.get(1));	
+		if(rel.equals("E"))		// E is the edge relation of the transition system.
+		{
+			if(elems.size()!=2)
+				throw new Exception("Invalid number " + elems.size() + " of arguments for relation 'E'.");
+			return _graph.containsEdge((TransitionSystemVertex) elems.get(0), (TransitionSystemVertex) elems.get(1));	
+			
+		}
+		else
+		{
+			if(_graph.getSignature().contains(rel))
+			{
+				Proposition prop = _graph.getProposition(rel);
+				if(elems.size()!=1)
+					throw new Exception("Invalid number " + elems.size() + " of arguments for relation " + rel + ".");
+				
+				return prop.getVertices().contains(elems.get(0));
+			}
+		}
+		throw new Exception("Relation '"+rel+"' unknown.");
+//		return _graph.containsEdge((TransitionSystemVertex) elems.get(0), (TransitionSystemVertex) elems.get(1));	
 	}
 }

@@ -19,7 +19,7 @@ public class FOEvaluation implements Evaluation
 	{
 		_inter = new Interpretation(t);
 		_struct = t;
-		// here there should be a signature check. 
+		// here there should be a signature check.
 		FOTreeNode node = new FOTreeNode(f, this);
 		node.setRoot(true);
 		return node;
