@@ -6,12 +6,40 @@ import de.hu.logic.modal.Formula;
 parser code {:
 
 	FormulaList flist = new FormulaList();	
+	String errorMsg = null;
 
 	public static void main(String args[]) throws Exception {
 		SymbolFactory sf = new DefaultSymbolFactory();
 		if (args.length==0) new Parser(new Scanner(System.in,sf),sf).parse();
 		else new Parser(new Scanner(new java.io.FileInputStream(args[0]),sf),sf).parse();
 	}
+	
+		public Boolean hasError()
+	{
+	  return errorMsg == null;
+	}
+	
+	public String getErrorMsg()
+	{
+	   if(errorMsg == null)
+	      return "no error";
+	   else
+	      return errorMsg;
+	}
+	
+	 public void syntax_error(Symbol cur_token)
+	 {
+	   if(errorMsg == null)
+	       errorMsg = "Syntax Error: " + cur_token.toString();
+	 }
+
+	 public void report_fatal_error(String message, Object info) throws Exception
+	 {
+	   throw new Exception("Fatal parsing error: " + message + "\n" + info.toString());
+	 }
+
+	 
+	
 :}
 
 terminal LT,GT, LP, RP, EQ, SLASH, DOT, LOGIC, FORMULA, TYPE, NAME;			// "<", ">","[", "]", "=", "/", "." and keywords "logic", "formula", "type", "name".
