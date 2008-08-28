@@ -60,7 +60,7 @@ import de.hu.graphgames.graph.GameGraphVertex;
 public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends DefaultEdge> {
 	
 	private DirectedGraph<V,E> gameGraph;	// game graph
-	private HashSet<V> win0;			// winning region for player 0.
+	private ArrayList<V> win0;			// winning region for player 0.
 	private Set<V> vertexSet;			// vertex set of the graph
 	private LinkedList<V> vertexList; // list used in the algorithm.
 	private HashMap<V, Integer> vertexDegree;		// stores the outdegrees of the vertices. the degrees will be decreased during the run of the alg.
@@ -75,7 +75,7 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 	}
 	
 	protected void init() {
-		win0 = new HashSet<V>();
+		win0 = new ArrayList<V>();
 		for(V v : vertexSet)
 		{
 			vertexDegree.put(v, gameGraph.outDegreeOf(v));
@@ -122,7 +122,7 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 			}
 		}
 		
-		return new ArrayList<V>(win0);
+		return win0;
 	}
 	
 
