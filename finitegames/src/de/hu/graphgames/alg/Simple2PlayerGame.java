@@ -3,12 +3,12 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Games.
+ * This file is part of Gralog.
  *
- * Games is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Games is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
@@ -38,7 +38,7 @@ import de.hu.graphgames.graph.GameGraphVertex;
 
 public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> implements Algorithm {
 
-	private static final String DSM_WINNING_PLAYER1 = "winning positions player 1";
+	private static final String DSM_WINNING_PLAYER1 = "winning positions player 0";
 	
 	private DirectedGraph<V, E> gameGraph;
 	private boolean showSteps;
@@ -68,7 +68,7 @@ public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> 
 		if ( pe.hasErrors() )
 			throw pe;
 		
-		ArrayList<V> win1 = new Simple2PlayerGameAlgorithm<V,E>( gameGraph ).execute();
+		ArrayList<V> win0 = new Simple2PlayerGameAlgorithm<V,E>( gameGraph ).execute();
 
 		AlgorithmResult result = new AlgorithmResult( gameGraph );
 		result.setDescription( "description" );
@@ -78,11 +78,11 @@ public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> 
 
 		result.addDisplaySubgraphMode( DSM_WINNING_PLAYER1, displaySubgraphMode );
 		
-		if ( showSteps && win1.size() != 0 ) {
+		if ( showSteps && win0.size() != 0 ) {
 			ArrayList<AlgorithmResultContent> contentList = new ArrayList<AlgorithmResultContent>();
 			
 			Set<V> win1Step = new HashSet<V>();
-			for ( V vertex : win1 ) {
+			for ( V vertex : win0 ) {
 				win1Step.add( vertex );
 				Subgraph winning1 = SubgraphFactory.createSubgraph( gameGraph, win1Step, new HashSet<E>() );
 
@@ -92,10 +92,10 @@ public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge> 
 			}
 			result.setContentList( contentList );
 		} else {
-			Subgraph winning1 = SubgraphFactory.createSubgraph( gameGraph, new HashSet<V>( win1 ), new HashSet<E>() );
+			Subgraph winning0 = SubgraphFactory.createSubgraph( gameGraph, new HashSet<V>( win0 ), new HashSet<E>() );
 			
 			AlgorithmResultContent content = new AlgorithmResultContent();
-			content.addDisplaySubgraph( DSM_WINNING_PLAYER1, winning1 );
+			content.addDisplaySubgraph( DSM_WINNING_PLAYER1, winning0 );
 			result.setSingleContent( content );
 		}
 

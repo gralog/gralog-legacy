@@ -50,6 +50,11 @@ public class GameGraphVertex extends LabeledGraphVertex {
 	public boolean isPlayer0() {
 		return player0;
 	}
+	
+	public boolean isPlayer1()
+	{
+		return !player0;
+	}
 
 	public void setPlayer0(boolean player0) {
 		boolean oldValue = this.player0;
