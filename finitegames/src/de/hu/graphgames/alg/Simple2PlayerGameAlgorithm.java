@@ -87,6 +87,7 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 	}
 	
 
+
 	public ArrayList<V> execute() 
 	{
 		V v,u;
