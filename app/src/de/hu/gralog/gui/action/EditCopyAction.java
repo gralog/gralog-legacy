@@ -22,9 +22,9 @@ package de.hu.gralog.gui.action;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.TransferHandler;
 
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.jgraph.GGraphTransferHandler;
 
 public class EditCopyAction extends AbstractAction {
 	
@@ -33,7 +33,7 @@ public class EditCopyAction extends AbstractAction {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		TransferHandler .getCopyAction() .actionPerformed(
+		GGraphTransferHandler.getCopyAction().actionPerformed(
 				new ActionEvent(MainPad.getInstance().getDesktop().getCurrentGraph(), e.getID() , e.getActionCommand() ));
 	}
 	

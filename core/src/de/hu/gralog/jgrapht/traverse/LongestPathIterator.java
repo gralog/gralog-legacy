@@ -19,168 +19,49 @@
 
 package de.hu.gralog.jgrapht.traverse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graphs;
-import org.jgrapht.traverse.CrossComponentIterator;
-import org.jgrapht.util.FibonacciHeap;
-import org.jgrapht.util.FibonacciHeapNode;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
-public class LongestPathIterator<V,E> extends CrossComponentIterator<V,E,FibonacciHeapNode<LongestPathIterator.HeapEntry<V, E>>> {
+public class LongestPathIterator<V,E> extends TopologicalOrderIterator<V,E> {
 
-	private FibonacciHeap<HeapEntry<V,E>> heap = new FibonacciHeap<HeapEntry<V,E>>();
+	private Map<V, Double> lengthsData = new HashMap<V, Double>();
 	
-	public LongestPathIterator( DirectedGraph<V,E> graph, V startVertex ) {
-		super( graph, startVertex );
+	public LongestPathIterator( DirectedGraph<V,E> graph ) {
+		super( graph );
+		for ( V vertex : graph.vertexSet() ) {
+			if ( graph.inDegreeOf( vertex ) == 0 )
+				lengthsData.put( vertex, new Double( 0 ) );
+		}
 	}
 
+	private double calculatePathLength( V vertex, E edge ) {
+		if ( edge == null )
+			return 0;
+		V fromVertex = Graphs.getOppositeVertex( getGraph(), edge, vertex );
+		Double fromVertexData = lengthsData.get( fromVertex );
+		return fromVertexData.doubleValue() + getGraph().getEdgeWeight( edge );
+	}
+		
 	@Override
 	protected void encounterVertex(V vertex, E edge) {
-		FibonacciHeapNode<HeapEntry<V, E>> node = createSeenData(vertex, edge);
-        putSeenData(vertex, node);
-        heap.insert(node, node.getKey());
+		super.encounterVertex(vertex, edge);
+		lengthsData.put( vertex, new Double( calculatePathLength( vertex, edge ) ) );
 	}
 
 	@Override
 	protected void encounterVertexAgain(V vertex, E edge) {
-		FibonacciHeapNode<HeapEntry<V, E>> node = getSeenData(vertex);
-
-        if (node.getData().frozen) {
-            // no improvement for this vertex possible
-            return;
-        }
-
-        double candidatePathLength = calculatePathLength(vertex, edge);
-
-        if (candidatePathLength < node.getKey())
-            heap.decreaseKey(node, candidatePathLength);
+		super.encounterVertexAgain(vertex, edge);
+		Double vertexData = lengthsData.get( vertex );
+		double newPathLength = calculatePathLength( vertex, edge );
+		if ( vertexData.doubleValue() < newPathLength )
+			lengthsData.put( vertex, new Double( newPathLength ) );
 	}
 
-	@Override
-	protected boolean isConnectedComponentExhausted() {
-		if ( heap.size() == 0 )
-			return true;
-		return false;
+	public double getLongestPathLength( V vertex ) {
+		return lengthsData.get( vertex ).doubleValue();
 	}
-
-	@Override
-	protected V provideNextVertex() {
-		FibonacciHeapNode<HeapEntry<V, E>> node = heap.removeMin();
-        node.getData().frozen = true;
-
-        return node.getData().vertex;
-	}
-	
-	/**
-     * Get the length of the shortest path known to the given vertex.  If the
-     * vertex has already been visited, then it is truly the shortest path
-     * length; otherwise, it is the best known upper bound.
-     *
-     * @param vertex vertex being sought from start vertex
-     *
-     * @return length of shortest path known, or Double.POSITIVE_INFINITY if no
-     *         path found yet
-     */
-    public double getLongestPathLength(V vertex)
-    {
-        FibonacciHeapNode<HeapEntry<V, E>> node = getSeenData(vertex);
-
-        if (node == null) {
-            return Double.POSITIVE_INFINITY;
-        }
-
-        return node.getKey();
-    }
-	
-	private void assertNonNegativeEdge(E edge)
-    {
-        if (getGraph().getEdgeWeight(edge) < 0) {
-            throw new IllegalArgumentException(
-                "negative edge weights not allowed");
-        }
-    }
-	
-	/**
-     * Determine path length to a vertex via an edge, using the path length for
-     * the opposite vertex.
-     *
-     * @param vertex the vertex for which to calculate the path length.
-     * @param edge the edge via which the path is being extended.
-     *
-     * @return calculated path length.
-     */
-    private double calculatePathLength(V vertex, E edge )
-    {
-        assertNonNegativeEdge(edge);
-
-        double maxPathLen = 0;
-        
-        for ( E incomingEdge : ((DirectedGraph<V,E>)getGraph()).incomingEdgesOf( vertex ) ) {
-        	FibonacciHeapNode<HeapEntry<V,E>> node = getSeenData( Graphs.getOppositeVertex( getGraph(), incomingEdge, vertex ) );
-        	if ( node == null ) {
-        		maxPathLen = Double.POSITIVE_INFINITY;
-        		break;
-        	} else {
-        		if ( maxPathLen < node.getKey() )
-        			maxPathLen = node.getKey();
-        	}
-        }
-        
-       
-        
-        V otherVertex = Graphs.getOppositeVertex(getGraph(), edge, vertex);
-        FibonacciHeapNode<HeapEntry<V, E>> otherEntry =
-            getSeenData(otherVertex);
-
-        return maxPathLen
-            + getGraph().getEdgeWeight(edge);
-    }
-	
-	private FibonacciHeapNode<HeapEntry<V, E>> createSeenData(
-	        V vertex,
-	        E edge)
-	    {
-	        double longestPathLength;
-
-	        if (edge == null) {
-	            longestPathLength = 0;
-	        } else {
-	            longestPathLength = calculatePathLength(vertex, edge);
-	        }
-
-	        HeapEntry<V, E> entry = new HeapEntry<V, E>();
-	        entry.vertex = vertex;
-	        entry.spanningTreeEdge = edge;
-
-	        return
-	            new FibonacciHeapNode<HeapEntry<V, E>>(
-	                entry,
-	                longestPathLength);
-	    }
-
-	    //~ Inner Classes ---------------------------------------------------------
-
-	    /**
-	     * Private data to associate with each entry in the priority queue.
-	     */
-	    static class HeapEntry<V, E>
-	    {
-	        /**
-	         * Best spanning tree edge to vertex seen so far.
-	         */
-	        E spanningTreeEdge;
-
-	        /**
-	         * The vertex reached.
-	         */
-	        V vertex;
-
-	        /**
-	         * True once spanningTreeEdge is guaranteed to be the true minimum.
-	         */
-	        boolean frozen;
-
-	        HeapEntry()
-	        {
-	        }
-	    }
 }

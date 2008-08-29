@@ -26,6 +26,7 @@ import java.beans.Customizer;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import javax.swing.JLabel;
@@ -34,15 +35,14 @@ import javax.swing.JScrollPane;
 
 import net.infonode.docking.View;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.gui.BeanEditorTableModel;
+import de.hu.gralog.graph.GralogGraph;
 import de.hu.gralog.gui.MainPad;
-import de.hu.gralog.gui.PropertyEditorTable;
+import de.hu.gralog.gui.components.beans.BeanEditorTableModel;
+import de.hu.gralog.gui.components.beans.PropertyEditorTable;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 import de.hu.gralog.jgraph.GJGraph;
-import de.hu.gralog.jgrapht.event.GraphPropertyListener;
 
 public class GraphPropertyEditorView extends View implements EditorDesktopViewListener, DocumentListener {
 	
@@ -107,7 +107,7 @@ public class GraphPropertyEditorView extends View implements EditorDesktopViewLi
 	
 	public void currentDocumentSelectionChanged() {
 		Document document = MainPad.getInstance().getDesktop().getCurrentDocument();
-		if ( document != null && document.getGraph() != null && document.getGraph().isElementsAndStructureEditable() && document.getGraph().getGraphT().isGraphEditable() ) {
+		if ( document != null && document.getGraph() != null && document.getGraph().isElementsAndStructureEditable() && document.getGraph().getGraphT().getGralogSupport().isBeanEditable() ) {
 			JPanel panel = getPanel( document );
 			
 			setComponent( panel );
@@ -133,21 +133,17 @@ public class GraphPropertyEditorView extends View implements EditorDesktopViewLi
 		
 	}
 
-	private static class GraphPropertyEditorTableModel extends BeanEditorTableModel implements GraphPropertyListener {
+	private static class GraphPropertyEditorTableModel extends BeanEditorTableModel implements PropertyChangeListener {
 		
-		public GraphPropertyEditorTableModel( GraphWithEditableElements graph ) {
+		public GraphPropertyEditorTableModel( GralogGraph graph ) {
 			super( graph );
-			graph.addGraphPropertyListener( this );
+			graph.getGralogSupport().getPropertyChangeSupport().addPropertyChangeListener( this );
 		}
 
-		public void propertyChanged(Object graphSource, PropertyChangeEvent e) {
-			if ( graphSource instanceof GraphWithEditableElements )
-				fireTableDataChanged();
+		public void propertyChange( PropertyChangeEvent e ) {
+			fireTableDataChanged();
 		}
 
-		public void propertyChanged(Object graphSource, PropertyChangeEvent e, Object[] elementsToUpdateView) {
-			propertyChanged( graphSource, e );
-		}
 	}
 
 	public void documentClosed(Document document) {

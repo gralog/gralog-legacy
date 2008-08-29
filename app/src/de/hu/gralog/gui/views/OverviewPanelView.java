@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 
 import net.infonode.docking.View;
 import de.hu.gralog.gui.MainPad;
-import de.hu.gralog.gui.OverviewPanel;
+import de.hu.gralog.gui.components.OverviewPanel;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
 

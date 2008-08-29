@@ -26,9 +26,9 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 import net.infonode.docking.View;
-import de.hu.gralog.gui.BeanEditorTableModel;
 import de.hu.gralog.gui.MainPad;
-import de.hu.gralog.gui.PropertyEditorTable;
+import de.hu.gralog.gui.components.beans.BeanEditorTableModel;
+import de.hu.gralog.gui.components.beans.PropertyEditorTable;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;

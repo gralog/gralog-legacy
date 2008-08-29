@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import javax.swing.undo.UndoManager;
 
 import de.hu.gralog.app.InputOutputException;
-import de.hu.gralog.gui.FileFormat;
 import de.hu.gralog.jgraph.GJGraph;
 
 public abstract class DocumentContent {

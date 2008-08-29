@@ -58,24 +58,24 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import net.infonode.docking.View;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
+import de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraphModeListener;
+import de.hu.gralog.algorithm.result.ElementTipsDisplayMode;
+import de.hu.gralog.algorithm.result.ElementTipsDisplayModeListener;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
-import de.hu.gralog.graph.alg.AlgorithmResultInfo;
-import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
-import de.hu.gralog.gui.HTMLEditorPane;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.components.HTMLEditorPane;
 import de.hu.gralog.gui.document.AlgorithmResultDocumentContent;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
 import de.hu.gralog.jgraph.GJGraph;
 import de.hu.gralog.jgraph.GJGraphUtil;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphModeListener;
-import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
-import de.hu.gralog.jgrapht.graph.ElementTipsDisplayModeListener;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 
 public class AlgorithmResultView extends View implements EditorDesktopViewListener, DocumentListener {
 	
@@ -265,8 +265,12 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 					END.setEnabled( true );
 					NEXT.setEnabled( true );
 				}
-
-				info.setCurrentContent( info.getContentList().get( step ) );
+				
+				try {
+					info.setCurrentContent( info.getContentList().get( step ) );
+				} catch( UserException e ) {
+					MainPad.getInstance().handleUserException( e );
+				}
 			}
 			
 			public void actionPerformed(ActionEvent e) {
@@ -314,17 +318,32 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 
 			public Object getChild(Object parent, int index) {
 				AlgorithmResultContentTreeNode parentNode = (AlgorithmResultContentTreeNode)parent;
-				return parentNode.getChildren().get( index );
+				try {
+					return parentNode.getChildren().get( index );
+				} catch (UserException e) {
+					MainPad.getInstance().handleUserException( e );
+				}
+				return null;
 			}
 
 			public int getChildCount(Object parent) {
 				AlgorithmResultContentTreeNode parentNode = (AlgorithmResultContentTreeNode)parent;
-				return parentNode.getChildren().size();
+				try {
+					return parentNode.getChildren().size();
+				} catch (UserException e) {
+					MainPad.getInstance().handleUserException( e );
+				}
+				return 0;
 			}
 
 			public int getIndexOfChild(Object parent, Object child) {
 				AlgorithmResultContentTreeNode parentNode = (AlgorithmResultContentTreeNode)parent;
-				return parentNode.getChildren().indexOf( child );
+				try {
+					return parentNode.getChildren().indexOf( child );
+				} catch (UserException e) {
+					MainPad.getInstance().handleUserException( e );
+				}
+				return 0;
 			}
 
 			public Object getRoot() {
@@ -333,7 +352,12 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 
 			public boolean isLeaf(Object node) {
 				AlgorithmResultContentTreeNode nodeNode = (AlgorithmResultContentTreeNode)node;
-				return nodeNode.getChildren().size() == 0;
+				try {
+					return nodeNode.getChildren().size() == 0;
+				} catch (UserException e) {
+					MainPad.getInstance().handleUserException( e );
+				}
+				return true;
 			}
 
 			public void addTreeModelListener(TreeModelListener l) {
@@ -349,8 +373,13 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 
 		public void valueChanged(TreeSelectionEvent e) {
 			TreePath path = e.getNewLeadSelectionPath();
-			if ( path != null )
-				info.setCurrentContent( (AlgorithmResultContent) path.getLastPathComponent() );
+			if ( path != null ) {
+				try {
+					info.setCurrentContent( (AlgorithmResultContent) path.getLastPathComponent() );
+				} catch (UserException e1) {
+					MainPad.getInstance().handleUserException( e1 );
+				}
+			}
 		}
 	}
 	
@@ -410,6 +439,8 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 						MainPad.getInstance().getDesktop().openDocument(  graph );
 					} catch( InputOutputException i ) {
 						MainPad.getInstance().handleUserException( new UserException( "unable to open as graph", i ) );
+					} catch (UserException u) {
+						MainPad.getInstance().handleUserException( u );
 					}
 				}
 				
@@ -423,20 +454,21 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			JPanel panel = new JPanel();
 			panel.setBorder( BorderFactory.createTitledBorder( "Subgraph Options" ) );
 
-			panel.setLayout( new BorderLayout() );
+			panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
 			
 			for ( String description : info.getDisplaySubgraphModes().keySet() ) {
 				final DisplaySubgraphMode displayMode = info.getDisplaySubgraphModes().get( description );
 				
-				JPanel tablePanel = new JPanel( new BorderLayout() );
+				JPanel tablePanel = new JPanel(  );
+				tablePanel.setLayout( new BoxLayout( tablePanel, BoxLayout.Y_AXIS ) );
 				JTable table = new DisplaySubgraphTable( displayMode );
-				tablePanel.add( new JScrollPane( table ), BorderLayout.CENTER );
+				tablePanel.add( table );
 				final JCheckBox visible = new JCheckBox( );
 				visible.setModel( new DisplaySubgraphModeVisibleButtonModel( displayMode ) );
 
 				visible.setBorder( BorderFactory.createEmptyBorder( 5, 0,0,0 ) );
 				
-				tablePanel.add( visible, BorderLayout.SOUTH );
+				tablePanel.add( visible );
 				cards.add( tablePanel, description );
 			}
 			
@@ -460,8 +492,8 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			chooseSubgraphPanel.add( chooseSubgraphLabel );
 			chooseSubgraphPanel.add( chooseSubgraph );
 
-			panel.add( chooseSubgraphPanel, BorderLayout.NORTH );
-			panel.add( cards, BorderLayout.CENTER );
+			panel.add( chooseSubgraphPanel );
+			panel.add( cards );
 			return panel;
 		}
 		

@@ -38,18 +38,19 @@ import net.infonode.docking.ViewSerializer;
 import net.infonode.docking.WindowPopupMenuFactory;
 import net.infonode.docking.util.DockingUtil;
 import net.infonode.util.Direction;
+import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.alg.AlgorithmResultInfo;
+import de.hu.gralog.graph.types.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentContentFactory;
 import de.hu.gralog.gui.document.DocumentListener;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.util.WeakListenerList;
 
 public class EditorDesktopView extends View implements DocumentListener {
 
-	private final  ArrayList listeners = new ArrayList();
+	private final  WeakListenerList<EditorDesktopViewListener> listeners = new WeakListenerList<EditorDesktopViewListener>();
 	private RootWindow rootWindow;
 	private ArrayList<DocumentView> documentViews = new ArrayList<DocumentView>();
 	private DocumentView currentView = null;
@@ -121,7 +122,7 @@ public class EditorDesktopView extends View implements DocumentListener {
                 System.out.println("");
 	}
 	
-	public void newDocument(GraphTypeInfo graphType) {
+	public void newDocument(GralogGraphTypeInfo graphType) {
 		try {
 			openDocument(new Document( DocumentContentFactory.getInstance().createDocumentContent( graphType )));
 		} catch(UserException e) {
@@ -307,20 +308,18 @@ public class EditorDesktopView extends View implements DocumentListener {
 	}
 	
 	protected void fireCurrentDocumentSelectionChanged() {
-		for (int i = 0; i < listeners.size();i++) {
-			EditorDesktopViewListener l = (EditorDesktopViewListener)listeners.get( i );
+		
+		for ( EditorDesktopViewListener l : listeners.getListeners() )
 			l.currentDocumentSelectionChanged(  );
-		}
 		updateControls();
 	}
 	
 	public void addEditorDesktopViewListener(EditorDesktopViewListener l) {
-		if (!listeners.contains( l ))
-			listeners.add( l );
+		listeners.addListener( l );
 	}
 
 	public void removeEditorDesktopViewListener(EditorDesktopViewListener l) {
-		listeners.remove( l );
+		listeners.removeListener( l );
 	}
 		
 	private class DesktopDocumentViewListener extends DockingWindowAdapter {
@@ -352,7 +351,7 @@ public class EditorDesktopView extends View implements DocumentListener {
 
 	protected void saveWithAbort( DocumentView editor ) throws OperationAbortedException {
 		if ( editor.getDocument().isModified() ) {
-			int retValue = JOptionPane.showConfirmDialog( MainPad.getInstance(), "�nderungen am Dokument " + editor.getDocument().getName() + " speichern?", "Dokument schliessen", JOptionPane.YES_NO_CANCEL_OPTION );
+			int retValue = JOptionPane.showOptionDialog( MainPad.getInstance(), "Save changes for document " + editor.getDocument().getName() + " ?", "Close Document", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, MainPad.YES_NO_CANCEL_BUTTON_TEXT, MainPad.YES_NO_CANCEL_BUTTON_TEXT[0] );
 			if ( retValue == JOptionPane.YES_OPTION ) {
 				try {
 					editor.getDocument().save();

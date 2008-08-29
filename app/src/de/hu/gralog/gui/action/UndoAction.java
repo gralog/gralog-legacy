@@ -23,8 +23,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import de.hu.gralog.gui.GUndoManager;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.components.undo.GUndoManager;
 
 public class UndoAction extends AbstractAction {
 

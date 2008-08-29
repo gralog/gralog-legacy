@@ -37,28 +37,38 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTree;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import net.infonode.docking.View;
 
 import org.jgrapht.Graph;
 
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultInfo;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.gui.BeanEditorTableModel;
-import de.hu.gralog.gui.HTMLEditorPane;
+import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.graph.GralogGraph;
 import de.hu.gralog.gui.MainPad;
-import de.hu.gralog.gui.PropertyEditorTable;
+import de.hu.gralog.gui.components.HTMLEditorPane;
+import de.hu.gralog.gui.components.beans.BeanEditorTableModel;
+import de.hu.gralog.gui.components.beans.PropertyEditorTable;
+import de.hu.gralog.gui.data.AlgorithmsTree;
+import de.hu.gralog.gui.data.AlgorithmsTree.AlgorithmTreeNode;
 import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
@@ -68,11 +78,11 @@ import de.hu.gralog.jgraph.GJGraphUtil;
 public class ExecuteAlgorithmsView extends View implements ActionListener, ListSelectionListener {
 
 	protected ArrayList<AlgorithmInfo> algorithms;
-	protected JComboBox algorithmChooser;
+	protected JTree algorithmChooser;
 	protected JEditorPane description = new HTMLEditorPane();
 	protected JEditorPane propertyDescription = new HTMLEditorPane();
 	protected BeanEditorTableModel algorithmPropertiesTM = new BeanEditorTableModel();
-	protected JButton executeButton = new JButton( "Execute" );
+	protected JButton executeButton = new JButton( "Execute Algorithm" );
 	protected PropertyEditorTable propertyTable = new PropertyEditorTable(  );
 	
 	public ExecuteAlgorithmsView() {
@@ -81,40 +91,52 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 		algorithms = MainPad.getInstance().getAlgorithms();
 		
 		JPanel panel = (JPanel)getComponent();
-		panel.setLayout( new BorderLayout(  ) );
-		
-		
+		panel.setLayout( new BoxLayout(  panel, BoxLayout.Y_AXIS ) );
+				
 		propertyTable.setModel( algorithmPropertiesTM );
 		propertyTable.getSelectionModel().addListSelectionListener( this );
 		
 		JTabbedPane tabPanel = new JTabbedPane();
-		tabPanel.setBorder( BorderFactory.createTitledBorder( "Settings" ) );
+		//tabPanel.setBorder( BorderFactory.createTitledBorder( "Settings" ) );
 		
 		JPanel algorithmChooserPanel = new JPanel();
-		algorithmChooserPanel.setLayout( new BoxLayout( algorithmChooserPanel, BoxLayout.X_AXIS ) );
-		algorithmChooserPanel.setBorder( BorderFactory.createTitledBorder( "Choose Algorithm" ) );
+		algorithmChooserPanel.setLayout( new BorderLayout( ) );
+		//algorithmChooserPanel.setBorder( BorderFactory.createTitledBorder( "Algorithms" ) );
 		
-		algorithmChooser =  new JComboBox( new AlgorithmsComboBoxModel( algorithms ) );
+		algorithmChooser =  new JTree( new AlgorithmsTreeModel( MainPad.getAlgorithmTree( algorithms ) ) );
 		algorithmChooser.setBorder( BorderFactory.createEmptyBorder( 0, 5, 0, 5) );
-		algorithmChooser.addItemListener( new ComboBoxItemListener() );
+		algorithmChooser.addTreeSelectionListener( new AlgorithmChooserListener() );
+		algorithmChooser.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+		algorithmChooser.setRootVisible( false );
+		algorithmChooser.setShowsRootHandles( true );
 		
 		executeButton.setActionCommand( "execute" );
 		executeButton.addActionListener( this );
 		executeButton.setEnabled( false );
 		
-		algorithmChooserPanel.add( algorithmChooser );
-		algorithmChooserPanel.add( executeButton );
+		algorithmChooserPanel.add( new JScrollPane( algorithmChooser ), BorderLayout.CENTER );
 		
 		description = new HTMLEditorPane();
 		
-		JSplitPane properties = new JSplitPane( JSplitPane.VERTICAL_SPLIT, new JScrollPane( propertyTable ), new JScrollPane( propertyDescription ) );
+/*		JSplitPane properties = new JSplitPane( JSplitPane.VERTICAL_SPLIT, new JScrollPane( propertyTable ), new JScrollPane( propertyDescription ) );
 		properties.setDividerLocation( 100 );
 		properties.setOneTouchExpandable( true );
-		tabPanel.addTab( "properties", properties );
+*/
+		tabPanel.addTab( "properties", new JScrollPane( propertyTable ) );
 		tabPanel.addTab( "description", new JScrollPane( description ) );
 		
-		panel.add( algorithmChooserPanel, BorderLayout.NORTH );
-		panel.add( tabPanel, BorderLayout.CENTER );
+		JPanel executePanel = new JPanel( new BorderLayout() );
+		executePanel.add( executeButton, BorderLayout.CENTER );
+
+		JSplitPane chooseAndProperties = new JSplitPane( JSplitPane.VERTICAL_SPLIT, algorithmChooserPanel, tabPanel );
+		chooseAndProperties.setDividerLocation( 100 );
+		chooseAndProperties.setOneTouchExpandable( true );
+		
+		JPanel chooseAndPropertiesPanel = new JPanel( new BorderLayout() );
+		chooseAndPropertiesPanel.add( chooseAndProperties, BorderLayout.CENTER );
+		
+		panel.add( chooseAndPropertiesPanel );
+		panel.add( executePanel );
 	}
 
 	public class AlgorithmsComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -144,6 +166,53 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 		
 	}
 	
+	public class AlgorithmsTreeModel implements TreeModel {
+
+		private final AlgorithmsTree algorithmsTree;
+		
+		public AlgorithmsTreeModel( AlgorithmsTree algorithmsTree ) {
+			this.algorithmsTree = algorithmsTree;
+		}
+		
+		public Object getRoot() {
+			return algorithmsTree.getRoot();
+		}
+
+		public Object getChild(Object parent, int index) {
+			return ((AlgorithmTreeNode)parent).getChildren().get( index );
+		}
+
+		public int getChildCount(Object parent) {
+			return ((AlgorithmTreeNode)parent).getChildren().size();
+		}
+
+		public boolean isLeaf(Object node) {
+			return ((AlgorithmTreeNode)node).isLeave();
+		}
+
+		public void valueForPathChanged(TreePath path, Object newValue) {
+		}
+
+		public int getIndexOfChild(Object parent, Object child) {
+			AlgorithmTreeNode parentTN = (AlgorithmTreeNode)parent;
+			int index = 0;
+			for ( AlgorithmTreeNode node : parentTN.getChildren() ) {
+				if ( node == child )
+					return index;
+				index++;
+			}
+			return index;
+		}
+
+		public void addTreeModelListener(TreeModelListener l) {
+		}
+
+		public void removeTreeModelListener(TreeModelListener l) {
+		}
+		
+		
+	}
+	
 	private class ComboBoxItemListener implements ItemListener {
 
 		public void itemStateChanged(ItemEvent e) {
@@ -165,12 +234,38 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 		
 	}
 	
+	private class AlgorithmChooserListener implements TreeSelectionListener {
+
+		public void valueChanged(TreeSelectionEvent e) {
+			executeButton.setEnabled( false );
+			if ( e.getPath() != null ) {
+				AlgorithmTreeNode node = (AlgorithmTreeNode)e.getPath().getLastPathComponent();
+				if (  node != null && node.isLeave() ) {
+					AlgorithmInfo info = (AlgorithmInfo)node.getData();
+					Algorithm algorithm = info.getAlgorithm();
+					
+					algorithmPropertiesTM.setBean( algorithm );
+					
+					try {
+						description.setText( Introspector.getBeanInfo( info.getType() ).getBeanDescriptor().getShortDescription() );
+					} catch (IntrospectionException e1) {
+						description.setText( null );
+					}
+					
+					executeButton.setEnabled( true );
+				}
+			}
+		}
+		
+	}
+
+	
 	protected void executeAlgorithm( Algorithm algorithm ) {
 		try {
 			Hashtable<String, Object> algorithmSettings = new Hashtable<String, Object>();
 			String algorithmName;
 			// erzeuge zun�chst eine Kopie des Algorithmus und aller zugeh�rigen Graphen
-			Hashtable<Graph, GJGraph> jgraphs = new Hashtable<Graph, GJGraph>();
+			Hashtable<GralogGraph, GJGraph> jgraphs = new Hashtable<GralogGraph, GJGraph>();
 			
 			Algorithm preparedAlgorithm = algorithm.getClass().newInstance();
 			
@@ -188,7 +283,9 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 						Graph graph = (Graph)value;
 						for ( Document document : MainPad.getInstance().getDesktop().getOpenDocuments() ) {
 							if ( document.getContent() instanceof GJGraphDocumentContent && document.getGraph().getGraphT() == graph ) {
-								GJGraph jgraph = GJGraphUtil.getGJGraphCopy( document.getGraph() );
+								GJGraph jgraph = document.getGraph();
+								if ( propertyDescriptor instanceof ChooseGraphPropertyDescriptor && ((ChooseGraphPropertyDescriptor)propertyDescriptor).isMakeCopy() )
+									jgraph = GJGraphUtil.getGJGraphCopy( jgraph );
 								jgraphs.put( jgraph.getGraphT(), jgraph );
 								propertyDescriptor.getWriteMethod().invoke( preparedAlgorithm, new Object[] { jgraph.getGraphT() } );
 								algorithmSettings.put( propertyDescriptor.getName(), document.toString() );
@@ -196,14 +293,27 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 						}
 					} else {
 						propertyDescriptor.getWriteMethod().invoke( preparedAlgorithm, new Object[] { value } );
+						if ( value == null )
+							value = "null";
 						algorithmSettings.put( propertyDescriptor.getName(), value );
 					}
 				}
 			}
 			
 			AlgorithmResult result = preparedAlgorithm.execute();
-			AlgorithmResultInfo info = new AlgorithmResultInfo( algorithmName, algorithmSettings, result, jgraphs );
-			MainPad.getInstance().getDesktop().newDocument( info );
+			if ( result != null ) {
+				if ( result.isOpenContentsAsGraphs() ) {
+					for( GralogGraph graph : AlgorithmResultInfo.getAllGraphs( result ) ) {
+						GJGraph gjGraph = jgraphs.get( graph );
+						if ( gjGraph == null )
+							gjGraph = new GJGraph( graph );
+						MainPad.getInstance().getDesktop().openDocument( gjGraph );
+					}
+				} else {
+					AlgorithmResultInfo info = new AlgorithmResultInfo( algorithmName, algorithmSettings, result, jgraphs );
+					MainPad.getInstance().getDesktop().newDocument( info );
+				}
+			}
 		} catch (IntrospectionException e) {
 			MainPad.getInstance().handleUserException( new UserException("could not execute algorithm", e) );
 		} catch (IllegalArgumentException e) {
@@ -226,7 +336,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 
 	public void actionPerformed(ActionEvent e) {
 		if ( e.getActionCommand().equalsIgnoreCase( "execute" ) ) {
-			Algorithm algorithm = ((AlgorithmInfo)algorithmChooser.getModel().getSelectedItem()).getAlgorithm();
+			Algorithm algorithm = ((AlgorithmInfo)((AlgorithmTreeNode)algorithmChooser.getLastSelectedPathComponent()).getData()).getAlgorithm();
 			
 			executeAlgorithm( algorithm );
 		}

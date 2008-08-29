@@ -25,7 +25,7 @@ import org.jgraph.JGraph;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.EdgeRenderer;
 
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
 /** 
  * 

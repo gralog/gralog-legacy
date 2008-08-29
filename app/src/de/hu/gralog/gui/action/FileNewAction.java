@@ -23,14 +23,14 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.types.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 
 public class FileNewAction extends AbstractAction {
 
-	private GraphTypeInfo graphType;
+	private GralogGraphTypeInfo graphType;
 	
-	public FileNewAction( GraphTypeInfo graphType ) {
+	public FileNewAction( GralogGraphTypeInfo graphType ) {
 		super( graphType.getName(), null );
 		this.graphType = graphType;
 	}

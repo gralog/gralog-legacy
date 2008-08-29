@@ -27,12 +27,11 @@ import java.util.Map;
 
 import javax.swing.filechooser.FileFilter;
 
+import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.graph.alg.AlgorithmResultInfo;
-import de.hu.gralog.gui.FileFormat;
+import de.hu.gralog.graph.GralogGraphFactory;
+import de.hu.gralog.graph.types.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.GJGraph;
 
@@ -109,10 +108,10 @@ public class DocumentContentFactory {
 		}
 	}
 	
-	public DocumentContent createDocumentContent( GraphTypeInfo graphType ) throws UserException {
+	public DocumentContent createDocumentContent( GralogGraphTypeInfo graphType ) throws UserException {
 		DocumentContent content = null;
 		
-		content = new GJGraphDocumentContent( new GJGraph( (GraphWithEditableElements)graphType.newInstance() ) );
+		content = new GJGraphDocumentContent( new GJGraph( GralogGraphFactory.createGraph( graphType ) ) );
 		
 		return content;
 	}

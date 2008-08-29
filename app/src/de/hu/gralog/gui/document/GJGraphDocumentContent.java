@@ -27,9 +27,8 @@ import javax.swing.undo.UndoManager;
 
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.graph.io.XMLDecoderIOFast;
-import de.hu.gralog.gui.FileFormat;
-import de.hu.gralog.gui.GraphEditor;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.components.GraphEditor;
 import de.hu.gralog.jgraph.GJGraph;
 import de.hu.gralog.jgraph.GJGraphUtil;
 

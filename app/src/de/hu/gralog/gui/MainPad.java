@@ -29,8 +29,6 @@ import java.awt.event.WindowEvent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -38,8 +36,9 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Properties;
+import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.jar.JarFile;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractButton;
@@ -71,9 +70,10 @@ import net.infonode.docking.title.LengthLimitedDockingWindowTitleProvider;
 import net.infonode.docking.util.DeveloperUtil;
 import net.infonode.docking.util.DockingUtil;
 import net.infonode.docking.util.ViewMap;
+import de.hu.gralog.algorithm.Algorithm;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.alg.Algorithm;
+import de.hu.gralog.beans.GralogCoreInitialize;
+import de.hu.gralog.graph.types.GralogGraphTypeInfo;
 import de.hu.gralog.gui.action.ChangeEditorStateAction;
 import de.hu.gralog.gui.action.EditCopyAction;
 import de.hu.gralog.gui.action.EditCutAction;
@@ -106,6 +106,7 @@ import de.hu.gralog.gui.data.JarLoader;
 import de.hu.gralog.gui.data.PluginManager;
 import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
 import de.hu.gralog.gui.document.DocumentContentFactory;
+import de.hu.gralog.gui.document.FileFormat;
 import de.hu.gralog.gui.views.AlgorithmResultView;
 import de.hu.gralog.gui.views.EditorDesktopView;
 import de.hu.gralog.gui.views.EditorDesktopViewListener;
@@ -117,7 +118,9 @@ import de.hu.gralog.jgraph.GJGraph;
 import de.hu.gralog.util.WeakListenerList;
 
 public class MainPad extends JFrame {
-		
+
+	public static final Object[] YES_NO_CANCEL_BUTTON_TEXT = { "Yes", "No", "Cancel" }; 
+	
 	public static final FileOpenAction FILE_OPEN_ACTION = new FileOpenAction(  );
 	
 	public static final FileCloseAction FILE_CLOSE_ACTION = new FileCloseAction(  );
@@ -166,15 +169,16 @@ public class MainPad extends JFrame {
 	static {
 		FILE_CHOOSER.setAcceptAllFileFilterUsed( true );
 		FILE_CHOOSER.setFileHidingEnabled( true );
+		
 	}
 	
 	private static MainPad mainPad = new MainPad();
-
+	private static final JarLoader jarLoader = new JarLoader( MainPad.class.getClassLoader() );
+	
 	public FileNewAction[] FILE_NEW_ACTIONS;
 	
 	private static final boolean REVERT_ENABLED = false;
 	private static final PluginManager PLUGIN_MANAGER = new PluginManager();
-	private static final JarLoader CLASS_LOADER = new JarLoader( "file://", MainPad.class.getClassLoader() );
 	
 	private static final Preferences PREFERENCES = Preferences.userNodeForPackage( MainPad.class );
 	private static final String PREFS_WINDOW_LAYOUT = "WINDOWLAYOUT";
@@ -195,9 +199,6 @@ public class MainPad extends JFrame {
 	}
 	
 	private static RootWindow rootWindow;
-	
-	private Properties gamesProperties;
-	private AlgorithmsTree algorithms;
 	
 	private ButtonGroup buttonGroupToolBar = new ButtonGroup();
 	private EditorState editorState = EditorState.SELECT;
@@ -245,17 +246,29 @@ public class MainPad extends JFrame {
 	}
 	
 	private MainPad( ) {
-		super("Games");
+		super( "Gralog" );
 
+		try {
+			GralogCoreInitialize.initialize();
+		} catch( UserException e ) {
+			e.printStackTrace();
+		}
+		Locale.setDefault( new Locale( "en", "UK" ) );
 		super.setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		super.addWindowListener( new MainPadWindowListener() );
 		super.setLayout( new BorderLayout() );
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		super.setPreferredSize( ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getSize() );
+		
+		
 	}
 	
 	public void showWindowLayoutFrame() {
 		DeveloperUtil.createWindowLayoutFrame( "Windowlayout", rootWindow ).setVisible( true );
+	}
+
+	public void readJarFile( JarFile file ) {
+		jarLoader.readJarFile( file );
 	}
 	
 	public void loadSettings() {
@@ -276,9 +289,10 @@ public class MainPad extends JFrame {
 			handleUserException( e );
 		}
 		
-		String defaultDir = System.getProperty( "user.home", null );
-		if ( defaultDir != null )
+		String defaultDir = System.getProperty( "user.home", "" );
+		if ( defaultDir.length() != 0 )
 			defaultDir = defaultDir + "/gralog/plugins";
+		defaultDir = defaultDir + ";" + new File( "." ).getPath() + "/plugins";
 		String pluginDirectories = PREFERENCES.get( PREFS_PLUGIN_DIRECTORIES, defaultDir );
 		if ( pluginDirectories != null ) {
 			StringTokenizer st = new StringTokenizer( pluginDirectories, ";" );
@@ -293,15 +307,19 @@ public class MainPad extends JFrame {
 			}
 		}
 		
-		FILE_NEW_ACTIONS = new FileNewAction[PLUGIN_MANAGER.getGraphTypes().size()];
+		FILE_NEW_ACTIONS = new FileNewAction[getGraphTypeInfos().size()];
 		int i = 0;
-		for ( GraphTypeInfo graphType : PLUGIN_MANAGER.getGraphTypes() ) {
+		for ( GralogGraphTypeInfo graphType : getGraphTypeInfos() ) {
 			FILE_NEW_ACTIONS[i++] = new FileNewAction( graphType );
 		}
 	}
 	
-	public JarLoader getClassLoader() {
-		return CLASS_LOADER;
+	public ArrayList<GralogGraphTypeInfo> getGraphTypeInfos() {
+		return PLUGIN_MANAGER.getGraphTypes();
+	}
+	
+	public JarLoader getJarLoader() {
+		return jarLoader;
 	}
 	
 	protected void loadWindowLayout() {
@@ -532,60 +550,18 @@ public class MainPad extends JFrame {
 		fireEditorStateChanged( from, editorState );
 	}
 	
-	protected void loadProperties() {
-		gamesProperties = loadProperties( getClass().getResourceAsStream( "/de/hu/gralog/resources/algorithms.conf") );
-		createAlgorithms();
-	}
-	
-	protected Properties loadProperties( InputStream input ) {
-		Properties properties = new Properties();
-		try {
-			properties.load( input );
-		} catch (IOException e) {
-			handleUserException( new UserException( "IOException when reading Properties ", e ) );
-		}
-		return properties;
-	}
-	
-	protected Properties loadProperties( File file ) {
-		try {
-			return loadProperties( new FileInputStream( file ) );
-		} catch (FileNotFoundException e) {
-			handleUserException( new UserException( "file not found " + file.getName(), e ) );
-		}
-		return new Properties();
-	}
-	
-	public void addProperties( File file ) throws NoSuchMethodException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-		algorithms.addProperties( loadProperties( file ) );
-	}
-	
-	protected void createAlgorithms() {
-		try {
-			algorithms = new AlgorithmsTree( gamesProperties );
-		} catch (ClassNotFoundException e) {
-			handleUserException( new UserException( "error building algorithmtree", e) );
-		} catch (NoSuchMethodException e) {
-			handleUserException( new UserException( "error building algorithmtree", e) );
-		} catch (InstantiationException e) {
-			handleUserException( new UserException( "error building algorithmtree", e) );
-		} catch (IllegalAccessException e) {
-			handleUserException( new UserException( "error building algorithmtree", e) );
-		}
-	}
-	
 	public ArrayList<AlgorithmInfo> getAlgorithms() {
 		return PLUGIN_MANAGER.getAlgorithms();
 	}
 	
-	public AlgorithmsTree getAlgorithmTree() {
-		return algorithms;
+	public static AlgorithmsTree getAlgorithmTree( ArrayList<AlgorithmInfo> algorithms ) {
+		return new AlgorithmsTree( algorithms );
 	}
 	
 	protected Algorithm getAlgorithmByName( String classname ) {
 		Algorithm algorithm = null;
 		try {
-			algorithm = (Algorithm) getClass().getClassLoader().loadClass( classname ).newInstance();
+			algorithm = (Algorithm) getJarLoader().loadClass( classname ).newInstance();
 		} catch (InstantiationException e) {
 			handleUserException( new UserException( "algorithm: " + classname + " could not be initiated", e ) );
 		} catch (IllegalAccessException e) {

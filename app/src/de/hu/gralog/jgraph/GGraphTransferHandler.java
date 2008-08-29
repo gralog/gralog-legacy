@@ -67,8 +67,9 @@ public class GGraphTransferHandler extends GraphTransferHandler {
 
 	@Override
 	protected GraphTransferable create(JGraph graph, Object[] cells, Map viewAttributes, Rectangle2D bounds, ConnectionSet cs, ParentMap pm) {
-		// TODO Auto-generated method stub
 		return new GGraphTransferable((GJGraph)graph, cells, viewAttributes, bounds, cs, pm);
+		//return new GGraphTransferable((GJGraph)graph, cells, null, null, null, null);
+
 	}
 
 	@Override

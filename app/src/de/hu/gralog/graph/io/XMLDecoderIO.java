@@ -32,37 +32,31 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
-import org.jgrapht.Graph;
 import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.Subgraph;
 
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.ElementTipsDisplayMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.InputOutputException;
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
-import de.hu.gralog.graph.alg.AlgorithmResultInfo;
+import de.hu.gralog.app.UserException;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.AlgorithmResultDocumentContent;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 import de.hu.gralog.jgraph.GJGraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
-import de.hu.gralog.jgrapht.graph.GraphUtils;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
 
 public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDocumentContentIO, ExceptionListener {
 
 	private static final GJGraphPersistenceDelegate GJGRAPH_PD =  new GJGraphPersistenceDelegate();
-	private static final GraphWithEditableElementsPersistenceDelegate GRAPH_PD = new GraphWithEditableElementsPersistenceDelegate();
 	private static final SubgraphPersistenceDelegate SUBGRAPH_PD =  new SubgraphPersistenceDelegate();
 
 	public XMLDecoderIO() {
@@ -79,13 +73,12 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 		XMLEncoder enc = new XMLEncoder( out );
 		
 		enc.setPersistenceDelegate( graph.getClass(), GJGRAPH_PD );
-		enc.setPersistenceDelegate( graph.getGraphT().getClass(), GRAPH_PD );
 		enc.writeObject( graph );
 		enc.close();
 	}
 	
 	protected GJGraph readGraph( InputStream in ) {
-		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getClassLoader() );
+		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getJarLoader() );
 		GJGraph graph = (GJGraph)dec.readObject();
 		graph.getGModel().cellsChanged( graph.getGModel().getVertexCells() );
 		return graph;
@@ -127,30 +120,6 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 		
 	}
 	
-	public static class GraphWithEditableElementsPersistenceDelegate extends DefaultPersistenceDelegate {
-
-		@Override
-		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			
-			GraphWithEditableElements graph = (GraphWithEditableElements)oldInstance;
-			
-			if ( graph.isGraphEditable() )
-				super.initialize( type, oldInstance, newInstance, out );
-			
-			for ( Object vertex : graph.vertexSet() )
-				out.writeStatement( new Statement( oldInstance, "addVertex", new Object[] { vertex } ) );
-			for ( Object edge : graph.edgeSet() )
-				out.writeStatement( new Statement( oldInstance, "addEdge", new Object[] { graph.getEdgeSource( edge ), graph.getEdgeTarget( edge ), edge } ) );
-		}
-
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-			GraphTypeInfo typeInfo = ((GraphWithEditableElements) oldInstance).getTypeInfo();
-			return new Expression( oldInstance, GraphFactory.class, "createGraph", new Object[] { typeInfo.getClass().getCanonicalName() } );
-		}
-		
-	}
-	
 	public AlgorithmResultInfo getDataCopy( AlgorithmResultInfo info ) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		writeAlgorithmResultInfo( info, out );
@@ -158,7 +127,7 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 	}
 	
 	public AlgorithmResultInfo readAlgorithmResultInfo( InputStream in ) {
-		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getClassLoader() );
+		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getJarLoader() );
 		return (AlgorithmResultInfo)dec.readObject();
 	}
 	
@@ -177,8 +146,6 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 		enc.setPersistenceDelegate( DirectedSubgraph.class, SUBGRAPH_PD );
 		enc.setPersistenceDelegate( GJGraph.class, GJGRAPH_PD );
 		
-		for ( Graph graph : info.getAllGraphs() )
-			enc.setPersistenceDelegate( graph.getClass(), GRAPH_PD );
 		enc.writeObject( info );
 		enc.close();
 	}
@@ -285,19 +252,26 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 
 		@Override
 		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			AlgorithmResultContent content = (AlgorithmResultContent)oldInstance;
+			try {
+				AlgorithmResultContent content = (AlgorithmResultContent)oldInstance;
 			
-			if ( content.getGraph() != null )
-				out.writeStatement( new Statement( oldInstance, "setGraph", new Object[] { content.getGraph() } ) );
+				if ( content.getName() != null )
+					out.writeStatement( new Statement( oldInstance, "setName", new Object[] { content.getName() } ) );
+
+				if ( content.getGraph() != null )
+					out.writeStatement( new Statement( oldInstance, "setGraph", new Object[] { content.getGraph() } ) );
 			
-			if ( content.getSubgraphs() != null ) {
-				for ( Map.Entry<String, Subgraph> entry : content.getSubgraphs().entrySet() )
-					out.writeStatement( new Statement( oldInstance, "addDisplaySubgraph", new Object[] { entry.getKey(), entry.getValue() } ) );
-			}
+				if ( content.getSubgraphs() != null ) {
+					for ( Map.Entry<String, Subgraph> entry : content.getSubgraphs().entrySet() )
+						out.writeStatement( new Statement( oldInstance, "addDisplaySubgraph", new Object[] { entry.getKey(), entry.getValue() } ) );
+				}
 			
-			if ( content.getTips() != null ) {
-				for ( Map.Entry<String, Hashtable> entry : content.getTips().entrySet() )
-					out.writeStatement( new Statement( oldInstance, "addElementTips", new Object[] { entry.getKey(), entry.getValue() } ) );
+				if ( content.getTips() != null ) {
+					for ( Map.Entry<String, Hashtable> entry : content.getTips().entrySet() )
+						out.writeStatement( new Statement( oldInstance, "addElementTips", new Object[] { entry.getKey(), entry.getValue() } ) );
+				}
+			} catch( UserException e ) {
+				MainPad.getInstance().handleUserException( e );
 			}
 		}
 
@@ -315,8 +289,13 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 			super.initialize(type, oldInstance, newInstance, out);
 
 			AlgorithmResultContentTreeNode node = (AlgorithmResultContentTreeNode)oldInstance;
-			for ( AlgorithmResultContentTreeNode child : node.getChildren() )
-				out.writeStatement( new Statement( oldInstance, "addChild", new Object[] { child } ) );
+			
+			try {
+				for ( AlgorithmResultContentTreeNode child : node.getChildren() )
+					out.writeStatement( new Statement( oldInstance, "addChild", new Object[] { child } ) );
+			} catch (UserException e) {
+				MainPad.getInstance().handleUserException( e );
+			}
 		}
 	}
 
@@ -324,9 +303,10 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 	public static class SubgraphPersistenceDelegate extends DefaultPersistenceDelegate {
 		@Override
 		protected Expression instantiate(Object oldInstance, Encoder out) {
-			Subgraph subgraph = (Subgraph)oldInstance;
-			Graph base = GraphUtils.getSubgraphBase( subgraph );
-			return new Expression( oldInstance, SubgraphFactory.class, "createSubgraph", new Object[] { base, new HashSet( subgraph.vertexSet() ), new HashSet( subgraph.edgeSet() ) } );
+		//	Subgraph subgraph = (Subgraph)oldInstance;
+		//	Graph base = GraphUtils.getSubgraphBase( subgraph );
+		//	return new Expression( oldInstance, SubgraphFactory.class, "createSubgraph", new Object[] { base, new HashSet( subgraph.vertexSet() ), new HashSet( subgraph.edgeSet() ) } );
+			return null;
 		}
 	}
 

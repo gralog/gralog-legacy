@@ -23,8 +23,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import de.hu.gralog.gui.LayoutDialog;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.layout.LayoutDialog;
 
 public class LayoutDialogAction extends AbstractAction {
 

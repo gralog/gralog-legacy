@@ -20,6 +20,7 @@
 package de.hu.gralog.jgraph;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -44,25 +45,25 @@ import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.GraphModel;
 import org.jgraph.graph.VertexView;
 
-import de.hu.gralog.graph.GraphWithEditableElements;
+import de.hu.gralog.algorithm.result.DisplaySubgraph;
+import de.hu.gralog.algorithm.result.DisplaySubgraphListener;
+import de.hu.gralog.algorithm.result.ElementTips;
+import de.hu.gralog.algorithm.result.ElementTipsListener;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.beans.GralogGraphBean;
+import de.hu.gralog.graph.GralogGraph;
+import de.hu.gralog.graph.types.elements.DefaultListenableElement;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 import de.hu.gralog.jgraph.cellview.VertexDisplayModeRenderer;
-import de.hu.gralog.jgrapht.edge.DefaultListenableEdge;
 import de.hu.gralog.jgrapht.ext.JGraphViewableGraphModelAdapter;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphListener;
-import de.hu.gralog.jgrapht.graph.ElementTips;
-import de.hu.gralog.jgrapht.graph.ElementTipsListener;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
 
 /**
  * 
  * This class overrides JGraph in order to:
- * - display {@link GraphWithEditableElements GraphWithEditableElements}
- * - listen to elementchanges of the underlying {@link GraphWithEditableElements GraphWithEditableElements}
+ * - display {@link GralogGraph GralogGraph}
+ * - listen to elementchanges of the underlying {@link GralogGraph GralogGraph}
  * - add the functionality in order to highlight subgraphs, and to listen to changes of such subgraphs
  * - add tooltips funtionality to vertices and edges
  * - use a custom MarqueeHandler {@link GMarqueeHandler EditableMarqueeHandler}
@@ -79,23 +80,23 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	private final DefaultEdgeRenderer defaultEdgeRenderer = new DefaultEdgeRenderer(  );
 	private final VertexDisplayModeRenderer defaultVertexRenderer = new DefaultVertexRenderer(  );
 	
-	private GraphWithEditableElements grapht;
+	private GralogGraph grapht;
 	private Vector registeredSubgraphs = new Vector();
 	private Vector highlightObjects = new Vector();
 	protected ArrayList<ElementTips> registeredElementTips = new ArrayList<ElementTips>();
 	private boolean elementsAndStructureEditable = true;
 	
-	public GJGraph( GraphWithEditableElements grapht ) {
+	public GJGraph( GralogGraph grapht ) {
 		this( grapht, null );
 	}
 	
-	public<V,E> GJGraph( GraphWithEditableElements<V,E> grapht, Hashtable<V, Point> vertexPositions ) {
-		super( new JGraphViewableGraphModelAdapter<V,E>( grapht, vertexPositions ) );
+	public<V,E,GB extends GralogGraphBean> GJGraph( GralogGraph<V,E,GB> grapht, Hashtable<V, Point> vertexPositions ) {
+		super( new JGraphViewableGraphModelAdapter<V,E,GB>( grapht, vertexPositions ) );
 		
 		this.grapht = grapht;
 
 		this.setGraphLayoutCache( new GGraphLayoutCache( getModel(), new GJGraphCellViewFactory() ) );
-		this.getSelectionModel().addGraphSelectionListener( grapht );
+		this.getSelectionModel().addGraphSelectionListener( grapht.getGralogSupport().getGraphSelectionSupport() );
 		this.setMarqueeHandler( new GMarqueeHandler() );
 
 		this.setSizeable( false );
@@ -132,7 +133,7 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	}
 
 
-	public GJGraph(GraphModel model, GraphLayoutCache view, GraphWithEditableElements graph) {
+	public GJGraph(GraphModel model, GraphLayoutCache view, GralogGraph graph) {
 		super( model, view );
 		this.grapht = graph;
 	}
@@ -140,7 +141,7 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	public JGraphViewableGraphModelAdapter getGModel() {
 		return (JGraphViewableGraphModelAdapter)super.getModel();
 	}
-	public GraphWithEditableElements getGraphT() {
+	public GralogGraph getGraphT() {
 		return grapht;
 	}
 	
@@ -171,45 +172,18 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	public void insertVertexAt(Point2D point) {
 		snap( point );
 		fromScreen( point );
-
-		DefaultGraphCell cell = new DefaultGraphCell( grapht.createVertex() );
-		cell.add( new DefaultPort() );
 		
-		AttributeMap cellAttributes = getGModel().getDefaultVertexAttributes();
+		Object vertex = grapht.getGralogSupport().createVertex();
+		DefaultGraphCell vertexCell = getGModel().getCellFactory().createVertexCell( vertex );
+		vertexCell.add(new DefaultPort());
 		
-		Rectangle2D bounds = new Rectangle2D.Double( point.getX(), point.getY(), 40, 40 );
-		GraphConstants.setBounds( cellAttributes, bounds );
-		
-		AttributeMap attributes = new AttributeMap();
-		attributes.put( cell, cellAttributes );
-		
-		getGModel().insert( new Object[] { cell }, attributes, null, null, null );
-	}
-	
-/*	public void positionVertexAt(Object vertex, Point2D point) {
-		snap( point );
-		fromScreen( point );
-		
-		DefaultGraphCell cell = getGModel().getVertexCell( vertex );
-		Rectangle2D bounds = (Rectangle2D)GraphConstants.getBounds( cell.getAttributes() ).clone();
+		Rectangle2D bounds = GraphConstants.getBounds( vertexCell.getAttributes() );
 		bounds.setRect( point.getX(), point.getY(), bounds.getWidth(), bounds.getHeight() );
 		
-		AttributeMap editAttr = new AttributeMap();
-		GraphConstants.setBounds( editAttr, bounds );
-		AttributeMap changes = new AttributeMap();
-		changes.put( cell, editAttr );
-		getGModel().edit( changes, null, null, null );
-	}
-*/	
-	public void positionVertexAt( Object vertex, Point2D point ) {
-		snap( point );
-		fromScreen( point );
+		vertexCell.setAttributes( (AttributeMap)getGModel().getDefaultVertexAttributes().clone() );
+		GraphConstants.setBounds( vertexCell.getAttributes(), bounds );
 		
-		DefaultGraphCell cell = getGModel().getVertexCell( vertex );
-		Rectangle2D bounds = (Rectangle2D)GraphConstants.getBounds( cell.getAttributes() );
-		bounds.setRect( point.getX(), point.getY(), bounds.getWidth(), bounds.getHeight() );
-		
-		//getGraphLayoutCache().cellViewsChanged( new CellView[] { getGraphLayoutCache().getMapping( cell, true ) } );
+		getGraphLayoutCache().insert( vertexCell );
 	}
 	
 	public void registerSubgraph( DisplaySubgraph subgraph ) {
@@ -271,6 +245,17 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 		return null;
 	}
 	
+	@Override
+	public String getToolTipText(MouseEvent e) {
+		if (e != null) {
+			if ( getFirstCellForLocation(e.getX(), e.getY() ) != null ) {
+				Object userObject = getGModel().getValue( getFirstCellForLocation(e.getX(), e.getY()) );
+				return getToolTip( userObject );
+			}
+		}
+		return null;
+	}
+
 	public void displayUpdated(DisplaySubgraph subgraph) {
 		getGraphLayoutCache().cellViewsChanged( getGraphLayoutCache().getAllViews() );
 	}
@@ -298,14 +283,14 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	}
 	
 	public DefaultEdgeRenderer getEdgeRenderer() {
-		if ( grapht.getEdgeRenderer() != null )
-			return grapht.getEdgeRenderer();
+		if ( grapht.getGralogSupport().getEdgeRenderer() != null )
+			return grapht.getGralogSupport().getEdgeRenderer();
 		return defaultEdgeRenderer;
 	}
 	
 	public VertexDisplayModeRenderer getVertexRenderer() {
-		if (grapht.getVertexRenderer() != null )
-			return grapht.getVertexRenderer();
+		if (grapht.getGralogSupport().getVertexRenderer() != null )
+			return grapht.getGralogSupport().getVertexRenderer();
 		return defaultVertexRenderer;
 	}
 	
@@ -317,13 +302,13 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 		if (value instanceof CellView) {
 			CellView view = (CellView)value;
 			if ( view instanceof VertexView ) {
-				if ( ((DefaultGraphCell)view.getCell()).getUserObject() instanceof DefaultListenableVertex )
+				if ( ((DefaultGraphCell)view.getCell()).getUserObject() instanceof DefaultListenableElement )
 					value = view.getCell();
 				else
 					return null;
 			}
 			if ( value instanceof EdgeView ) {
-				if ( ((DefaultGraphCell)view.getCell()).getUserObject() instanceof DefaultListenableEdge )
+				if ( ((DefaultGraphCell)view.getCell()).getUserObject() instanceof DefaultListenableElement )
 					value = view.getCell();
 				else
 					return null;
@@ -378,7 +363,7 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 			
 			HashMap vMap = new HashMap();
 			GraphTypeInfo gti = getGraphT().getTypeInfo();
-			GraphWithEditableElements grapht = gti.copyGraph(getGraphT(), vMap);
+			GralogGraph grapht = gti.copyGraph(getGraphT(), vMap);
 
 			if (grapht == null || vMap.isEmpty()) {
 				// copyGraph Funktion not properly overridden

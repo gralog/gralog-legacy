@@ -12,7 +12,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GraphTypeInfo;
+import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
 
 public class PluginManager {
@@ -39,16 +40,21 @@ public class PluginManager {
 			
 		});
 		
-		for ( File file : jarFiles )
-			plugins.add( new Plugin( file ) );
+		for ( File file : jarFiles ) {
+			try {
+				plugins.add( new Plugin( file ) );
+			} catch( UserException e ) {
+				MainPad.getInstance().handleUserException( e );
+			}
+		}
 	}
 	
 	public void loadPlugin( InputStream in ) throws UserException {
 		plugins.add( new Plugin( in ) );
 	}
 	
-	public ArrayList<GraphTypeInfo> getGraphTypes() {
-		ArrayList<GraphTypeInfo> graphTypes = new ArrayList<GraphTypeInfo>();
+	public ArrayList<GralogGraphTypeInfo> getGraphTypes() {
+		ArrayList<GralogGraphTypeInfo> graphTypes = new ArrayList<GralogGraphTypeInfo>();
 		
 		for ( Plugin plugin : plugins )
 			graphTypes.addAll( plugin.getGraphTypes() );

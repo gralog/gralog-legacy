@@ -24,13 +24,13 @@ import java.io.OutputStream;
 
 import javax.swing.undo.UndoManager;
 
+import de.hu.gralog.algorithm.result.AlgorithmInfoListener;
+import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.InputOutputException;
-import de.hu.gralog.graph.alg.AlgorithmInfoListener;
-import de.hu.gralog.graph.alg.AlgorithmResultInfo;
+import de.hu.gralog.app.UserException;
 import de.hu.gralog.graph.io.XMLDecoderIOFast;
-import de.hu.gralog.gui.FileFormat;
-import de.hu.gralog.gui.GraphEditor;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.components.GraphEditor;
 import de.hu.gralog.jgraph.GJGraph;
 
 public class AlgorithmResultDocumentContent extends DocumentContent implements AlgorithmInfoListener {
@@ -62,7 +62,12 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	
 	@Override
 	public GJGraph getGraph() {
-		return info.getGraph( );
+		try {
+			return info.getGraph( );
+		} catch (UserException e) {
+			MainPad.getInstance().handleUserException( e );
+		}
+		return null;
 	}
 	
 	public AlgorithmResultInfo getAlgorithmResultInfo() {

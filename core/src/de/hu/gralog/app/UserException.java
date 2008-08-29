@@ -27,7 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 
 public class UserException extends Exception {
 

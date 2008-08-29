@@ -28,7 +28,7 @@ import org.jgraph.graph.CellView;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.VertexRenderer;
 
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
 /** 
  * 

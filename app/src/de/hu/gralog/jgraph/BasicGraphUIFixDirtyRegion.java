@@ -72,8 +72,10 @@ public class BasicGraphUIFixDirtyRegion extends BasicGraphUI {
 			if (dirtyRegion == null) {
 				Rectangle2D newDirtyRegion = graph.getClipRectangle(e.getChange());
 				dirtyRegion = RectUtils.union(oldDirty, newDirtyRegion);
-				if ( e.getChange() instanceof GraphModelEdit )
+				if ( e.getChange() instanceof GraphModelEdit ) {
 					((GraphModelEdit)e.getChange()).putDirtyRegion(graphLayoutCache, dirtyRegion);
+					e.getChange().setDirtyRegion( dirtyRegion );
+				}
 				else
 					e.getChange().setDirtyRegion( dirtyRegion );
 			}

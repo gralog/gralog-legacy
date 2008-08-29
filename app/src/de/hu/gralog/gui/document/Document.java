@@ -27,9 +27,9 @@ import java.io.IOException;
 import net.infonode.docking.OperationAbortedException;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.gui.GUndoManager;
 import de.hu.gralog.gui.MainPad;
-import de.hu.gralog.gui.UndoManagerListener;
+import de.hu.gralog.gui.components.undo.GUndoManager;
+import de.hu.gralog.gui.components.undo.UndoManagerListener;
 import de.hu.gralog.jgraph.GJGraph;
 import de.hu.gralog.util.WeakListenerList;
 
@@ -116,7 +116,8 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 
 		if ( newFile != null ) {
 			try {
-				content.write( DocumentContentFactory.getInstance().getFileFormat( newFile ), new FileOutputStream( newFile ) );
+				FileOutputStream out = new FileOutputStream( newFile );
+				content.write( DocumentContentFactory.getInstance().getFileFormat( newFile ), out );
 				
 				undoManager.discardAllEdits();
 				file = newFile;
