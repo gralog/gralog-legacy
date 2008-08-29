@@ -49,6 +49,11 @@ public class SubsetIterator<V> implements Iterator
 					// this guarantees that no duplicate sets are returned and all sets have size k
 	boolean hasNext;
 	
+	/**
+	 * Initialise the iterator over 'card'-element subsets of the set 'set' 
+	 * @param set base set
+	 * @param card cardinality of sets to be returned.
+	 */
 	public SubsetIterator(Set<V> set, int card)
 	{
 		k = card; 
@@ -63,6 +68,9 @@ public class SubsetIterator<V> implements Iterator
 		}
 	}
 
+	/**
+	 * Not implemented. This iterator does not support removal of elements.
+	 */
 	public void remove() {
 		// TODO Auto-generated method stub
 		

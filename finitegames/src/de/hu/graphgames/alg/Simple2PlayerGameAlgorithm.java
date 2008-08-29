@@ -74,6 +74,11 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 		init();
 	}
 	
+	/**
+	 * This function is called internally to initialise the various variables used in the algorithm.
+	 * In particular, it initialises the vertexDegree map to contain the outdegree of every vertex.
+	 *
+	 */
 	protected void init() {
 		win0 = new ArrayList<V>();
 		for(V v : vertexSet)
@@ -88,6 +93,15 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 	
 
 
+	/**
+	 * This is the main algorithm of the class. It computes the winning region of Player 0 on the 
+	 * game arena given to the constructor. See the class description for a description of the implemented
+	 * algorithm.
+	 * The method returns a list rather than a set to support the stepwise display functionality of gralog.
+	 * The list contains the elements in the winning region in the order they were added to the winning regions.
+	 * Hence, following the list in order explains for each element why it has been added to the winning region.
+	 * @return returns a list containing the winning positions of player 0.
+	 */
 	public ArrayList<V> execute() 
 	{
 		V v,u;
