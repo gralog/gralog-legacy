@@ -30,35 +30,36 @@ import org.jgraph.graph.VertexRenderer;
 
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
-/** 
+/**
  * 
  * This class should be overriden in order to implement your own VertexRenderer.
- * It extends/changes the behavior of the JGraph-{@link VertexRenderer VertexRenderer} in two ways:
- * - it implements {@link DisplayModeRenderer DisplayModeRenderer}
- * - attributes are no longer contained in CellView instead one set of attributes is used for all Views of
- * 	 a graph 
+ * It extends/changes the behavior of the JGraph-{@link VertexRenderer VertexRenderer}
+ * by implementing {@link DisplayModeRenderer DisplayModeRenderer}.
  * 
  * @author Sebastian
- *
+ * 
  */
 
-public class DefaultVertexRenderer extends VertexRenderer implements VertexDisplayModeRenderer {
+public class DefaultVertexRenderer extends VertexRenderer implements
+		VertexDisplayModeRenderer {
 
-	public DefaultVertexRenderer(  ) {
+	public DefaultVertexRenderer() {
 	}
 
-	public Component getRendererComponent(JGraph graph, CellView view, boolean sel, boolean focus, boolean preview, DisplayMode displayMode ) {
-		if ( displayMode == DisplayMode.HIDE )
+	public Component getRendererComponent(JGraph graph, CellView view,
+			boolean sel, boolean focus, boolean preview, DisplayMode displayMode) {
+		if (displayMode == DisplayMode.HIDE)
 			return null;
-		
-		getRendererComponent( graph, view, sel, focus, preview );
-		
-		if ( displayMode.getColor() != null ) {
-			borderWidth = (int)Math.max( 1, GraphConstants.getLineWidth( view.getAllAttributes() ) );
+
+		getRendererComponent(graph, view, sel, focus, preview);
+
+		if (displayMode.getColor() != null) {
+			borderWidth = (int) Math.max(1, GraphConstants.getLineWidth(view
+					.getAllAttributes()));
 			bordercolor = displayMode.getColor();
 
-			setBorder( BorderFactory.createLineBorder( bordercolor, borderWidth ) );
-			
+			setBorder(BorderFactory.createLineBorder(bordercolor, borderWidth));
+
 		}
 		this.view = null;
 		return this;

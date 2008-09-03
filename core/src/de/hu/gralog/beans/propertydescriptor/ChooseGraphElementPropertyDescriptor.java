@@ -24,41 +24,53 @@ import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 
 import de.hu.gralog.beans.propertyeditor.ChooseGraphElementPropertyEditor;
-import de.hu.gralog.graph.GralogGraph;
+import de.hu.gralog.graph.GralogGraphSupport;
 
 /**
- * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.
- * This Descriptor can be used for all properties of type graph. Use the Descriptor
- * if you want the user to choose among all currently opened graphs in GrALog to define
- * your property. Each Descriptor has to have a graphType. The graphType determines which
- * graphs are selectable for that property ( always make sure, that the getter and setter-methods
- * of your property have a compatible type ). 
+ * This class is a special PropertyDescriptor that can be used to define
+ * properties of algorithms, graphs, vertices and edges in GrALoG. This
+ * PropertyDescriptor allows the user to choose an element ( an element is
+ * either a vertex or an edge ) of the currently active graph. The elements that
+ * the user is allowed to choose from can be specified by an
+ * {@link GraphElementFilter}. Make sure that the property corresponding to
+ * this descriptor has a type compatible to all elements you allow the user to
+ * choose from.
  * 
  * @author ordyniak
- *
+ * 
  */
 public class ChooseGraphElementPropertyDescriptor extends PropertyDescriptor {
 
 	private final GraphElementFilter graphElementFilter;
-	
+
 	/**
-	 * Contructs a ChooseGraphPropertyDescriptor
+	 * Contructs a ChooseGraphElementPropertyDescriptor
 	 * 
-	 * @param propertyName the name of the property
-	 * @param beanClass the class this property belongs to
-	 * @param graphType the TypeInfo-Object to define which graphs should be selectable for this property
+	 * @param propertyName
+	 *            the name of the property
+	 * @param beanClass
+	 *            the class this property belongs to
+	 * @param graphElementFilter
+	 *            a {@link GraphElementFilter} that specifies the elements to
+	 *            choose from.
 	 * @throws IntrospectionException
 	 */
-	public ChooseGraphElementPropertyDescriptor(String propertyName, Class<?> beanClass, GraphElementFilter graphElementFilter )
+	public ChooseGraphElementPropertyDescriptor(String propertyName,
+			Class<?> beanClass, GraphElementFilter graphElementFilter)
 			throws IntrospectionException {
 		super(propertyName, beanClass);
 		this.graphElementFilter = graphElementFilter;
 	}
 
+	/**
+	 * 
+	 * @return the {@link PropertyEditor} used by Gralog to edit this property
+	 * 
+	 */
 	@Override
 	public PropertyEditor createPropertyEditor(Object bean) {
-		return new ChooseGraphElementPropertyEditor( (GralogGraph)bean, graphElementFilter );
+		return new ChooseGraphElementPropertyEditor((GralogGraphSupport) bean,
+				graphElementFilter);
 	}
 
-	
 }

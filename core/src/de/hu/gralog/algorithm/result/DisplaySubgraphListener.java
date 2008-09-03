@@ -19,7 +19,14 @@
 
 package de.hu.gralog.algorithm.result;
 
-
+/**
+ * This interface defines a listener that is informed of changed in
+ * {@link DisplaySubgraph}. As {@link DisplaySubgraph} this method is not
+ * important to plugin developers.
+ * 
+ * @author Sebastian
+ * 
+ */
 public interface DisplaySubgraphListener {
 	public void displayUpdated(DisplaySubgraph subgraph);
 }

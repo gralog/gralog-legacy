@@ -26,35 +26,38 @@ import java.beans.PropertyEditor;
 import de.hu.gralog.beans.propertyeditor.EnumPropertyEditor;
 
 /**
- * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.
- * This Descriptor can be used for all properties of type graph. Use the Descriptor
- * if you want the user to choose among all currently opened graphs in GrALog to define
- * your property. Each Descriptor has to have a graphType. The graphType determines which
- * graphs are selectable for that property ( always make sure, that the getter and setter-methods
- * of your property have a compatible type ). 
+ * This class is a special PropertyDescriptor to define properties for algorithms,
+ * graphs, vertices and edges in GrALoG. 
+ * This descriptor is for properties of value Enum and
+ * allows the user to choose one of the avaible values from
+ * a comboBox. Please make sure that your property is
+ * of the type Enum this descriptor refers to.
  * 
  * @author ordyniak
- *
+ * 
  */
 public class EnumPropertyDescriptor extends PropertyDescriptor {
 
 	private final Enum[] values;
-	
+
 	/**
-	 * Contructs a ChooseGraphPropertyDescriptor
+	 * Contructs an EnumPropertyDescriptor
 	 * 
-	 * @param propertyName the name of the property
-	 * @param beanClass the class this property belongs to
-	 * @param graphType the TypeInfo-Object to define which graphs should be selectable for this property
+	 * @param propertyName
+	 *            the name of the property
+	 * @param beanClass
+	 *            the class this property belongs to
+	 * @param values
+	 *            the values of the Enum-Class you want to display
 	 * @throws IntrospectionException
 	 */
-	public EnumPropertyDescriptor(String propertyName, Class<?> beanClass, Enum[] values )
-			throws IntrospectionException {
+	public EnumPropertyDescriptor(String propertyName, Class<?> beanClass,
+			Enum[] values) throws IntrospectionException {
 		super(propertyName, beanClass);
 		this.values = values;
 	}
 
 	public PropertyEditor createPropertyEditor(Object bean) {
-		return new EnumPropertyEditor( values );
+		return new EnumPropertyEditor(values);
 	}
 }

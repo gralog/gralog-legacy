@@ -25,156 +25,184 @@ import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.app.UserException;
 
 /**
- * This interface has to be implement by all GraLog algorithms. An algorithm
- * in GraLog is basically a JavaBean with an execute-function defined 
- * by this interface. Here we give only a short introduction to JavaBeans
- * if you are not familar with JavaBeans please refer to 
- * <a href="{@docRoot}/../pdf/beans.101.pdf">Java Bean Specification</a>.
+ * This interface has to be implement by all GraLog-Algorithms. An algorithm in
+ * GraLog is basically a JavaBean with an execute-function defined by this
+ * interface. Here we give only a short introduction to JavaBeans if you are not
+ * familar with JavaBeans please refer to <a href="{@docRoot}/../pdf/beans.101.pdf">Java
+ * Bean Specification</a>.
  * <p>
- * With the help of JavaBeans algorithms in gralog can be hugely customized 
- * which means that they can take arbitrary parameters and provide their own 
+ * With the help of JavaBeans algorithms in gralog can be hugely customized
+ * which means that they can take arbitrary parameters and provide their own
  * gui-elements for customizing these parameters.
- * <p>
+ * 
+ * <h1>Plugin-Developers</h1>
+ * 
  * Lets suppose you want to implement an algorithm which takes two parameters:
  * <ul>
- * 	<li>a parameter <b>counter</b> which should be a positive integer</li>
- * 	<li>a required parameter <b>graph</b> which should be a DirectedGraph whose vertexes extend LabeledGraphVertex and whose
- * 	edges extend DefaultEdge. </li>
+ * <li>a parameter <b>counter</b> which should be a positive integer</li>
+ * <li>a required parameter <b>graph</b> whose underlying JGraphT-Graph should
+ * be a {@link org.jgrapht.graph.SimpleDirectedGraph} whose vertices extend
+ * {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} and whose edges
+ * extend {@link org.jgrapht.graph.DefaultEdge}. </li>
  * </ul>
  * <p>
- * The first thing you have to do is to implement your Algorithm-Class which 
+ * The first thing you have to do is to implement your Algorithm-Class which
  * should look something like this:
  * <p>
+ * 
  * <pre>
- * 		public class YourAlgorithm implements Algorithm {
+ * public class YourAlgorithm&lt;V extends LabeledGraphVertex, E extends DefaultEdge, G extends DirectedGraph&lt;V, E&gt;&gt;
+ * 		implements Algorithm {
  * 
- * 			private int counter;
- * 			private DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> graph;
+ * 	private int counter;
  * 
- * 			public void setCounter( int counter ) {
- * 				this.counter = counter;
- * 			}
+ * 	private GralogGraphSupport&lt;V, E, ?, G&gt; graph;
  * 
- * 			public int getCounter() {
- * 				return counter;
- * 			}
+ * 	public void setCounter(int counter) {
+ * 		this.counter = counter;
+ * 	}
  * 
- * 			public void setGraph( DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> graph ) {
- * 				this.graph = graph;
- * 			}
+ * 	public int getCounter() {
+ * 		return counter;
+ * 	}
  * 
- * 			public DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> getGraph() {
- * 				return graph;
- * 			}
+ * 	public void setGraph(GralogGraphSupport&lt;V, E, ?, G&gt; graph) {
+ * 		this.graph = graph;
+ * 	}
  * 
- * 			public AlgorithmResult execute() throws InvalidPropertyValuesException, UserException {
- * 				InvalidPropertyValuesException e = new InvalidPropertyValuesException();
+ * 	public GralogGraphSupport&lt;V, E, ?, G&gt; getGraph() {
+ * 		return graph;
+ * 	}
  * 
- * 				if ( getGraph() == null )
- * 					e.addPropertyError( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
- * 				if ( getCounter() <= 0 )
- * 					e.addPropertyError( "counter", InvalidPropertyValuesException.GREATER_ZERO ); 
- * 				if ( e.hasErrors() )
- * 					throw e;
+ * 	public AlgorithmResult execute() throws InvalidPropertyValuesException,
+ * 			UserException {
+ * 		InvalidPropertyValuesException e = new InvalidPropertyValuesException();
  * 
- * 				// do something and build result
- * 				return result;
- * 			}
- * 		}
+ * 		if (getGraph() == null)
+ * 			e.addPropertyError(&quot;graph&quot;,
+ * 					InvalidPropertyValuesException.PROPERTY_REQUIRED);
+ * 		if (getCounter() &lt;= 0)
+ * 			e.addPropertyError(&quot;counter&quot;,
+ * 					InvalidPropertyValuesException.GREATER_ZERO);
+ * 		if (e.hasErrors())
+ * 			throw e;
+ * 
+ * 		// do something and build result
+ * 		return result;
+ * 	}
+ * }
  * </pre>
+ * 
  * <p>
- * As you can see each parameter is reflected as a member variable of YourAlgorithm. 
- * Furthermore there are two functions for each parameter which are called getter and setter
- * ( the naming convention for these functions comes from the JavaBeans-Specification ). 
- * Since there is a getter and a setter for each parameter GraLog knows that YourAlgorithm
- * takes two parameters: counter and graph. Before the user executes YourAlgorithm GraLog allows
- * the user to edit these parameters, so when execute is called you can suppose that all
- * parameters are set according to the users opinion.
+ * As you can see each parameter is reflected as a member variable of
+ * YourAlgorithm. Furthermore there are two functions for each parameter which
+ * are called getter and setter ( the naming convention for these functions
+ * comes from the JavaBeans-Specification ). Since there is a getter and a
+ * setter for each parameter GraLog knows that YourAlgorithm takes two
+ * parameters: counter and graph. Before the user executes YourAlgorithm GraLog
+ * allows the user to edit these parameters, so when execute is called you can
+ * suppose that all parameters are set according to the users opinion.
  * <p>
- * As we have said there are restrictions on the parameters. So the first thing you
- * should do is to check for these restrictions in your execute-method. In this case
- * it is checked whether graph is not equal to null and counter is creater than zero and
- * if not an InvalidPropertyValuesException is thrown which gives the user the possibility
- * to alter his input.
+ * As we have said there are restrictions on the parameters. So the first thing
+ * you should do is to check for these restrictions in your execute-method. In
+ * this case it is checked whether graph is not equal to null and counter is
+ * creater than zero and if not an InvalidPropertyValuesException is thrown
+ * which gives the user the possibility to alter his input.
  * <p>
  * The next step is to define a BeanInfo for YourAlgorithm. The easiest way to
  * do this is to define a class YourAlgorithmBeanInfo - the naming convention
  * again comes from JavaBean - in the same package as YourAlgorithm, which
  * should look like this:
  * <p>
+ * 
  * <pre>
- * 	public class YourAlgorithmBeanInfo extends SimpleBeanInfo {
- * 
- * 		private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( YourAlgorithm.class );
- * 		private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
- * 
- *		static {
- *			BEAN_DESCRIPTOR.setDisplayName( "A name for YourAlgorithm" );
- *			BEAN_DESCRIPTOR.setShortDescription( 
- *					"A description for your algorithm in html." );
- *
- * 			try {
- * 				PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( "counter", YourAlgorithm.class );
- * 				PROPERTY_DESCRIPTORS[0].setShortDescription( "A description for the property counter." );
- * 				PROPERTY_DESCRIPTORS[1] = new ChooseGraphPropertyDescriptor( "graph", YourAlgorithm.class, new LabeledDirectedGraphTypeInfo() );
- *	 			PROPERTY_DESCRIPTORS[1].setShortDescription( "A description for the property graph." );
- *			} catch( IntrospectionException e ) {
- *				e.printStackTrace();
- *			}
- *
- *			public BeanDescriptor getBeanDescriptor() {
- *				return BEAN_DESCRIPTOR;
- *			}
- *
- *			public PropertyDescriptor[] getPropertyDescriptors() {
- *				return PROPERTY_DESCRIPTORS;
- *			}
- *	}
+ *   	public class YourAlgorithmBeanInfo extends SimpleBeanInfo {
+ *   
+ *   		private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( YourAlgorithm.class );
+ *   		private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
+ *   
+ *  		static {
+ *  			BEAN_DESCRIPTOR.setDisplayName( &quot;A name for YourAlgorithm&quot; );
+ *  			BEAN_DESCRIPTOR.setShortDescription( 
+ *  					&quot;A description for your algorithm in html.&quot; );
+ *  
+ *   			try {
+ *   				PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( &quot;counter&quot;, YourAlgorithm.class );
+ *   				PROPERTY_DESCRIPTORS[0].setShortDescription( &quot;A description for the property counter.&quot; );
+ *   				PROPERTY_DESCRIPTORS[1] = new ChooseGraphPropertyDescriptor( &quot;graph&quot;, YourAlgorithm.class, new LabeledSimpleDirectedGraphTypeInfo() );
+ *  	 			PROPERTY_DESCRIPTORS[1].setShortDescription( &quot;A description for the property graph.&quot; );
+ *  			} catch( IntrospectionException e ) {
+ *  				e.printStackTrace();
+ *  			}
+ *  
+ *  			public BeanDescriptor getBeanDescriptor() {
+ *  				return BEAN_DESCRIPTOR;
+ *  			}
+ *  
+ *  			public PropertyDescriptor[] getPropertyDescriptors() {
+ *  				return PROPERTY_DESCRIPTORS;
+ *  			}
+ *  	}
  * </pre>
+ * 
  * <p>
- * YourAlgorithmBeanInfo basically defines a so called {@link java.beans.BeanDescriptor} and an array
- * of {@link java.beans.PropertyDescriptor} one for each parameter. The BeanDescriptor describes properties
- * of the algorithm such as a name and a description in html. Each PropertyDescriptor describes a property
- * of your Algorithm. Currently there are two kinds of PropertyDescriptors in GraLog:
+ * YourAlgorithmBeanInfo basically defines a so called
+ * {@link java.beans.BeanDescriptor} and an array of
+ * {@link java.beans.PropertyDescriptor} one for each parameter. The
+ * BeanDescriptor describes properties of the algorithm such as a name and a
+ * description in html. Each PropertyDescriptor describes a property of your
+ * Algorithm. This algorithm uses two PropertyDescriptors - a more detailed
+ * introduction to propertydescriptors and the avaible types of
+ * propertydescriptors can be found in
+ * {@link de.hu.gralog.beans.propertydescriptor}. It follows a short
+ * introduction to the descriptors used in our example:
+ * 
  * <p>
  * <table>
- * 	<tr>
- * 		<td>Class</td>
- * 		<td>Description</td>
- * 	</tr>
- * 	<tr>
- * 		<td>{@link java.beans.PropertyDescriptor}</td>
- * 		<td>
- * 			This PropertyDescriptors should be used for all basic types like boolean, int, double, String .. .
- * 			It offers a standard editor for these types.
- * 		</td>
- * 	</tr>
- * 	<tr>
- * 		<td>{@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor}</td>
- * 		<td>	
- * 			This PropertyDescriptor should be used whenever you want the user to choose one
- * 			of the currently opened graphs in GraLog. It allows to filter those which are of a certain type
- * 			- in the example of type LabeledDirectedGraph.
- * 		</td>
- * 	</tr>
+ * <tr>
+ * <td>Class</td>
+ * <td>Description</td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.beans.PropertyDescriptor}</td>
+ * <td> This PropertyDescriptors should be used for all basic types like
+ * boolean, int, double, String .. . It offers a standard editor for these
+ * types. </td>
+ * </tr>
+ * <tr>
+ * <td>{@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor}</td>
+ * <td> This PropertyDescriptor should be used whenever you want the user to
+ * choose one of the currently opened graphs in GraLog. It allows to filter
+ * those which are of a certain type - in the example of the type
+ * LabeledSimpleDirectedGraph. </td>
+ * </tr>
  * </table>
  * <p>
- * The last thing you have to do in your algorithm ( after making your calculations ) is to return
- * an {@link de.hu.gralog.algorithm.result.AlgorithmResult}. Please refer to the documentation of 
- * {@link de.hu.gralog.algorithm.result.AlgorithmResult} how to do this.
+ * The last thing you have to do in your algorithm ( after making your
+ * calculations ) is to return an
+ * {@link de.hu.gralog.algorithm.result.AlgorithmResult}. Please refer to the
+ * documentation of {@link de.hu.gralog.algorithm.result.AlgorithmResult} how to
+ * do this.
  * 
- * @author Sebastian
- *
+ * @author Sebastian Ordyniak
+ * 
  */
 public interface Algorithm extends Serializable {
 	/**
-	 * This function is called when all parameters have been set by the user. It returns 
-	 * an {@link de.hu.gralog.algorithm.result.AlgorithmResult} which describes the 
-	 * output of your algorithm.
+	 * This function is called when all parameters have been set by the user. It
+	 * returns an {@link de.hu.gralog.algorithm.result.AlgorithmResult} which
+	 * describes the output of your algorithm.
 	 * 
-	 * @throws InvalidPropertyValuesException should be thrown if not all parameters where set correctly
-	 * @throws UserException should be thrown if an error occurs during your calculations and you know what went wrong
+	 * @return it is possible to return null, which tells Gralog not to display
+	 *         anything. This can be useful when your Algorithm only wants to
+	 *         manipulate a Gralog-Graph but does not need to show a result.
+	 * 
+	 * @throws InvalidPropertyValuesException
+	 *             should be thrown if not all parameters where set correctly
+	 * @throws UserException
+	 *             should be thrown if an error occurs during your calculations
+	 *             and you know what went wrong
 	 */
-	AlgorithmResult execute(  ) 
-		throws InvalidPropertyValuesException, UserException;
+	AlgorithmResult execute() throws InvalidPropertyValuesException,
+			UserException;
 }

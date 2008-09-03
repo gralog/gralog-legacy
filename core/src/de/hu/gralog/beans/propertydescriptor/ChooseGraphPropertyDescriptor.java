@@ -22,61 +22,79 @@ package de.hu.gralog.beans.propertydescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import de.hu.gralog.graph.types.GralogGraphTypeInfoFilter;
+import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 
 /**
- * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.
- * This Descriptor can be used for all properties of type graph. Use the Descriptor
- * if you want the user to choose among all currently opened graphs in GrALog to define
- * your property. Each Descriptor has to have a graphType. The graphType determines which
- * graphs are selectable for that property ( always make sure, that the getter and setter-methods
- * of your property have a compatible type ). 
+ * This class is a special PropertyDescriptor to define properties for algorithms,
+ * graphs, vertices and edges in
+ * GrALoG. This Descriptor can be used for all properties of type 
+ * {@link GralogGraphSupport}. Use the
+ * Descriptor if you want the user to choose among all currently opened graphs
+ * in GrALog to define your property. Each Descriptor has to have a graphType.
+ * The graphType determines which graphs are selectable for that property (
+ * always make sure, that the getter and setter-methods of your property have a
+ * compatible type ).
  * 
  * @author ordyniak
- *
+ * 
  */
 public class ChooseGraphPropertyDescriptor extends PropertyDescriptor {
 
 	private final GralogGraphTypeInfoFilter graphTypeInfoFilter;
+
 	private final boolean makeCopy;
-	
+
 	/**
 	 * Contructs a ChooseGraphPropertyDescriptor
 	 * 
-	 * @param propertyName the name of the property
-	 * @param beanClass the class this property belongs to
-	 * @param graphType the TypeInfo-Object to define which graphs should be selectable for this property
+	 * @param propertyName
+	 *            the name of the property
+	 * @param beanClass
+	 *            the class this property belongs to
+	 * @param graphType
+	 *            the TypeInfo-Object to define which graphs should be
+	 *            selectable for this property
 	 * @throws IntrospectionException
 	 */
-	public ChooseGraphPropertyDescriptor(String propertyName, Class<?> beanClass, GralogGraphTypeInfoFilter graphTypeInfoFilter )
+	public ChooseGraphPropertyDescriptor(String propertyName,
+			Class<?> beanClass, GralogGraphTypeInfoFilter graphTypeInfoFilter)
 			throws IntrospectionException {
-		this( propertyName, beanClass, graphTypeInfoFilter, true );
+		this(propertyName, beanClass, graphTypeInfoFilter, true);
 	}
 
 	/**
 	 * Contructs a ChooseGraphPropertyDescriptor
 	 * 
-	 * @param propertyName the name of the property
-	 * @param beanClass the class this property belongs to
-	 * @param graphType the TypeInfo-Object to define which graphs should be selectable for this property
+	 * @param propertyName
+	 *            the name of the property
+	 * @param beanClass
+	 *            the class this property belongs to
+	 * @param graphType
+	 *            the TypeInfo-Object to define which graphs should be
+	 *            selectable for this property
+	 * @param makeCopy
+	 * 			  if <b>false</b> gralog passes the choosen graph without
+	 * 			  copying it beforehand. This allows algorithms to
+	 * 			  make changes on graphs that are currently open in
+	 * 			  gralog.
 	 * @throws IntrospectionException
 	 */
-	public ChooseGraphPropertyDescriptor(String propertyName, Class<?> beanClass, GralogGraphTypeInfoFilter graphTypeInfoFilter, boolean makeCopy )
-			throws IntrospectionException {
+	public ChooseGraphPropertyDescriptor(String propertyName,
+			Class<?> beanClass, GralogGraphTypeInfoFilter graphTypeInfoFilter,
+			boolean makeCopy) throws IntrospectionException {
 		super(propertyName, beanClass);
 		this.graphTypeInfoFilter = graphTypeInfoFilter;
 		this.makeCopy = makeCopy;
 	}
 
-	
 	/**
-	 *  
+	 * 
 	 * @return the TypeInfo-Object
 	 */
 	public GralogGraphTypeInfoFilter getGraphType() {
 		return graphTypeInfoFilter;
 	}
-	
+
 	public boolean isMakeCopy() {
 		return makeCopy;
 	}

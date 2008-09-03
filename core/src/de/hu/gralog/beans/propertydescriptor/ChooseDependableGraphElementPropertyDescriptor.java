@@ -28,40 +28,82 @@ import java.util.Set;
 import de.hu.gralog.beans.propertyeditor.ChooseDependableGraphElementPropertyEditor;
 
 /**
- * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.
- * This Descriptor can be used for all properties of type graph. Use the Descriptor
- * if you want the user to choose among all currently opened graphs in GrALog to define
- * your property. Each Descriptor has to have a graphType. The graphType determines which
- * graphs are selectable for that property ( always make sure, that the getter and setter-methods
- * of your property have a compatible type ). 
+ * This class is a special PropertyDescriptor to define properties of
+ * algorithms, graphs, vertices and edges in Gralog. This descriptor allows the
+ * user to choose an element ( elements either vertices or edges )of a graph,
+ * that is specified as another property of the same Bean, i.e. the bean for the
+ * graph, algorithm, vertex or edge. Always make sure that the property this
+ * descriptor depends on is of type {@link GralogGraphSupport} and that the
+ * property defined by this descriptor has the right type according to whether
+ * it is a Vertex or an edge.
  * 
  * @author ordyniak
- *
+ * 
  */
-public class ChooseDependableGraphElementPropertyDescriptor extends PropertyDescriptor implements DependsOnPropertyPropertyDescriptor {
+public class ChooseDependableGraphElementPropertyDescriptor extends
+		PropertyDescriptor implements DependsOnPropertyPropertyDescriptor {
 
 	private final GraphElementFilter graphElementFilter;
+
 	private final PropertyDescriptor dependsOnPropertyDescriptor;
-	
-	public ChooseDependableGraphElementPropertyDescriptor(String propertyName, Class<?> beanClass, ChooseGraphPropertyDescriptor dependsonGraphPD, GraphElementFilter graphElementFilter )
+
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param propertyName
+	 *            the name of the property this descriptor describes
+	 * @param beanClass
+	 *            the beanClass this property belongs to
+	 * @param dependsonGraphPD
+	 *            the propertyDescriptor for the graph property on bean that
+	 *            this propertydescriptor depends on, i.e. the property that
+	 *            specifies the graph whose elements can be selected
+	 * 
+	 * @param graphElementFilter
+	 *            a {@link GraphElementFilter} that filters the elements that
+	 *            the user is able to select from the graph
+	 * 
+	 * @throws IntrospectionException
+	 */
+	public ChooseDependableGraphElementPropertyDescriptor(String propertyName,
+			Class<?> beanClass, ChooseGraphPropertyDescriptor dependsonGraphPD,
+			GraphElementFilter graphElementFilter)
 			throws IntrospectionException {
 		super(propertyName, beanClass);
 		this.dependsOnPropertyDescriptor = dependsonGraphPD;
 		this.graphElementFilter = graphElementFilter;
 	}
-	
+
+	/**
+	 * 
+	 * 
+	 * @return the {@link GraphElementFilter} used to select the selectable
+	 *         elements
+	 */
 	public GraphElementFilter getGraphElementFilter() {
 		return graphElementFilter;
 	}
-	
+
+	/**
+	 * 
+	 * @return the list of properties that this property depends on, i.e.
+	 *         informs gralog about all properties whose changes should trigger
+	 *         updates to the PropertyEditor corresponding to this
+	 *         PropertyDescriptor
+	 */
 	public Set<PropertyDescriptor> getDependsOnPropertyDescriptors() {
 		HashSet<PropertyDescriptor> set = new HashSet<PropertyDescriptor>();
-		set.add( dependsOnPropertyDescriptor );
+		set.add(dependsOnPropertyDescriptor);
 		return set;
 	}
 
+	/**
+	 * 
+	 * @return the propertyEditor that gralog should use to edit this property
+	 */
 	@Override
 	public PropertyEditor createPropertyEditor(Object bean) {
-		return new ChooseDependableGraphElementPropertyEditor( this, bean );
+		return new ChooseDependableGraphElementPropertyEditor(this, bean);
 	}
 }

@@ -19,6 +19,13 @@
 
 package de.hu.gralog.algorithm.result;
 
+/**
+ * This interface allows listeners to listen to DisplaySubgraphMode-changes. It
+ * is not needed by Plugin-Developers.
+ * 
+ * @author Sebastian
+ * 
+ */
 public interface DisplaySubgraphModeListener {
 	void displaySubgraphModeChanged();
 }

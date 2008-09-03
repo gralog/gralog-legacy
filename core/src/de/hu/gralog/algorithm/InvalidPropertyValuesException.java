@@ -25,60 +25,68 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 
 /**
- * This Exception is used to return errors concerning the values of properties for algorithms.
+ * This Exception is used to return errors concerning the values of properties
+ * for algorithms.
  * 
  * @author ordyniak
- *
+ * 
  */
 public class InvalidPropertyValuesException extends Exception {
 
 	public static final String PROPERTY_REQUIRED = "This property is required";
+
 	public static final String GREATER_ZERO = "This property should be creater than zero";
+
 	public static final String GREATER_EQUAL_ZERO = "This property should be creater or equal zero";
 
-	
 	protected Vector errors = new Vector();
+
 	private static final Vector COLUMN_NAMES = new Vector();
-	
+
 	static {
-		COLUMN_NAMES.add( "Property" );
-		COLUMN_NAMES.add( "Errormessage" );
+		COLUMN_NAMES.add("Property");
+		COLUMN_NAMES.add("Errormessage");
 	}
-	
+
 	/**
-	 * Contructs an InvalidPropertyValuesException without errors. Use {@link #addPropertyError(String, String)}
-	 * to add an Error to this Exception.
-	 *
+	 * Contructs an InvalidPropertyValuesException without errors. Use
+	 * {@link #addPropertyError(String, String)} to add an Error to this
+	 * Exception.
+	 * 
 	 */
-	public InvalidPropertyValuesException( ) {
-		
+	public InvalidPropertyValuesException() {
+
 	}
-	
+
 	/**
 	 * Contructs an InvalidPropertyValuesException.
 	 * 
-	 * @param property the name of the property whose value is invalid
-	 * @param errormsg the errormessage to display to the user
+	 * @param property
+	 *            the name of the property whose value is invalid
+	 * @param errormsg
+	 *            the errormessage to display to the user
 	 */
-	public InvalidPropertyValuesException(String property, String errormsg ) {
-		addPropertyError( property, errormsg );
+	public InvalidPropertyValuesException(String property, String errormsg) {
+		addPropertyError(property, errormsg);
 	}
 
 	/**
 	 * Adds an error.
 	 * 
-	 * @param property the name of the property whose value is invalid
-	 * @param errormsg the errormessage to display to the user
+	 * @param property
+	 *            the name of the property whose value is invalid
+	 * @param errormsg
+	 *            the errormessage to display to the user
 	 */
-	public void addPropertyError( String property, String errormsg ) {
+	public void addPropertyError(String property, String errormsg) {
 		Vector error = new Vector();
-		error.add( property );
-		error.add( errormsg );
-		errors.add( error );
+		error.add(property);
+		error.add(errormsg);
+		errors.add(error);
 	}
-	
+
 	public JComponent getComponent() {
-		return new JTable( errors, COLUMN_NAMES );
+		return new JTable(errors, COLUMN_NAMES);
 	}
 
 	/**

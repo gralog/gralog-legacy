@@ -26,42 +26,51 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graphs;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-public class LongestPathIterator<V,E> extends TopologicalOrderIterator<V,E> {
+/**
+ * This iterator computes the length of the longest path from
+ * any sourcevertex to any other vertex in a directed acyclic graph.
+ * 
+ * @author Sebastian
+ *
+ * @param <V> the vertexType
+ * @param <E> the edgeType
+ */
+public class LongestPathIterator<V, E> extends TopologicalOrderIterator<V, E> {
 
 	private Map<V, Double> lengthsData = new HashMap<V, Double>();
-	
-	public LongestPathIterator( DirectedGraph<V,E> graph ) {
-		super( graph );
-		for ( V vertex : graph.vertexSet() ) {
-			if ( graph.inDegreeOf( vertex ) == 0 )
-				lengthsData.put( vertex, new Double( 0 ) );
+
+	public LongestPathIterator(DirectedGraph<V, E> graph) {
+		super(graph);
+		for (V vertex : graph.vertexSet()) {
+			if (graph.inDegreeOf(vertex) == 0)
+				lengthsData.put(vertex, new Double(0));
 		}
 	}
 
-	private double calculatePathLength( V vertex, E edge ) {
-		if ( edge == null )
+	private double calculatePathLength(V vertex, E edge) {
+		if (edge == null)
 			return 0;
-		V fromVertex = Graphs.getOppositeVertex( getGraph(), edge, vertex );
-		Double fromVertexData = lengthsData.get( fromVertex );
-		return fromVertexData.doubleValue() + getGraph().getEdgeWeight( edge );
+		V fromVertex = Graphs.getOppositeVertex(getGraph(), edge, vertex);
+		Double fromVertexData = lengthsData.get(fromVertex);
+		return fromVertexData.doubleValue() + getGraph().getEdgeWeight(edge);
 	}
-		
+
 	@Override
 	protected void encounterVertex(V vertex, E edge) {
 		super.encounterVertex(vertex, edge);
-		lengthsData.put( vertex, new Double( calculatePathLength( vertex, edge ) ) );
+		lengthsData.put(vertex, new Double(calculatePathLength(vertex, edge)));
 	}
 
 	@Override
 	protected void encounterVertexAgain(V vertex, E edge) {
 		super.encounterVertexAgain(vertex, edge);
-		Double vertexData = lengthsData.get( vertex );
-		double newPathLength = calculatePathLength( vertex, edge );
-		if ( vertexData.doubleValue() < newPathLength )
-			lengthsData.put( vertex, new Double( newPathLength ) );
+		Double vertexData = lengthsData.get(vertex);
+		double newPathLength = calculatePathLength(vertex, edge);
+		if (vertexData.doubleValue() < newPathLength)
+			lengthsData.put(vertex, new Double(newPathLength));
 	}
 
-	public double getLongestPathLength( V vertex ) {
-		return lengthsData.get( vertex ).doubleValue();
+	public double getLongestPathLength(V vertex) {
+		return lengthsData.get(vertex).doubleValue();
 	}
 }

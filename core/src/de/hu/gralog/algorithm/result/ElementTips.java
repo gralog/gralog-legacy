@@ -22,35 +22,43 @@ package de.hu.gralog.algorithm.result;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+/**
+ * This class represents an ElementTip that can be displayed by gralog.
+ * Plugin-developers do not need this class.
+ * 
+ * @author Sebastian
+ * 
+ */
 
 public class ElementTips implements ElementTipsDisplayModeListener {
-	
+
 	protected transient ArrayList<ElementTipsListener> listeners = new ArrayList<ElementTipsListener>();
+
 	protected Hashtable elementTips;
+
 	protected ElementTipsDisplayMode mode;
-	
-	
-	public ElementTips( ElementTipsDisplayMode mode, Hashtable elementTips ) {
+
+	public ElementTips(ElementTipsDisplayMode mode, Hashtable elementTips) {
 		this.mode = mode;
-		mode.addElementTipsDisplayModeListener( this );
+		mode.addElementTipsDisplayModeListener(this);
 		this.elementTips = elementTips;
 	}
-	
+
 	public Hashtable getElementTips() {
 		return elementTips;
 	}
-	
+
 	public ElementTipsDisplayMode getMode() {
 		return mode;
 	}
-	
-	public void addElementTipsListener( ElementTipsListener l ) {
-		if ( !listeners.contains( l ) )
-			listeners.add( l );
+
+	public void addElementTipsListener(ElementTipsListener l) {
+		if (!listeners.contains(l))
+			listeners.add(l);
 	}
-	
+
 	protected void fireDataChanged() {
-		for ( ElementTipsListener l : listeners )
+		for (ElementTipsListener l : listeners)
 			l.elementTipsChanged();
 	}
 

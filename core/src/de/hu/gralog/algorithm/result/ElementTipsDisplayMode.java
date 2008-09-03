@@ -19,97 +19,133 @@ import javax.swing.undo.UndoableEdit;
  * or not the elementtips should be visible.
  * 
  * @author ordyniak
- *
+ * 
  */
 public class ElementTipsDisplayMode {
 	protected transient ArrayList<UndoableEditListener> undoListeners = new ArrayList<UndoableEditListener>();
+
 	protected transient ArrayList<ElementTipsDisplayModeListener> listeners = new ArrayList<ElementTipsDisplayModeListener>();
-	
+
 	protected boolean visible = true;
-	
-	public void setVisible( boolean visible ) {
-		setVisible( visible, false );
+
+	/**
+	 * Specifies whether or not the elementtips should be displayed by gralog.
+	 * 
+	 * @param visible
+	 */
+	public void setVisible(boolean visible) {
+		setVisible(visible, false);
 	}
-	
-	public void setVisible( boolean visible, boolean undoRedoEdit ) {
-		if ( this.visible == visible )
+
+	/**
+	 * This method allows gralog to change the visibility-state without
+	 * informing UndoRedoListeners. It should not be called by
+	 * plugin-developers.
+	 * 
+	 * @param visible
+	 * @param undoRedoEdit,
+	 *            if false UndoRedoListeners are not informed about the change.
+	 */
+	public void setVisible(boolean visible, boolean undoRedoEdit) {
+		if (this.visible == visible)
 			return;
 		ElementTipsDisplayMode beforeEdit = null;
-		if ( !undoRedoEdit )
+		if (!undoRedoEdit)
 			beforeEdit = getDataClone();
-		
+
 		this.visible = visible;
-		
-		fireDataChanged( beforeEdit, undoRedoEdit );
+
+		fireDataChanged(beforeEdit, undoRedoEdit);
 	}
-	
+
+	/**
+	 * 
+	 * @return the visibility-state of this ElementTips
+	 */
 	public boolean isVisible() {
 		return visible;
 	}
-	
-	protected void fireDataChanged( ElementTipsDisplayMode beforeEdit, boolean undoRedoEdit ) {
-		for ( ElementTipsDisplayModeListener l : listeners )
+
+	/**
+	 * Informs all listeners about changes to this ElementTips-instance.
+	 * 
+	 * @param beforeEdit,
+	 *            the ElementTips-instance before the change
+	 * @param undoRedoEdit,
+	 *            if false UndoRedoListeners are not informed about the change
+	 */
+	protected void fireDataChanged(ElementTipsDisplayMode beforeEdit,
+			boolean undoRedoEdit) {
+		for (ElementTipsDisplayModeListener l : listeners)
 			l.elementTipsDisplayModeChanged();
-		if ( !undoRedoEdit ) {
+		if (!undoRedoEdit) {
 			ElementTipsDisplayMode afterEdit = getDataClone();
-			for ( UndoableEditListener l : undoListeners )
-				l.undoableEditHappened( new UndoableEditEvent( this, new ElementTipsDisplayModeUndoableEdit( beforeEdit, afterEdit, this ) ) );
+			for (UndoableEditListener l : undoListeners)
+				l.undoableEditHappened(new UndoableEditEvent(this,
+						new ElementTipsDisplayModeUndoableEdit(beforeEdit,
+								afterEdit, this)));
 		}
 	}
-	
+
 	public ElementTipsDisplayMode getDataClone() {
 		ElementTipsDisplayMode mode = new ElementTipsDisplayMode();
-		mode.setVisible( isVisible(), true );
+		mode.setVisible(isVisible(), true);
 		return mode;
 	}
-	
-	public void addElementTipsDisplayModeListener( ElementTipsDisplayModeListener l ) {
-		if ( ! listeners.contains( l ) )
-			listeners.add( l );
+
+	public void addElementTipsDisplayModeListener(
+			ElementTipsDisplayModeListener l) {
+		if (!listeners.contains(l))
+			listeners.add(l);
 	}
-	
-	public void addUndoableEditListener( UndoableEditListener l ) {
-		if ( ! undoListeners.contains( l ) )
-			undoListeners.add( l );
+
+	public void addUndoableEditListener(UndoableEditListener l) {
+		if (!undoListeners.contains(l))
+			undoListeners.add(l);
 	}
-	
+
 	private Object readResolve() {
 		listeners = new ArrayList<ElementTipsDisplayModeListener>();
 		undoListeners = new ArrayList<UndoableEditListener>();
 		return this;
 	}
-	
-	private static class ElementTipsDisplayModeUndoableEdit implements UndoableEdit {
+
+	private static class ElementTipsDisplayModeUndoableEdit implements
+			UndoableEdit {
 
 		protected ElementTipsDisplayMode beforeEdit, afterEdit, edited;
+
 		protected boolean isAlive = true;
-		
-		public ElementTipsDisplayModeUndoableEdit( ElementTipsDisplayMode beforeEdit, ElementTipsDisplayMode afterEdit, ElementTipsDisplayMode edited ) {
+
+		public ElementTipsDisplayModeUndoableEdit(
+				ElementTipsDisplayMode beforeEdit,
+				ElementTipsDisplayMode afterEdit, ElementTipsDisplayMode edited) {
 			this.beforeEdit = beforeEdit;
 			this.afterEdit = afterEdit;
 			this.edited = edited;
 		}
-		
-		protected void applyData( ElementTipsDisplayMode from, ElementTipsDisplayMode to ) {
-			to.setVisible( from.isVisible(), true );
+
+		protected void applyData(ElementTipsDisplayMode from,
+				ElementTipsDisplayMode to) {
+			to.setVisible(from.isVisible(), true);
 		}
-		
+
 		public void undo() throws CannotUndoException {
-			applyData( beforeEdit, edited );
+			applyData(beforeEdit, edited);
 		}
 
 		public boolean canUndo() {
-			if ( isAlive )
+			if (isAlive)
 				return true;
 			return false;
 		}
 
 		public void redo() throws CannotRedoException {
-			applyData( afterEdit, edited );
+			applyData(afterEdit, edited);
 		}
 
 		public boolean canRedo() {
-			if ( isAlive )
+			if (isAlive)
 				return true;
 			return false;
 		}
@@ -146,6 +182,6 @@ public class ElementTipsDisplayMode {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
+
 	}
 }

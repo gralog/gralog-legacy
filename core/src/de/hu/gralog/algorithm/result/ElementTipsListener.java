@@ -19,6 +19,13 @@
 
 package de.hu.gralog.algorithm.result;
 
+/**
+ * This interface allows gralog to listen to changes of ElementTips. It should
+ * not be used by Plugin-Developers.
+ * 
+ * @author Sebastian
+ * 
+ */
 public interface ElementTipsListener {
 	void elementTipsChanged();
 }

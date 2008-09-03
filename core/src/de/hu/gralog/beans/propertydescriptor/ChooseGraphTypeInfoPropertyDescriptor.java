@@ -22,43 +22,50 @@ package de.hu.gralog.beans.propertydescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import de.hu.gralog.graph.types.GralogGraphTypeInfoFilter;
+import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 
 /**
- * This class is a special PropertyDescriptor for properties of algorithms in GrALoG.
- * This Descriptor can be used for all properties of type graph. Use the Descriptor
- * if you want the user to choose among all currently opened graphs in GrALog to define
- * your property. Each Descriptor has to have a graphType. The graphType determines which
- * graphs are selectable for that property ( always make sure, that the getter and setter-methods
- * of your property have a compatible type ). 
+ * This class is a special PropertyDescriptor to define properties for
+ * algorithms, graphs, vertices and edges in GrALoG. This Descriptor can be used
+ * for all properties of type {@link GralogGraphTypeInfo}. Use the Descriptor
+ * if you want the user to choose among all avaible types of graphs currently
+ * installed in GrALog. You can filter the types of graphs that should be
+ * avaible to the user by specifying a {@link GralogGraphTypeInfoFilter} with
+ * this descriptor. Please make sure that your property excepts all
+ * GralogGraphTypeInfo objects the user can choose from.
  * 
  * @author ordyniak
- *
+ * 
  */
 public class ChooseGraphTypeInfoPropertyDescriptor extends PropertyDescriptor {
 
 	private GralogGraphTypeInfoFilter graphTypeInfoFilter;
-	
+
 	/**
 	 * Contructs a ChooseGraphTypeInfoPropertyDescriptor
 	 * 
-	 * @param propertyName the name of the property
-	 * @param beanClass the class this property belongs to
-	 * @param graphTypeInfoFilter 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param beanClass
+	 *            the class this property belongs to
+	 * @param graphTypeInfoFilter
+	 *            a filter for the {@link GralogGraphTypeInfo GralogTypeInfo's}
+	 *            that should be avaible to the user.
 	 * @throws IntrospectionException
 	 */
-	public ChooseGraphTypeInfoPropertyDescriptor(String propertyName, Class<?> beanClass, GralogGraphTypeInfoFilter graphTypeInfoFilter )
+	public ChooseGraphTypeInfoPropertyDescriptor(String propertyName,
+			Class<?> beanClass, GralogGraphTypeInfoFilter graphTypeInfoFilter)
 			throws IntrospectionException {
 		super(propertyName, beanClass);
 		this.graphTypeInfoFilter = graphTypeInfoFilter;
 	}
 
 	/**
-	 *  
+	 * 
 	 * @return the TypeInfo-Object
 	 */
 	public GralogGraphTypeInfoFilter getGraphTypeInfoFilter() {
 		return graphTypeInfoFilter;
 	}
-	
+
 }

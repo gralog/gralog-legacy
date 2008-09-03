@@ -35,89 +35,96 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
 /**
  * 
- * This static class provides default attributes for Edge- and VertexRenderers. 
+ * This static class provides default attributes for Edge- and VertexRenderers.
  * 
  * @author Sebastian
- *
+ * 
  */
 
 public class ElementAttributes {
-	
+
 	private static final Hashtable EDGE_ATTRIBUTES = new Hashtable();
+
 	private static final Hashtable DIRECTED_EDGE_ATTRIBUTES = new Hashtable();
+
 	private static final Hashtable VERTEX_ATTRIBUTES = new Hashtable();
-	
-	public static AttributeMap getVertexAttributes(  ) {
-		
-		AttributeMap map = (AttributeMap)VERTEX_ATTRIBUTES.get( DisplayMode.SHOW );
-		if ( map != null )
+
+	public static AttributeMap getVertexAttributes() {
+
+		AttributeMap map = (AttributeMap) VERTEX_ATTRIBUTES
+				.get(DisplayMode.SHOW);
+		if (map != null)
 			return map;
-		
+
 		map = new AttributeMap();
-		
-//		GraphConstants.setBounds(map, new Rectangle2D.Double(50, 50, 40, 40));
-		
-		GraphConstants.setBackground(map, Color.white );
-		GraphConstants.setBorderColor( map, Color.black );
-		GraphConstants.setLineWidth( map, 2 );
-		GraphConstants.setBorder(map, BorderFactory.createLineBorder( GraphConstants.getBorderColor( map ), (int)GraphConstants.getLineWidth( map ) ));
-				
+
+		// GraphConstants.setBounds(map, new Rectangle2D.Double(50, 50, 40,
+		// 40));
+
+		GraphConstants.setBackground(map, Color.white);
+		GraphConstants.setBorderColor(map, Color.black);
+		GraphConstants.setLineWidth(map, 2);
+		GraphConstants.setBorder(map, BorderFactory.createLineBorder(
+				GraphConstants.getBorderColor(map), (int) GraphConstants
+						.getLineWidth(map)));
+
 		GraphConstants.setForeground(map, Color.black);
 		GraphConstants.setFont(map, GraphConstants.DEFAULTFONT.deriveFont(
 				Font.BOLD, 12));
 		GraphConstants.setOpaque(map, true);
-		GraphConstants.setAutoSize( map, false );
-		
-		VERTEX_ATTRIBUTES.put( DisplayMode.SHOW, map );
+		GraphConstants.setAutoSize(map, false);
+
+		VERTEX_ATTRIBUTES.put(DisplayMode.SHOW, map);
 		return map;
 	}
 
-	public static AttributeMap getEdgeAttributes( Graph graph ) {
+	public static AttributeMap getEdgeAttributes(Graph graph) {
 		AttributeMap map;
-		
-		if ( graph instanceof DirectedGraph )
-			map = (AttributeMap)DIRECTED_EDGE_ATTRIBUTES.get( DisplayMode.SHOW );
-		else 
-			map = (AttributeMap)EDGE_ATTRIBUTES.get( DisplayMode.SHOW );
-		
-		if ( map != null )
-			return map;
-		
-		map = new AttributeMap();
-		
-		GraphConstants.setLineBegin(map, GraphConstants.ARROW_NONE );
-		GraphConstants.setBeginSize(map, 0 );
-		GraphConstants.setBeginFill(map, false );
 
-		if ( graph instanceof DirectedGraph ) {
-			GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL );
-			GraphConstants.setEndSize(map, 10 );
-			GraphConstants.setEndFill(map, true );
+		if (graph instanceof DirectedGraph)
+			map = (AttributeMap) DIRECTED_EDGE_ATTRIBUTES.get(DisplayMode.SHOW);
+		else
+			map = (AttributeMap) EDGE_ATTRIBUTES.get(DisplayMode.SHOW);
+
+		if (map != null)
+			return map;
+
+		map = new AttributeMap();
+
+		GraphConstants.setLineBegin(map, GraphConstants.ARROW_NONE);
+		GraphConstants.setBeginSize(map, 0);
+		GraphConstants.setBeginFill(map, false);
+
+		if (graph instanceof DirectedGraph) {
+			GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
+			GraphConstants.setEndSize(map, 10);
+			GraphConstants.setEndFill(map, true);
 		} else {
-			GraphConstants.setLineEnd(map, GraphConstants.ARROW_NONE );
-			GraphConstants.setEndSize(map, 0 );
-			GraphConstants.setEndFill(map, false );
+			GraphConstants.setLineEnd(map, GraphConstants.ARROW_NONE);
+			GraphConstants.setEndSize(map, 0);
+			GraphConstants.setEndFill(map, false);
 		}
-		
+
 		GraphConstants.setLineWidth(map, 1);
-		
-		GraphConstants.setLineStyle(map, GraphConstants.STYLE_BEZIER );
-		GraphConstants.setRouting( map, GraphConstants.ROUTING_DEFAULT );
-		GraphConstants.setBorderColor(map, Color.BLACK );
-		GraphConstants.setForeground( map, Color.BLACK );
-		GraphConstants.setBackground( map, UIManager.getColor("Tree.textBackground") );
-		GraphConstants.setOpaque(map, false );
+
+		GraphConstants.setLineStyle(map, GraphConstants.STYLE_BEZIER);
+		GraphConstants.setRouting(map, GraphConstants.ROUTING_DEFAULT);
+		GraphConstants.setBorderColor(map, Color.BLACK);
+		GraphConstants.setForeground(map, Color.BLACK);
+		GraphConstants.setBackground(map, UIManager
+				.getColor("Tree.textBackground"));
+		GraphConstants.setOpaque(map, false);
 		GraphConstants.setFont(map, GraphConstants.DEFAULTFONT.deriveFont(
 				Font.BOLD, 12));
-		GraphConstants.setLabelAlongEdge(map, false );
-		
-		GraphConstants.setLineColor(map, Color.BLACK );
-		
-		if ( graph instanceof DirectedGraph )
-			DIRECTED_EDGE_ATTRIBUTES.put( DisplayMode.SHOW, map );
+		GraphConstants.setLabelAlongEdge(map, false);
+
+		GraphConstants.setLineColor(map, Color.BLACK);
+
+		if (graph instanceof DirectedGraph)
+			DIRECTED_EDGE_ATTRIBUTES.put(DisplayMode.SHOW, map);
 		else
-			EDGE_ATTRIBUTES.put( DisplayMode.SHOW, map );
-		
+			EDGE_ATTRIBUTES.put(DisplayMode.SHOW, map);
+
 		return map;
 	}
 

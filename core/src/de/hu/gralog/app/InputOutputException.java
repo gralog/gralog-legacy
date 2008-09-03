@@ -19,12 +19,17 @@
 
 package de.hu.gralog.app;
 
+/**
+ * An Exception used to signal all kind of Erros associated with in- and output
+ * of files.
+ * 
+ * @author Sebastian
+ * 
+ */
 public class InputOutputException extends Exception {
 
-	
 	public InputOutputException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
 
 }

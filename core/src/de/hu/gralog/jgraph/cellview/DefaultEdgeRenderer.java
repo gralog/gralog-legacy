@@ -27,29 +27,29 @@ import org.jgraph.graph.EdgeRenderer;
 
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
-/** 
+/**
  * 
  * This class should be overriden in order to implement your own EdgeRenderer.
- * It extends/changes the behavior of the JGraph-{@link EdgeRenderer EdgeRenderer} in two ways:
- * - it implements {@link DisplayModeRenderer DisplayModeRenderer}
- * - attributes are no longer contained in CellView instead one set of attributes is used for all Views of
- * 	 a graph 
+ * It extends/changes the behavior of the JGraph-{@link EdgeRenderer EdgeRenderer}
+ * by implementing {@link DisplayModeRenderer DisplayModeRenderer}.
  * 
  * @author Sebastian
- *
+ * 
  */
-public class DefaultEdgeRenderer extends EdgeRenderer implements DisplayModeRenderer {
+public class DefaultEdgeRenderer extends EdgeRenderer implements
+		DisplayModeRenderer {
 
-	public DefaultEdgeRenderer( ) {
-		
+	public DefaultEdgeRenderer() {
+
 	}
-	
-	public Component getRendererComponent(JGraph graph, CellView view, boolean sel, boolean focus, boolean preview, DisplayMode displayMode) {
-		if ( displayMode == DisplayMode.HIDE )
+
+	public Component getRendererComponent(JGraph graph, CellView view,
+			boolean sel, boolean focus, boolean preview, DisplayMode displayMode) {
+		if (displayMode == DisplayMode.HIDE)
 			return null;
 		getRendererComponent(graph, view, sel, focus, preview);
-		if ( displayMode.getColor() != null )
-			setForeground( displayMode.getColor() );
+		if (displayMode.getColor() != null)
+			setForeground(displayMode.getColor());
 		return this;
 	}
 }

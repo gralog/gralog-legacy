@@ -34,27 +34,38 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import de.hu.gralog.beans.propertydescriptor.GraphElementFilter;
-import de.hu.gralog.graph.GralogGraph;
+import de.hu.gralog.graph.GralogGraphSupport;
 
-public class ChooseGraphElementPropertyEditor extends PropertyEditorSupport implements PropertyEditorRendererExtension {
+/**
+ * This PropertyEditor allows to edit and renderer values that
+ * are described by 
+ * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphElementPropertyDescriptor}.
+ * 
+ * @author Sebastian
+ *
+ */
+public class ChooseGraphElementPropertyEditor extends PropertyEditorSupport
+		implements PropertyEditorRendererExtension {
 
 	private final GraphElementFilter graphElementFilter;
-	private final GralogGraph graph;
-	
+
+	private final GralogGraphSupport graphSupport;
+
 	private ChooseGraphElementPropertyEditorComponent editor;
-	
-	public ChooseGraphElementPropertyEditor( GralogGraph graph, GraphElementFilter graphElementFilter ) {
-		super( );
+
+	public ChooseGraphElementPropertyEditor(GralogGraphSupport graphSupport,
+			GraphElementFilter graphElementFilter) {
+		super();
 		this.graphElementFilter = graphElementFilter;
-		this.graph = graph;
+		this.graphSupport = graphSupport;
 		editor = new ChooseGraphElementPropertyEditorComponent();
 	}
-	
+
 	public Component getCustomRenderer() {
 		editor.updateElements();
 		return editor;
 	}
-	
+
 	@Override
 	public boolean supportsCustomEditor() {
 		return true;
@@ -66,77 +77,87 @@ public class ChooseGraphElementPropertyEditor extends PropertyEditorSupport impl
 		return editor;
 	}
 
-	private GralogGraph getGraph() {
-		return graph;
+	private GralogGraphSupport getGraphSupport() {
+		return graphSupport;
 	}
-	
+
 	List<Object> getChoosableElements() {
 		ArrayList<Object> chooseableElements = new ArrayList<Object>();
-		GralogGraph graph = getGraph();
-		if ( graph == null )
+		GralogGraphSupport graphSupport = getGraphSupport();
+		if (graphSupport == null)
 			return chooseableElements;
-		for ( Object vertex : graph.vertexSet() ) {
-			if ( !graphElementFilter.filterElement( graph, vertex ) )
-				chooseableElements.add( vertex );
+		for (Object vertex : graphSupport.getGraph().vertexSet()) {
+			if (!graphElementFilter.filterElement(graphSupport, vertex))
+				chooseableElements.add(vertex);
 		}
-		for ( Object edge : graph.edgeSet() ) {
-			if ( !graphElementFilter.filterElement( graph, edge ) )
-				chooseableElements.add( edge );
+		for (Object edge : graphSupport.getGraph().edgeSet()) {
+			if (!graphElementFilter.filterElement(graphSupport, edge))
+				chooseableElements.add(edge);
 		}
 		return chooseableElements;
 	}
-	
+
 	Object getSelectedElement() {
-		GralogGraph graph = getGraph();
-		if ( graph == null )
+		GralogGraphSupport graphSupport = getGraphSupport();
+		if (graphSupport == null)
 			return null;
-		Set vertices = graph.getGralogSupport().getGraphSelectionSupport().getSelectedVertices();
-		if ( vertices != null && vertices.size() == 1 && !graphElementFilter.filterElement( graph, vertices.iterator().next() ) )
+		Set vertices = graphSupport.getGraphSelectionSupport()
+				.getSelectedVertices();
+		if (vertices != null
+				&& vertices.size() == 1
+				&& !graphElementFilter.filterElement(graphSupport, vertices
+						.iterator().next()))
 			return vertices.iterator().next();
-		Set edges = graph.getGralogSupport().getGraphSelectionSupport().getSelectedEdges();
-		if ( edges != null && edges.size() == 1 && !graphElementFilter.filterElement( graph, edges.iterator().next() ) )
-			return edges.iterator().next(  );
+		Set edges = graphSupport.getGraphSelectionSupport().getSelectedEdges();
+		if (edges != null
+				&& edges.size() == 1
+				&& !graphElementFilter.filterElement(graphSupport, edges
+						.iterator().next()))
+			return edges.iterator().next();
 		return null;
 	}
-	
-	protected class ChooseGraphElementPropertyEditorComponent extends JPanel implements ActionListener {
+
+	protected class ChooseGraphElementPropertyEditorComponent extends JPanel
+			implements ActionListener {
 		private JComboBox chooseCombo;
+
 		private JButton button;
 
-		public ChooseGraphElementPropertyEditorComponent(  ) {
-			super( new BorderLayout() );
-			
-			chooseCombo = new JComboBox(  );
+		public ChooseGraphElementPropertyEditorComponent() {
+			super(new BorderLayout());
+
+			chooseCombo = new JComboBox();
 			comboBoxUpdate();
-			chooseCombo.addActionListener( this );
-			chooseCombo.setActionCommand( "SELECTED" );
-			add( chooseCombo, BorderLayout.CENTER );
-			
-			button = new JButton( "S" );
-			button.setActionCommand( "CURRENT" );
-			button.addActionListener( this );
-			add( button, BorderLayout.EAST );
+			chooseCombo.addActionListener(this);
+			chooseCombo.setActionCommand("SELECTED");
+			add(chooseCombo, BorderLayout.CENTER);
+
+			button = new JButton("S");
+			button.setActionCommand("CURRENT");
+			button.addActionListener(this);
+			add(button, BorderLayout.EAST);
 		}
 
 		private void comboBoxUpdate() {
-			chooseCombo.setModel( new DefaultComboBoxModel( getChoosableElements().toArray() ) );
-			chooseCombo.setSelectedItem( getValue() );
+			chooseCombo.setModel(new DefaultComboBoxModel(
+					getChoosableElements().toArray()));
+			chooseCombo.setSelectedItem(getValue());
 		}
-		
+
 		private void updateElements() {
 			comboBoxUpdate();
 		}
-		
+
 		public void actionPerformed(ActionEvent e) {
-			if ( e.getActionCommand().equals( "SELECTED" ) ) {
-				setValue( chooseCombo.getSelectedItem() );
+			if (e.getActionCommand().equals("SELECTED")) {
+				setValue(chooseCombo.getSelectedItem());
 			} else {
-				if ( getSelectedElement() != null ) {
-					setValue( getSelectedElement() );
-					chooseCombo.setSelectedItem( getValue() );
+				if (getSelectedElement() != null) {
+					setValue(getSelectedElement());
+					chooseCombo.setSelectedItem(getValue());
 				}
 			}
-			
+
 		}
 
 	}

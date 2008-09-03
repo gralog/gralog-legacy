@@ -2,7 +2,21 @@
 <BODY>
 This package defines all classes needed to implement algorithms in GraLog.
 
-Please refer to the documentation of {@link de.hu.gralog.graph.alg.Algorithm} to see what needs to
-be done in order to implement an algorithm.
+An Algorithm in Gralog is basically a JavaBean 
+( please refer to <a href="../../../../../pdf/beans.101.pdf">Java Bean Specification</a> for
+the definition of Java Beans ) that
+implements {@link Algorithm}. Being a JavaBean means that
+Gralog-Algorithms can specify their properties by using the JavaBeans-Framework that
+provides functionality to define {@link java.beans.Customizer Customizers}, 
+{@link de.hu.gralog.beans.propertyeditor PropertyEditor} and 
+{@link de.hu.gralog.beans.proertydescriptor PropertyDescriptions}
+for these properties respectively Algorithms. It basically means
+that Gralog-Algorithm can be hugely customized taking arbitrary Parameters 
+and providing their own
+GUI-Components to edit these properties.
+
+<h1>Plugin-Developers</h1>
+
+Please see {@link Algorithm} for an example of how to implement your own Algorithm.
 </BODY>
 </HTML>

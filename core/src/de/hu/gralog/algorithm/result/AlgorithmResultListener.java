@@ -8,6 +8,16 @@ package de.hu.gralog.algorithm.result;
 
 import de.hu.gralog.app.UserException;
 
+/**
+ * This interface defines a listener that listens to
+ * {@link AlgorithmResult AlgorithmResult's}. This listener is used by gralog
+ * to inform gralog of changes in AlgorithmResult triggered by an
+ * {@link AlgorithmResultInteractiveContent} and should not be used by plugin
+ * developers.
+ * 
+ * @author Sebastian
+ * 
+ */
 public interface AlgorithmResultListener {
-	public void currentContentChanged() throws UserException ;
+	public void currentContentChanged() throws UserException;
 }

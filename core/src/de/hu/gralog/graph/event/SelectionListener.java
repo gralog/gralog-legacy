@@ -4,19 +4,20 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package de.hu.gralog.jgrapht.event;
+package de.hu.gralog.graph.event;
 
 import java.util.Set;
 
 import org.jgraph.event.GraphSelectionEvent;
 
 /**
- *	A Listener for selectionevents of graphs.
- *
+ * A Listener for selectionevents of graphs.
+ * 
  * 
  * @author ordyniak
- *
+ * 
  */
-public interface SelectionListener<V,E> {
-	public void valueChanged( Set<V> selectedVertexes, Set<E> selectedEdges, GraphSelectionEvent event );
+public interface SelectionListener<V, E> {
+	public void valueChanged(Set<V> selectedVertexes, Set<E> selectedEdges,
+			GraphSelectionEvent event);
 }

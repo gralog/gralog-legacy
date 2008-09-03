@@ -1,11 +1,83 @@
 <HTML>
 <BODY>
-This library defines all classes needed to implement Graphs and Algorithms for GraLog.
+The main propose of this library is to define the concepts of 
+{@link de.hu.gralog.graph Gralog-Graphs} and {@link de.hu.gralog.algorithm Gralog-Algorithms}
+ that can be used, displayed and / or executed by Gralog. 
+The library can also be seen as
+a starting point for Plugin-Developers that can use these concepts
+to build their own types of {@link de.hu.gralog.graph Gralog-Graphs} 
+and {@link de.hu.gralog.algorithm Gralog-Algorithms}. 
 <p>
-The main purpose of this library is to give a starting point for plugin-developers. There
-are two important packages in this library namely {@link de.hu.gralog.graph} and
-{@link de.hu.gralog.graph.alg}. The first one contains all classes needed to implement 
-your own types of graphs the second one contains all classes needed to implement 
-your own algorithms.
+Besides giving an introduction
+to the concepts underlying Gralog this documentation therefore 
+also tries to provide hints 
+for Plugin-Developers on how to build their own Plugins for Gralog.
+Therefore most of the package-, class- or method- 
+(including this overview-) 
+-JavaDoc-comments contain a
+section called <b>Plugin-Developers</b>, that explains how to use
+this package, class or method when developing your own Plugin.
+<p>
+<h2>Plugin-Developers</h2>
+<p>
+A Plugin in Gralog basically consists of a definition of
+{@link de.hu.gralog.graph Gralog-Graphs} and 
+{@link de.hu.gralog.algorithm Gralog-Algorithms}. To
+define your own {@link de.hu.gralog.graph Gralog-Graph} 
+you have to subclass
+{@link de.hu.gralog.graph.GralogGraphTypeInfo} ( please
+refer to the description of {@link de.hu.gralog.graph} on
+how to do this. {@link de.hu.gralog.algorithm Gralog-Algorithms} are basically
+classes that implement the {@link de.hu.gralog.algorithm.Algorithm}-
+interface, please refer to {@link de.hu.gralog.algorithm}
+on how to build your own algorithms.
+<p>
+Every
+Plugin in Gralog comes as a Jar-File that must contain a file
+called <b>plugin.config</b> in its root-directory. The <b>plugin.config</b>
+tells Gralog which Gralog-Graphs and -Algorithms are defined by
+that Plugin and where to lookup the classes that define them.
+<p>
+The <b>plugin.config</b> is an XML-File, that has the following format:
+
+<pre>
+	&lt;plugin name=&quot;<b>PLUGIN_NAME</b>&quot;&gt;
+		&lt;graphs&gt;
+			&lt;graph typeInfoClass=&quot;<b>TYPE_INFO_CLASS</b>&quot;/&gt;
+		&lt;/graphs&gt;
+		&lt;algorithms&gt;
+			&lt;algorithm name=&quot;<b>ALGORITH_NAME</b>&quot; class=&quot;<b>ALGORITH_CLASS</b>&quot;/&gt;
+		&lt;/algorithms&gt;
+	&lt;/plugin&gt;
+</pre>
+
+Here <b>PLUGIN_NAME</b>, <b>TYPE_INFO_CLASS</b>, <b>ALGORITHM_NAME</b> and <b>ALGORITHM_CLASS</b>,
+have the following meaning:
+<p>
+<table border="1">
+	<tr>
+		<td><b>Field</b></td>
+		<td><b>Meaning</b></td>
+	</tr>
+	<tr>
+		<td><b>PLUGIN_NAME</b></td>
+		<td>This is the name for your plugin, that is displayed to the User by Gralog</td>
+	</tr>
+	<tr>
+		<td><b>TYPE_INFO_CLASS</b></td>
+		<td>The fully qualified classname for your subclass of {@link de.hu.gralog.graph.GralogGraphTypeInfo},
+			that defines your {@link de.hu.gralog.graph Gralog-Graph}</td>
+	</tr>
+	<tr>
+		<td><b>ALGORITHM_NAME</b></td>
+		<td>This is the name for your {@link de.hu.gralog.algorithm Gralog-Algorithm} that is displayed to the user by Gralog</td>
+	</tr>
+	<tr>
+		<td><b>ALGORITHM_CLASS</b></td>
+		<td>The fully qualified classname for your class implementing {@link de.hu.gralog.algorithm.Algorithm},
+		that defines your {@link de.hu.gralog.algorithm Gralog-Algorithm}.</td>
+	</tr>
+</table>		
+			
 </BODY>
 </HTML>

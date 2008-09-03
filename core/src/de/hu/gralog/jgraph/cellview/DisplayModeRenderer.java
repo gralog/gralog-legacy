@@ -31,13 +31,15 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
 /**
  * 
- * This interface extends the basic {@link Renderer JGraphRenderer} in order to allow displaymodedependent display
- * of CellViews. The feature is needed to highlight special components of a JGraph.   
+ * This interface extends the basic {@link Renderer JGraphRenderer} in order to
+ * allow displaymodedependent display of CellViews. The feature is needed to
+ * highlight special components of a JGraph.
  * 
  * @author Sebastian
- *
+ * 
  */
 
 public interface DisplayModeRenderer extends CellViewRenderer {
-	public Component getRendererComponent(JGraph graph, CellView view, boolean sel, boolean focus, boolean preview, DisplayMode displayMode);
+	public Component getRendererComponent(JGraph graph, CellView view,
+			boolean sel, boolean focus, boolean preview, DisplayMode displayMode);
 }

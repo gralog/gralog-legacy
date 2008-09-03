@@ -26,138 +26,150 @@ import java.util.Vector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Subgraph;
 
-
-
 /**
+ * This class is used by gralog to display subgraphs of a graph. It is of no use
+ * for plugin developers.
+ * 
  * 
  * @author ordyniak
- *
+ * 
  */
-public class DisplaySubgraph implements DisplaySubgraphModeListener, Serializable {
+public class DisplaySubgraph implements DisplaySubgraphModeListener,
+		Serializable {
 
 	protected transient Vector listeners = new Vector();
-	
+
 	public static class DisplayMode implements Serializable {
-		
-		public static final DisplayMode SHOW = new DisplayMode( "SHOW" );
-		public static final DisplayMode HIDE = new DisplayMode( "HIDE" );
-		public static final DisplayMode HIGH1 = new DisplayMode( "HIGH1", Color.GREEN );
-		public static final DisplayMode HIGH2 = new DisplayMode( "HIGH2", Color.RED );
+
+		public static final DisplayMode SHOW = new DisplayMode("SHOW");
+
+		public static final DisplayMode HIDE = new DisplayMode("HIDE");
+
+		public static final DisplayMode HIGH1 = new DisplayMode("HIGH1",
+				Color.GREEN);
+
+		public static final DisplayMode HIGH2 = new DisplayMode("HIGH2",
+				Color.RED);
+
 		private static final DisplayMode[] ORDER = { HIGH2, HIGH1, SHOW, HIDE };
-		
+
 		private String name;
+
 		private Color color;
-		
+
 		protected DisplayMode() {
-			
+
 		}
-		
-		private DisplayMode( String name ) {
-			this( name, null );
+
+		private DisplayMode(String name) {
+			this(name, null);
 		}
-		
-		private DisplayMode( String name, Color color ) {
+
+		private DisplayMode(String name, Color color) {
 			this.name = name;
 			this.color = color;
 		}
-		
-		private int getIndex( ) {
-			for ( int i = 0; i < ORDER.length; i++ ) {
-				if ( ORDER[i] == this )
+
+		private int getIndex() {
+			for (int i = 0; i < ORDER.length; i++) {
+				if (ORDER[i] == this)
 					return i;
 			}
-			return -1;	
+			return -1;
 		}
-		
-		public boolean overwrites( DisplayMode displayMode ) {
-			if ( getIndex() < displayMode.getIndex() )
+
+		public boolean overwrites(DisplayMode displayMode) {
+			if (getIndex() < displayMode.getIndex())
 				return true;
 			return false;
 		}
-		
+
 		public static DisplayMode[] getDisplayModes() {
 			return ORDER;
 		}
-		
+
 		public String toString() {
 			return name;
 		}
-		
-		public static DisplayMode parseString( String name ) {
-			for ( DisplayMode mode : ORDER ) {
-				if ( mode.name.equalsIgnoreCase( name ) )
+
+		public static DisplayMode parseString(String name) {
+			for (DisplayMode mode : ORDER) {
+				if (mode.name.equalsIgnoreCase(name))
 					return mode;
 			}
 			return null;
 		}
-		
+
 		public Color getColor() {
 			return color;
 		}
-		
+
 		private Object readResolve() {
-			if ( name.equals( "SHOW" ) )
+			if (name.equals("SHOW"))
 				return SHOW;
-			if ( name.equals( "HIDE" ) )
+			if (name.equals("HIDE"))
 				return HIDE;
-			if ( name.equals( "HIGH1" ) )
+			if (name.equals("HIGH1"))
 				return HIGH1;
 			return HIGH2;
 		}
 	}
-	
+
 	protected DisplaySubgraphMode mode;
-	protected Subgraph subgraph; 
-	
+
+	protected Subgraph subgraph;
+
 	protected DisplaySubgraph() {
-		
+
 	}
-	
-	public DisplaySubgraph( DisplaySubgraphMode mode, Subgraph subgraph ) {
+
+	public DisplaySubgraph(DisplaySubgraphMode mode, Subgraph subgraph) {
 		this.mode = mode;
 		this.subgraph = subgraph;
-		mode.addListener( this );
+		mode.addListener(this);
 	}
-	
+
 	public Subgraph getSubgraph() {
 		return subgraph;
 	}
-	
+
 	public DisplaySubgraphMode getMode() {
 		return mode;
 	}
-	
-	public DisplayMode getDisplayMode( Object userObject ) {
-		if ( userObject instanceof DefaultEdge ) {
-			if ( getMode().getEdgeDisplayMode( false ) == getMode().getEdgeDisplayMode( true ) )
-				return getMode().getEdgeDisplayMode( false );
-			if ( subgraph.containsEdge( (DefaultEdge)userObject ) )
-				return getMode().getEdgeDisplayMode( false );
-			return getMode().getEdgeDisplayMode( true );
+
+	public DisplayMode getDisplayMode(Object userObject) {
+		if (userObject instanceof DefaultEdge) {
+			if (getMode().getEdgeDisplayMode(false) == getMode()
+					.getEdgeDisplayMode(true))
+				return getMode().getEdgeDisplayMode(false);
+			if (subgraph.containsEdge((DefaultEdge) userObject))
+				return getMode().getEdgeDisplayMode(false);
+			return getMode().getEdgeDisplayMode(true);
 		}
-		if ( getMode().getVertexDisplayMode( false ) == getMode().getVertexDisplayMode( true ) )
-			return getMode().getVertexDisplayMode( false );
-		if ( subgraph.containsVertex( userObject ) ) 
-			return getMode().getVertexDisplayMode( false );
-		return getMode().getVertexDisplayMode( true );
+		if (getMode().getVertexDisplayMode(false) == getMode()
+				.getVertexDisplayMode(true))
+			return getMode().getVertexDisplayMode(false);
+		if (subgraph.containsVertex(userObject))
+			return getMode().getVertexDisplayMode(false);
+		return getMode().getVertexDisplayMode(true);
 	}
 
 	protected void fireSubGraphChanged() {
-		for (int i = 0; i < listeners.size();  i++ )
-			((DisplaySubgraphListener)listeners.get( i )).displayUpdated( this );
+		for (int i = 0; i < listeners.size(); i++)
+			((DisplaySubgraphListener) listeners.get(i)).displayUpdated(this);
 	}
-	
+
 	public void addDisplaySubgraphListener(DisplaySubgraphListener l) {
-		if ( ! listeners.contains( l ) )
-			listeners.add( l );
+		if (!listeners.contains(l))
+			listeners.add(l);
 	}
 
 	public void removeDisplaySubgraphListener(DisplaySubgraphListener l) {
-		listeners.remove( l );
+		listeners.remove(l);
 	}
 
 	public void displaySubgraphModeChanged() {
 		fireSubGraphChanged();
 	}
-	
+
 }

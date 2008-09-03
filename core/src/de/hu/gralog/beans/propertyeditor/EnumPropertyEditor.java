@@ -29,23 +29,32 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-public class EnumPropertyEditor extends PropertyEditorSupport implements PropertyEditorRendererExtension {
+/**
+ * This PropertyEditor allows to edit and renderer values that
+ * are described by 
+ * {@link de.hu.gralog.beans.propertydescriptor.EnumPropertyDescriptor}.
+ * 
+ * @author Sebastian
+ *
+ */
+public class EnumPropertyEditor extends PropertyEditorSupport implements
+		PropertyEditorRendererExtension {
 
 	private final Enum[] values;
-	
+
 	private EnumPropertyEditorComponent editor;
-	
-	public EnumPropertyEditor( Enum[] values ) {
-		super( );
+
+	public EnumPropertyEditor(Enum[] values) {
+		super();
 		this.values = values;
 		editor = new EnumPropertyEditorComponent();
 	}
-	
+
 	public Component getCustomRenderer() {
 		editor.configure();
 		return editor;
 	}
-	
+
 	@Override
 	public boolean supportsCustomEditor() {
 		return true;
@@ -59,48 +68,49 @@ public class EnumPropertyEditor extends PropertyEditorSupport implements Propert
 
 	String[] getNames() {
 		String[] names = new String[values.length];
-		for ( int i = 0; i < values.length; i++ )
+		for (int i = 0; i < values.length; i++)
 			names[i] = values[i].name();
 		return names;
 	}
-	
-	static String getNameForValue( Object value ) {
-		if ( value == null )
+
+	static String getNameForValue(Object value) {
+		if (value == null)
 			return null;
-		return ((Enum)value).name();
+		return ((Enum) value).name();
 	}
-	
-	Object getValueForName( String name ) {
-		if ( name == null )
+
+	Object getValueForName(String name) {
+		if (name == null)
 			return null;
-		return Enum.valueOf( values[0].getDeclaringClass(), name );
+		return Enum.valueOf(values[0].getDeclaringClass(), name);
 	}
-	
-	protected class EnumPropertyEditorComponent extends JPanel implements ActionListener {
+
+	protected class EnumPropertyEditorComponent extends JPanel implements
+			ActionListener {
 		private JComboBox chooseCombo;
 
-		public EnumPropertyEditorComponent(  ) {
-			super( new BorderLayout() );
-			
-			chooseCombo = new JComboBox(  );
+		public EnumPropertyEditorComponent() {
+			super(new BorderLayout());
+
+			chooseCombo = new JComboBox();
 			comboBoxUpdate();
-			chooseCombo.addActionListener( this );
-			chooseCombo.setActionCommand( "SELECTED" );
-			add( chooseCombo, BorderLayout.CENTER );
+			chooseCombo.addActionListener(this);
+			chooseCombo.setActionCommand("SELECTED");
+			add(chooseCombo, BorderLayout.CENTER);
 		}
 
 		private void comboBoxUpdate() {
-			chooseCombo.setModel( new DefaultComboBoxModel( getNames() ) );
-			chooseCombo.setSelectedItem( getNameForValue( getValue() ) );
+			chooseCombo.setModel(new DefaultComboBoxModel(getNames()));
+			chooseCombo.setSelectedItem(getNameForValue(getValue()));
 		}
-	
+
 		public void configure() {
-			chooseCombo.setSelectedItem( getNameForValue( getValue() ) );
+			chooseCombo.setSelectedItem(getNameForValue(getValue()));
 		}
-		
+
 		public void actionPerformed(ActionEvent e) {
-			if ( e.getActionCommand().equals( "SELECTED" ) )
-				setValue( getValueForName( (String)chooseCombo.getSelectedItem() ) );
+			if (e.getActionCommand().equals("SELECTED"))
+				setValue(getValueForName((String) chooseCombo.getSelectedItem()));
 		}
 
 	}
