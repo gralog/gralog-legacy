@@ -17,18 +17,17 @@
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
-package de.hu.graphgames.alg;
+package de.hu.gralog.finitegames.alg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import de.hu.graphgames.graph.GameGraphVertex;
+import de.hu.gralog.finitegames.graph.GameGraphVertex;
 
 
 
@@ -74,17 +73,12 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 		init();
 	}
 	
-	/**
-	 * This function is called internally to initialise the various variables used in the algorithm.
-	 * In particular, it initialises the vertexDegree map to contain the outdegree of every vertex.
-	 *
-	 */
 	protected void init() {
 		win0 = new ArrayList<V>();
 		for(V v : vertexSet)
 		{
 			vertexDegree.put(v, gameGraph.outDegreeOf(v));
-			if(gameGraph.outDegreeOf(v) == 0 && v.isPlayer1())
+			if(gameGraph.outDegreeOf(v) == 0 && !v.isPlayer0())
 			{
 				vertexList.add(v);
 			}
@@ -93,15 +87,6 @@ public class Simple2PlayerGameAlgorithm<V extends GameGraphVertex,E extends Defa
 	
 
 
-	/**
-	 * This is the main algorithm of the class. It computes the winning region of Player 0 on the 
-	 * game arena given to the constructor. See the class description for a description of the implemented
-	 * algorithm.
-	 * The method returns a list rather than a set to support the stepwise display functionality of gralog.
-	 * The list contains the elements in the winning region in the order they were added to the winning regions.
-	 * Hence, following the list in order explains for each element why it has been added to the winning region.
-	 * @return returns a list containing the winning positions of player 0.
-	 */
 	public ArrayList<V> execute() 
 	{
 		V v,u;

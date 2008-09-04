@@ -4,15 +4,15 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package de.hu.graphgames.alg;
+package de.hu.gralog.finitegames.alg;
 
 import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
-import de.hu.graphgames.graph.GameGraphTypeInfo;
+import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.finitegames.graph.GameGraphTypeInfo;
 
 public class Simple2PlayerGameBeanInfo extends SimpleBeanInfo {
 
@@ -53,5 +53,4 @@ public class Simple2PlayerGameBeanInfo extends SimpleBeanInfo {
 	public PropertyDescriptor[] getPropertyDescriptors() {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
 }
