@@ -6,51 +6,58 @@
  */
 package de.hu.parity.graph;
 
-import java.util.HashMap;
-
+import org.jgrapht.VertexFactory;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.GraphWithEditableElements;
+import de.hu.gralog.finitegames.graph.GameGraphVertexRenderer;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GraphBeanFactory;
+import de.hu.gralog.graph.GraphFactory;
+import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
+import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 
-public class ParityGameGraphTypeInfo extends GraphTypeInfo {
+public class ParityGameGraphTypeInfo<GB> extends GralogGraphTypeInfo<ParityGameVertex, DefaultEdge, GB, ListenableDirectedGraph<ParityGameVertex,DefaultEdge>> {
 
+	@Override
 	public String getName() {
 		return "ParityGameGraph";
 	}
 
-	public GraphWithEditableElements newInstance() {
-		DirectedGraph<ParityGameVertex, DefaultEdge> graph = new DirectedGraph<ParityGameVertex, DefaultEdge>( ParityGameVertex.class, DefaultEdge.class );
-		graph.setTypeInfo( this );
-		return graph;
-	}
-	
 	@Override
-	public GraphWithEditableElements copyGraph( GraphWithEditableElements grapht, HashMap vMap ) {
-		DirectedGraph<ParityGameVertex, DefaultEdge> parityGameGraph = (DirectedGraph<ParityGameVertex, DefaultEdge>) grapht;			// original GraphT
-		DirectedGraph<ParityGameVertex, DefaultEdge> newParityGameGraph = new DirectedGraph(ParityGameVertex.class, DefaultEdge.class);			// cloned GraphT
-		newParityGameGraph.setTypeInfo( this );
-
-		// Clone the vertices and add them to the cloned GraphT "newAutGraph":
-		for( ParityGameVertex v : parityGameGraph.vertexSet() ) {
-			ParityGameVertex v2 = new ParityGameVertex( v.getLabel(), v.getPriority(), v.isPlayer0() );	
-			vMap.put( v, v2 ); 	// "vMap" stores for each vertex "v" in autGraph the corresponding vertex "v2" in newAutGraph
-			newParityGameGraph.addVertex( v2 );
-		}
-
-		// Clone the edges and add them to the cloned GraphT:		
-		for( DefaultEdge e : parityGameGraph.edgeSet() ) {
-			DefaultEdge e2 = new DefaultEdge();
-			
-			newParityGameGraph.addEdge(
-				(ParityGameVertex) vMap.get(parityGameGraph.getEdgeSource(e)),
-				(ParityGameVertex) vMap.get(parityGameGraph.getEdgeTarget(e)),
-				e2
-			);
-		}
-
-		return newParityGameGraph; 
+	public GraphFactory<ListenableDirectedGraph<ParityGameVertex, DefaultEdge>> getGraphFactory() {
+		return new GraphFactory<ListenableDirectedGraph<ParityGameVertex,DefaultEdge>>() {
+			public ListenableDirectedGraph<ParityGameVertex, DefaultEdge> createGraph() {
+				return new ListenableDirectedGraph<ParityGameVertex, DefaultEdge>( new SimpleDirectedGraph<ParityGameVertex, DefaultEdge>( DefaultEdge.class ) );
+			}
+		};
 	}
 
+	@Override
+	public GraphBeanFactory<GB> getGraphBeanFactory() {
+		return null;
+	}
+
+	@Override
+	public VertexFactory<ParityGameVertex> getVertexFactory() {
+		return new VertexFactory<ParityGameVertex>() {
+			public ParityGameVertex createVertex() {
+				return new ParityGameVertex();
+			}
+		};
+	}
+
+	@Override
+	public DefaultVertexRenderer getVertexRenderer() {
+		return new GameGraphVertexRenderer();
+	}
+
+	@Override
+	public DefaultEdgeRenderer getEdgeRenderer() {
+		return null;
+	}
+
+
+	
 }

@@ -7,10 +7,10 @@ import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
-import de.hu.gralog.graph.AutomatonGraphBean;
-import de.hu.gralog.graph.AutomatonVertex;
 import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.LabeledGraphEdge;
+import de.hu.gralog.plugin.dfa.graph.AutomatonGraphBean;
+import de.hu.gralog.plugin.dfa.graph.AutomatonVertex;
+import de.hu.gralog.plugin.dfa.graph.LabeledGraphEdge;
 
 public class EmptinessTestAlgorithm<V extends AutomatonVertex, E extends LabeledGraphEdge, GB extends AutomatonGraphBean<V>, G extends ListenableDirectedGraph<V,E>> {
 	

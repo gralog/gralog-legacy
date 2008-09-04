@@ -25,14 +25,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.Subgraph;
+import org.jgrapht.graph.DirectedSubgraph;
 
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.jgrapht.graph.GraphUtils;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.graphgames.graph.GameGraphVertex;
+import de.hu.gralog.algorithms.jgrapht.Algorithms;
+import de.hu.gralog.finitegames.graph.GameGraphVertex;
+import de.hu.parity.alg.util.PlayerVertexFilter;
 
 public class Strategy<V extends GameGraphVertex,E extends DefaultEdge> {
 
@@ -46,10 +46,10 @@ public class Strategy<V extends GameGraphVertex,E extends DefaultEdge> {
 	}
 	
 	public Strategy( DirectedGraph<V,E> graph, boolean player0 ) {
-		this( graph, GraphUtils.filterVertexes( graph.vertexSet(), new PlayerVertexFilter( player0 ) ) );
+		this( graph, Algorithms.filter( graph.vertexSet(), new PlayerVertexFilter<V>( player0 ) ) );
 	}
 	
-	public Strategy( Strategy strategy ) {
+	public Strategy( Strategy<V,E> strategy ) {
 		this( strategy.graph, strategy.domain );
 		function = (Hashtable<V,V>)strategy.function.clone();
 	}
@@ -63,9 +63,7 @@ public class Strategy<V extends GameGraphVertex,E extends DefaultEdge> {
 			throw new IllegalArgumentException( "x is not in the given strategydomain" );
 		if ( y != null && ! graph.containsEdge( x, y ) )
 			throw new IllegalArgumentException( "there is no corresponding edge for that strategy" );
-		if ( y == null )
-			function.remove( x );
-		else
+		if ( y != null )
 			function.put( x, y );
 	}
 	
@@ -73,21 +71,22 @@ public class Strategy<V extends GameGraphVertex,E extends DefaultEdge> {
 		return function.get( x );
 	}
 	
-	public Subgraph<V,E> getSubgraph() {
-		Subgraph<V,E> subgraph = SubgraphFactory.createSubgraph( graph, null, new HashSet() );
+	public DirectedSubgraph<V,E> getSubgraph() {
+		DirectedSubgraph<V,E> subgraph = new DirectedSubgraph<V,E>( graph, null, new HashSet<E>() );
 		
 		Iterator<V> it = domain.iterator();
 		while ( it.hasNext() ) {
 			V source = it.next();
 			V target = getValue( source );
-			subgraph.addEdge( source, target );
+			if ( target != null )
+				subgraph.addEdge( source, target );
 		}
 		
 		return subgraph;
 	}
 	
-	public Subgraph<V,E> getSubgraphWithConcurrentEdges() {
-		Subgraph<V,E> subgraph = getSubgraph();
+	public DirectedSubgraph<V,E> getSubgraphWithConcurrentEdges() {
+		DirectedSubgraph<V,E> subgraph = getSubgraph();
 		
 		Iterator<V> it = graph.vertexSet().iterator();
 		while ( it.hasNext() ) {
@@ -107,9 +106,12 @@ public class Strategy<V extends GameGraphVertex,E extends DefaultEdge> {
 			V x = domainIt.next();
 			List<V> vertexes = Graphs.successorListOf( graph, x );
 			if ( vertexes.isEmpty() )
-				break;
+				continue;
 			int e = (int)(Math.random() * (vertexes.size() ));
-			setValue( x, vertexes.get( e ) );
+			if ( e == vertexes.size() )
+				e--;
+			V y = vertexes.get( e );
+			setValue( x, y );
 		}
 	}
 	

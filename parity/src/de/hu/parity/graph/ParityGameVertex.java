@@ -19,7 +19,7 @@
 
 package de.hu.parity.graph;
 
-import de.hu.graphgames.graph.GameGraphVertex;
+import de.hu.gralog.finitegames.graph.GameGraphVertex;
 
 
 
@@ -43,7 +43,8 @@ public class ParityGameVertex extends GameGraphVertex {
 	public void setPriority(int priority) {
 		int oldValue = priority;
 		this.priority = priority;
-		firePropertyChange( "priority", oldValue, priority );
+		propertyChangeSupport.firePropertyChange( "priority", oldValue, priority );
+		displayChangeSupport.fireDisplayChangeDefault();
 	}
 
 	public String toString() {

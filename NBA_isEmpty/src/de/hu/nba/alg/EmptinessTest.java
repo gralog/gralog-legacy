@@ -7,12 +7,12 @@ import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.AutomatonGraphBean;
-import de.hu.gralog.graph.AutomatonGraphTypeInfo;
-import de.hu.gralog.graph.AutomatonVertex;
 import de.hu.gralog.graph.GralogGraphFactory;
 import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.LabeledGraphEdge;
+import de.hu.gralog.plugin.dfa.graph.AutomatonGraphBean;
+import de.hu.gralog.plugin.dfa.graph.AutomatonGraphTypeInfo;
+import de.hu.gralog.plugin.dfa.graph.AutomatonVertex;
+import de.hu.gralog.plugin.dfa.graph.LabeledGraphEdge;
 
 public class EmptinessTest<V extends AutomatonVertex, E extends LabeledGraphEdge, GB extends AutomatonGraphBean<V>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 

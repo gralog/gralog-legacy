@@ -6,7 +6,7 @@ import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
 import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.AutomatonGraphTypeInfo;
+import de.hu.gralog.plugin.dfa.graph.AutomatonGraphTypeInfo;
 
 public class EmptinessTestBeanInfo extends SimpleBeanInfo {
 

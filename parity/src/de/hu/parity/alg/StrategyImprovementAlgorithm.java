@@ -19,7 +19,6 @@
 
 package de.hu.parity.alg;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -28,74 +27,123 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedSubgraph;
+import org.jgrapht.graph.EdgeReversedGraph;
+import org.jgrapht.graph.ListenableDirectedGraph;
 import org.jgrapht.graph.Subgraph;
 import org.jgrapht.traverse.ClosestFirstIterator;
 
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.Algorithms;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.ElementTipsDisplayMode;
-import de.hu.gralog.jgrapht.graph.GraphUtils;
-import de.hu.gralog.jgrapht.graph.ReversedDirectedGraph;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.ElementTipsDisplayMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.algorithms.jgrapht.Algorithms;
+import de.hu.gralog.algorithms.jgrapht.Filter;
+import de.hu.gralog.app.UserException;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.jgrapht.traverse.LongestPathIterator;
-import de.hu.gralog.jgrapht.traverse.VertexFilter;
 import de.hu.parity.graph.ParityGameVertex;
 
-public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends DefaultEdge> implements Algorithm {
+public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
 	private static final String DSM_STRATEGY_PLAYER0 = "strategy player0";
 	private static final String DSM_STRATEGY_PLAYER1 = "strategy player1";
 	private static final String DSM_WINNING_POSITIONS = "winning positions player0";
-	private static final String ETM_VALUATION = "valuation";
+	private static final String DSM_OMEGA= "current omega";
+	private static final String DSM_CAN_REACH_OMEGA= "can reach omega";
+	private static final String DSM_VALUATION_GRAPH = "valuation graph";
 	
-	private DirectedGraph<V,E> graph;
+	private static final String ETM_VALUATION = "valuation";
+	private static int ODD_INFINITY_PRIORITY = 100001;
+	private static int EVEN_INFINITY_PRIORITY = 10000;
+	
+	private GralogGraphSupport<V,E,?,G> graph;
 
-	public DirectedGraph<V,E> getGraph() {
+	public GralogGraphSupport<V,E,?,G> getGraph() {
 		return graph;
 	}
 	
-	public void setGraph( DirectedGraph<V,E> graph ) {
+	public void setGraph( GralogGraphSupport<V,E,?,G> graph ) {
 		this.graph = graph;
 	}
-
-	protected AlgorithmResultContent getContent( Strategy<V,E> strategyPlayer0, Strategy<V,E> strategyPlayer1, Valuation valuation ) {
-		AlgorithmResultContent content = new AlgorithmResultContent(  );
-		
-		if ( strategyPlayer0 != null )
-			content.addDisplaySubgraph( DSM_STRATEGY_PLAYER0, strategyPlayer0.getSubgraph() );
-		
-		if ( strategyPlayer1 != null )
-			content.addDisplaySubgraph( DSM_STRATEGY_PLAYER1, strategyPlayer1.getSubgraph() );
-		
-		if ( valuation != null ) {
+	
+	protected void fillContentValuation( AlgorithmResultContent content, Valuation valuation ) {
+		if ( valuation != null )
 			content.addElementTips( ETM_VALUATION, valuation.function );
-			
-			DirectedSubgraph<V,E> winningPlayer0 = new DirectedSubgraph<V,E>( graph, new HashSet<V>(), new HashSet<E>() );
-			Iterator<V> it = graph.vertexSet().iterator();
+	}
+
+	protected void fillContentStrategyP0( AlgorithmResultContent content, Strategy<V,E> strategyPlayer0 ) {
+		if ( strategyPlayer0 != null )
+			content.addDisplaySubgraph( DSM_STRATEGY_PLAYER0, strategyPlayer0.getSubgraph().vertexSet(), strategyPlayer0.getSubgraph().edgeSet() );
+	}
+
+	protected void fillContentStrategyP1( AlgorithmResultContent content, Strategy<V,E> strategyPlayer1 ) {
+		if ( strategyPlayer1 != null )
+			content.addDisplaySubgraph( DSM_STRATEGY_PLAYER1, strategyPlayer1.getSubgraph().vertexSet(), strategyPlayer1.getSubgraph().edgeSet() );
+	}
+	
+	protected void fillContentStrategies( AlgorithmResultContent content, Strategy<V,E> strategyPlayer0, Strategy<V,E> strategyPlayer1 ) {
+		fillContentStrategyP0( content, strategyPlayer0 );
+		fillContentStrategyP1( content, strategyPlayer1 );
+	}
+
+	protected void fillContentWinningSets( AlgorithmResultContent content, Valuation valuation ) {
+		if ( valuation != null ) {
+			DirectedSubgraph<V,E> winningPlayer0 = new DirectedSubgraph<V,E>( graph.getGraph(), new HashSet<V>(), new HashSet<E>() );
+			Iterator<V> it = graph.getGraph().vertexSet().iterator();
 			while ( it.hasNext() ) {
 				V v = it.next();
+		
 				if ( valuation.getPlayProfile( v ).getU().getPriority() % 2 == 0 )
 					winningPlayer0.addVertex( v );
 			}
-			content.addDisplaySubgraph( DSM_WINNING_POSITIONS, winningPlayer0 );
+			content.addDisplaySubgraph( DSM_WINNING_POSITIONS, winningPlayer0.vertexSet(), winningPlayer0.edgeSet() );
 		}
-		return content;
 	}
+	
+	protected void fillContent( AlgorithmResultContent content, Strategy<V,E> strategyPlayer0, Strategy<V,E> strategyPlayer1, Valuation valuation, boolean winningSets ) {
+		fillContentStrategies( content, strategyPlayer0, strategyPlayer1 );
+		fillContentValuation( content, valuation );
+		if ( winningSets )
+			fillContentWinningSets( content, valuation );
+	}
+
+	protected void fillContent( AlgorithmResultContent content, V omega, Subgraph<V,E, DirectedGraph<V,E>> valuationGraph, Subgraph<V,E, DirectedGraph<V,E>> canReachOmega ) {
+		Set<V> omegaSet = new HashSet<V>();
+		omegaSet.add( omega );
+		content.addDisplaySubgraph( DSM_OMEGA, omegaSet, new HashSet<E>() );
+		content.addDisplaySubgraph( DSM_VALUATION_GRAPH, valuationGraph.vertexSet(), valuationGraph.edgeSet() );
+		content.addDisplaySubgraph( DSM_CAN_REACH_OMEGA, canReachOmega.vertexSet(), canReachOmega.edgeSet() );
+	}
+	
+	protected AlgorithmResultContentTreeNode createIterationContent( AlgorithmResultContentTreeNode contentTree, int iterationCount ) {
+		AlgorithmResultContentTreeNode iterationContent = new AlgorithmResultContentTreeNode();
+		iterationContent.setName( "Iteration: " + iterationCount );
+		contentTree.addChild( iterationContent );
+		return iterationContent;
+	}
+	
+	protected void addCircleContent( AlgorithmResultContentTreeNode content, V omega, Subgraph<V,E, DirectedGraph<V,E>> valuationGraph, Subgraph<V,E, DirectedGraph<V,E>> canReachOmega ) {
+		AlgorithmResultContentTreeNode circleContent = new AlgorithmResultContentTreeNode();
+		circleContent.setName( "circle around: " + omega );
+		fillContent( circleContent, omega, valuationGraph, canReachOmega );
+		content.addChild( circleContent );
+	}
+	
+	private AlgorithmResult result;
 	
 	public AlgorithmResult execute(  ) throws InvalidPropertyValuesException {
 		if ( getGraph() == null )
 			throw new InvalidPropertyValuesException( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
-		AlgorithmResult result = new AlgorithmResult( getGraph() );
+		result = new AlgorithmResult( getGraph() );
 		result.setDescription( "<html>Hallo Du!</html>" );
 		
 		DisplaySubgraphMode displaySubgraphMode = new DisplaySubgraphMode();
@@ -110,35 +158,67 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		displaySubgraphMode.setVertexDisplayMode( DisplayMode.HIGH1, DisplayMode.HIGH2 );
 		result.addDisplaySubgraphMode( DSM_WINNING_POSITIONS, displaySubgraphMode );
 
+		displaySubgraphMode = new DisplaySubgraphMode();
+		displaySubgraphMode.setVertexDisplayMode( DisplayMode.HIGH2, DisplayMode.SHOW );
+		result.addDisplaySubgraphMode( DSM_OMEGA, displaySubgraphMode );
+		
+		displaySubgraphMode = new DisplaySubgraphMode();
+		displaySubgraphMode.setVertexDisplayMode( DisplayMode.HIGH1, DisplayMode.SHOW );
+		result.addDisplaySubgraphMode( DSM_CAN_REACH_OMEGA, displaySubgraphMode );
+		
+		displaySubgraphMode = new DisplaySubgraphMode();
+		displaySubgraphMode.setEdgeDisplayMode( DisplayMode.HIGH1, DisplayMode.SHOW );
+		result.addDisplaySubgraphMode( DSM_VALUATION_GRAPH, displaySubgraphMode );
+		
 		ElementTipsDisplayMode elementTipsDisplayMode = new ElementTipsDisplayMode();
 		result.addElementTipsDisplayMode( ETM_VALUATION, elementTipsDisplayMode );
+	
+		for (V vertex : graph.getGraph().vertexSet() ) {
+			if ( graph.getGraph().outDegreeOf( vertex ) == 0 ) {
+				if ( vertex.isPlayer0() )
+					vertex.setPriority( ODD_INFINITY_PRIORITY );
+				else
+					vertex.setPriority( EVEN_INFINITY_PRIORITY );
+			}
+		}
 		
 		Strategy<V,E>[] strategies = new Strategy[2]; 
 		
-		strategies[0] = new Strategy<V,E>( graph, GraphUtils.filterVertexes( graph.vertexSet(), new PlayerVertexFilter<V>( true ) ) );
-		strategies[1] = new Strategy<V,E>( graph, GraphUtils.filterVertexes( graph.vertexSet(), new PlayerVertexFilter<V>( false ) ) );
+		strategies[0] = new Strategy<V,E>( graph.getGraph(), true );
+		strategies[1] = new Strategy<V,E>( graph.getGraph(), false );
 
 		strategies[0].initRandom();
-
-		Strategy<V,E>[] oldStrategies = new Strategy[2];
-		oldStrategies[0] = new Strategy<V,E>( strategies[0] );
-		Valuation valuation = null;
 		
-		int strategyIdx = -1;
-		ArrayList<AlgorithmResultContent> contents = new ArrayList<AlgorithmResultContent>();
+		Strategy<V,E> oldStrategy = null;
+		AlgorithmResultContentTreeNode contentTree = new AlgorithmResultContentTreeNode(); 
+		contentTree.setName( "RESULT" );
+		
+		int iterationCount = 0;
+		Valuation valuation;
 		do {
-			if ( strategyIdx == -1 ) {
-				contents.add( getContent( strategies[0], null, valuation ) );
-				strategyIdx = 0;
-			} else 
-				contents.add( getContent( strategies[0], strategies[1], valuation ) );
+			AlgorithmResultContentTreeNode iterationContent = createIterationContent( contentTree, iterationCount );
 			
-			oldStrategies[(strategyIdx +1 ) % 2] = new Strategy<V,E>( strategies[(strategyIdx +1 ) % 2] );
-			valuation = valuate( strategies[strategyIdx].getSubgraphWithConcurrentEdges() );
-			strategyIdx = ( strategyIdx + 1 ) % 2;
-			calculateStrategy( valuation, strategies[strategyIdx] );
-		} while ( ! ( oldStrategies[0].equals( strategies[0] ) ) || ! ( oldStrategies[1].equals( strategies[1] ) ));
-		result.setContentList( contents );
+			valuation = valuate( strategies[0].getSubgraphWithConcurrentEdges(), iterationContent );
+			
+			calculateStrategy( valuation, strategies[1] );
+			
+			try {
+				for ( AlgorithmResultContent content : iterationContent.getChildren() )
+					fillContentValuation( content, valuation );
+			} catch ( UserException e ) {
+				
+			}
+			
+			fillContent( iterationContent, strategies[0], strategies[1], valuation, true );
+			
+			oldStrategy = new Strategy<V,E>( strategies[0] );
+			calculateStrategy( valuation, strategies[0] );
+			iterationCount++;
+		} while ( ! ( oldStrategy.equals( strategies[0] ) ) && iterationCount <= 100 );
+		
+		fillContent( contentTree, strategies[0], strategies[1], valuation, true );
+		
+		result.setContentTree( contentTree );
 		return result;
 	}
 	
@@ -146,14 +226,15 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		Iterator<V> domain = strategy.getDomain().iterator();
 		while ( domain.hasNext() ) {
 			V vertex = domain.next();
-			strategy.setValue( vertex, getOptimalStrategy( valuation, vertex ) );
+			V toVertex = getOptimalStrategy( valuation, vertex );
+			strategy.setValue( vertex, toVertex );
 		}
 	}
 	
 	public V getOptimalStrategy( Valuation valuation, V vertex ) {
 		V value = null;
 		
-		Iterator<V> vertexes = Graphs.successorListOf( graph, vertex ).iterator();
+		Iterator<V> vertexes = Graphs.successorListOf( (DirectedGraph<V,E>)graph.getGraph(), vertex ).iterator();
 		while ( vertexes.hasNext() ) {
 			V target = vertexes.next();
 			if ( vertex.isPlayer0() ) {
@@ -214,16 +295,16 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		public static <V extends ParityGameVertex> boolean lessThanOmega( Set<V> s1, Set<V> s2, V omega ) {
 			Set<V> s11 = new HashSet<V>( s1 );
 			Set<V> s21 = new HashSet<V>( s2 );
-			Iterator<V> it = s11.iterator();
-			while ( it.hasNext() ) {
-				if ( (it.next()).getPriority() < omega.getPriority() )
-					it.remove();
+			
+			for ( V v : new HashSet<V>( s11 ) ) {
+				if ( v.getPriority() < omega.getPriority() )
+					s11.remove( v );
 			}
-			it = s21.iterator();
-			while ( it.hasNext() ) {
-				if ( (it.next()).getPriority() < omega.getPriority() )
-					it.remove();
+			for ( V v : new HashSet<V>( s21 ) ) {
+				if ( v.getPriority() < omega.getPriority() )
+					s21.remove( v );
 			}
+
 			return lessThan( s11, s21 );
 		}
 		
@@ -233,10 +314,10 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		
 		public static <V extends ParityGameVertex> boolean lessThan( PlayProfile<V> p1, PlayProfile<V> p2 ) {
 			if ( lessThan( p1.getU(), p2.getU() ) ||
-				 equal( p1.getU(), p2.getU() ) && ( 
-				 (lessThan( p1.getP(), p2.getP()) ||
-				 (equal( p1.getP(), p2.getP()) && p2.getU().getPriority() % 2 == 1 && p1.getLen() < p2.getLen()) ||
-				 (equal( p1.getP(), p2.getP()) && p2.getU().getPriority() % 2 == 0 && p1.getLen() > p2.getLen() ))))
+				 equal( p1.getU(), p2.getU() ) &&  
+				 (lessThan( p1.getP(), p2.getP() ) ||
+				 (equal( p1.getP(), p2.getP() ) && p2.getU().getPriority() % 2 == 1 && p1.getLen() < p2.getLen() ) ||
+				 (equal( p1.getP(), p2.getP() ) && p2.getU().getPriority() % 2 == 0 && p1.getLen() > p2.getLen() )))
 				return true;
 			return false;
 		}
@@ -338,7 +419,7 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		return list.iterator();
 	}
 	
-	private Set<E> getEdges( Subgraph<V,E> graph, Set<V> from, Set<V> to ) {
+	private Set<E> getEdges( Subgraph<V,E, DirectedGraph<V,E>> graph, Set<V> from, Set<V> to ) {
 		HashSet<E> remove = new HashSet<E>();
 		Iterator<E> edges = graph.edgeSet().iterator();
 		while ( edges.hasNext() ) {
@@ -355,31 +436,39 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		return remove;
 	}
 	
-	private void removeEdges( Subgraph<V,E> graph, Set<V> from, Set<V> to ) {
+	private void removeEdges( DirectedSubgraph<V,E> graph, Set<V> from, Set<V> to ) {
 		graph.removeAllEdges( getEdges( graph, from, to ) );
 	}
 	
-	private Valuation valuate( Subgraph<V,E> graph ) {
+	private Valuation valuate( DirectedSubgraph<V,E> graph, AlgorithmResultContentTreeNode iterationContent ) {
 		Valuation valuation = new Valuation();
 		Iterator<V> vertexes = getVertexesInRewardOrder( graph.vertexSet() );
 		while ( vertexes.hasNext() ) {
 			V vertex = vertexes.next();
 			if ( valuation.getPlayProfile( vertex ) == null ) {
-				Set<V> canreachOmega = Algorithms.reach( graph, vertex, true, new PriorityVertexFilter<V>( vertex ) );
+				boolean onLoopOrLeaf = graph.outDegreeOf( vertex ) == 0;
+									
+				if ( !onLoopOrLeaf ) {
+					Set<V> canreachOmega = Algorithms.reach( graph, vertex, true, new PriorityVertexFilter<V>( vertex ) );
 				
-				HashSet<V> svertex = new HashSet<V>();
-				svertex.add( vertex );
-				if ( getEdges( graph, svertex, canreachOmega ).size() != 0 ) {
-					Set<V> canreach = Algorithms.reach( graph, vertex, true, null );
-					valuation.union( subValuate( SubgraphFactory.createSubgraph( graph, canreach, null), vertex ) );
-					removeEdges( graph, canreach, null );
+					HashSet<V> svertex = new HashSet<V>();
+					svertex.add( vertex );
+					onLoopOrLeaf = getEdges( graph, svertex, canreachOmega ).size() != 0; 
 				}
+				if ( onLoopOrLeaf ) {
+					Set<V> canreach = Algorithms.reach( graph, vertex, true, null );
+
+					addCircleContent( iterationContent, vertex, new DirectedSubgraph<V,E>( getGraph().getGraph(), null, graph.edgeSet() ), new DirectedSubgraph<V,E>( graph, canreach, null ) );
+					
+					valuation.union( subValuate( new DirectedSubgraph<V,E>( graph, canreach, null), vertex ) );
+					removeEdges( graph, canreach, null );
+				} 
 			}
 		}
 		return valuation;
 	}
 	
-	private Valuation subValuate( Subgraph<V,E> k, V omega ) {
+	private Valuation subValuate( DirectedSubgraph<V,E> k, V omega ) {
 		Valuation valuation = new Valuation();
 		Iterator<V> vertexes = k.vertexSet().iterator();
 		while ( vertexes.hasNext() ) {
@@ -419,16 +508,21 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 			}
 		}
 		if ( omega.getPriority() % 2 == 0 ) {
-			LongestPathIterator<V,E> it = new LongestPathIterator<V,E>( (DirectedSubgraph<V,E>)k, omega );
-			while ( it.hasNext() ) {
+			DirectedSubgraph<V,E> subgraph = new DirectedSubgraph<V,E>( k, null, null );
+			subgraph.removeAllEdges( subgraph.outgoingEdgesOf( omega ) );
+			
+			LongestPathIterator<V,E> it = new LongestPathIterator<V,E>( new EdgeReversedGraph<V,E>( subgraph ) );
+			while ( it.hasNext()  ) {
 				V vertex = it.next();
-				valuation.getPlayProfile( vertex ).setLen( (int)it.getLongestPathLength( vertex ) );
+				int length = (int)it.getLongestPathLength( vertex );
+				valuation.getPlayProfile( vertex ).setLen( length );
 			}
 		} else {
-			ClosestFirstIterator<V,E> it = new ClosestFirstIterator<V,E>( new ReversedDirectedGraph<V,E>( (DirectedSubgraph<V,E>)k ), omega );
+			ClosestFirstIterator<V,E> it = new ClosestFirstIterator<V,E>( new EdgeReversedGraph<V,E>( (DirectedGraph<V,E>)k ), omega );
 			while ( it.hasNext() ) {
 				V vertex = it.next();
-				valuation.getPlayProfile( vertex ).setLen( (int)it.getShortestPathLength( vertex ) );
+				int length = (int)it.getShortestPathLength( vertex );
+				valuation.getPlayProfile( vertex ).setLen( length );
 			}
 		}
 		return valuation;
@@ -436,11 +530,9 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 	
 	private Iterator<V> getSortedVertexesOmega( Set<V> vertexes, V omega ) {
 		LinkedList<V> list = new LinkedList<V>( vertexes );
-		Iterator<V> it = list.iterator();
-		while ( it.hasNext() ) {
-			V v = it.next();
+		for ( V v : new LinkedList<V>( list ) ) {
 			if ( v.getPriority() <= omega.getPriority() )
-				it.remove();
+				list.remove( v );
 		}
 		Collections.sort( list, new Comparator<V>() {
 			public int compare(V o1, V o2) {
@@ -454,21 +546,21 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 		return list.iterator();
 	}
 
-	private static class VertexVertexFilter<V> implements VertexFilter<V> {
+	private static class VertexVertexFilter<V> implements Filter<V> {
 		V w;
 		
 		public VertexVertexFilter( V w ) {
 			this.w = w;
 		}
 		
-		public boolean filterVertex( V w ) {
+		public boolean filter( V w ) {
 			if ( this.w == w )
 				return true;
 			return false;
 		}
 	}
 	
-	private static class PriorityVertexFilter<V extends ParityGameVertex> implements VertexFilter<V> {
+	private static class PriorityVertexFilter<V extends ParityGameVertex> implements Filter<V> {
 
 		V w;
 		
@@ -476,7 +568,7 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 			this.w = w;
 		}
 		
-		public boolean filterVertex(V v) {
+		public boolean filter(V v) {
 			if ( v.getPriority() > w.getPriority() )
 				return true;
 			return false;

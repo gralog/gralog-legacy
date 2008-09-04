@@ -17,12 +17,12 @@
  *
  */
 
-package de.hu.parity.alg;
+package de.hu.parity.alg.util;
 
-import de.hu.gralog.jgrapht.traverse.VertexFilter;
-import de.hu.graphgames.graph.GameGraphVertex;
+import de.hu.gralog.algorithms.jgrapht.Filter;
+import de.hu.gralog.finitegames.graph.GameGraphVertex;
 
-public class PlayerVertexFilter<V extends GameGraphVertex> implements VertexFilter<V> {
+public class PlayerVertexFilter<V extends GameGraphVertex> implements Filter<V> {
 
 	protected boolean player0;
 	
@@ -30,7 +30,7 @@ public class PlayerVertexFilter<V extends GameGraphVertex> implements VertexFilt
 		this.player0 = player0;
 	}
 	
-	public boolean filterVertex(V vertex) {
+	public boolean filter(V vertex) {
 		if ( vertex.isPlayer0() == player0 )
 			return false;
 		return true;
