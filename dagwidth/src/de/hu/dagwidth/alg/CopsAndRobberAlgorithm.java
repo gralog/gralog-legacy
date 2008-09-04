@@ -26,13 +26,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.LabeledGraphVertex;
-import de.hu.gralog.graph.alg.Algorithms;
-import de.hu.gralog.jgrapht.traverse.VertexFilter;
-import de.hu.graphgames.graph.GameGraphVertex;
+import de.hu.gralog.algorithms.jgrapht.Algorithms;
+import de.hu.gralog.algorithms.jgrapht.Filter;
+import de.hu.gralog.finitegames.graph.GameGraphVertex;
+import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 
 public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends DefaultEdge> {
 
@@ -61,7 +62,7 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 	}
 	
 	public DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> getCopsAndRobberGameGraph( ) {
-		gameGraph = new DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>( (Class< ? extends CopsAndRobberVertex<V>>)CopsAndRobberVertex.class );
+		gameGraph = new DefaultDirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>( DefaultEdge.class );
 		Combinations<V> combinations = new Combinations<V>( width, graph.vertexSet() );
 		while ( combinations.hasNext() ) {
 			Set<V> combination = combinations.next();
@@ -327,7 +328,7 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 		
 	}
 	
-	public static class  CopsAndRobberVertexFilter<V> implements VertexFilter<V> {
+	public static class  CopsAndRobberVertexFilter<V> implements Filter<V> {
 
 		private Set<V> X;
 		private V removed;
@@ -341,7 +342,7 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 			this.removed = remove;
 		}
 		
-		public boolean filterVertex(V vertex) {
+		public boolean filter(V vertex) {
 			if ( X.contains( vertex ) && vertex != removed )
 				return true;
 			return false;
@@ -367,7 +368,7 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 
 		public DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> next() {
 			Set<V> combination = combinations.next();
-			gameGraph = new DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>( (Class<? extends CopsAndRobberVertex<V>>)CopsAndRobberVertex.class );
+			gameGraph = new DefaultDirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>( DefaultEdge.class );
 			start( combination );
 			return gameGraph;
 		}
@@ -379,9 +380,9 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 		
 	}
 	
-	public static class DummyVertexFilter<V extends CopsAndRobberVertex> implements VertexFilter<V> {
+	public static class DummyVertexFilter<V extends CopsAndRobberVertex> implements Filter<V> {
 
-		public boolean filterVertex(V vertex) {
+		public boolean filter(V vertex) {
 			if ( vertex.isDummyVertex() )
 				return false;
 			return true;

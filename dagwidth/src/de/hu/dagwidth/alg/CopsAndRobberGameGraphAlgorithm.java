@@ -21,30 +21,34 @@ package de.hu.dagwidth.alg;
 
 import java.util.Hashtable;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.LabeledGraphVertex;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.graphgames.graph.GameGraphTypeInfo;
-import de.hu.graphgames.graph.GameGraphVertex;
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.app.UserException;
+import de.hu.gralog.finitegames.graph.GameGraphTypeInfo;
+import de.hu.gralog.finitegames.graph.GameGraphVertex;
+import de.hu.gralog.graph.GralogGraphFactory;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 
-public class CopsAndRobberGameGraphAlgorithm implements Algorithm {
+public class CopsAndRobberGameGraphAlgorithm<V extends LabeledGraphVertex, E extends DefaultEdge> implements Algorithm {
 
-	private DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> graph;
+	private GralogGraphSupport<V,E,?, ListenableDirectedGraph<V,E>> graph;
 	private int dagWidth;
 	private boolean robberMonotone;
 	private boolean copMonotone;
 
-	public DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> getGraph() {
+	public GralogGraphSupport<V,E,?, ListenableDirectedGraph<V,E>> getGraph() {
 		return graph;
 	}
 
-	public void setGraph(DirectedGraph<? extends LabeledGraphVertex, ? extends DefaultEdge> graph) {
+	public void setGraph(GralogGraphSupport<V,E,?, ListenableDirectedGraph<V,E>> graph) {
 		this.graph = graph;
 	} 
 	
@@ -72,7 +76,7 @@ public class CopsAndRobberGameGraphAlgorithm implements Algorithm {
 		this.dagWidth = dagWidth;
 	}
 
-	public AlgorithmResult execute(  ) throws InvalidPropertyValuesException {
+	public AlgorithmResult execute(  ) throws InvalidPropertyValuesException, UserException {
 		InvalidPropertyValuesException e = new InvalidPropertyValuesException();
 		if ( getGraph() == null )
 			e.addPropertyError( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
@@ -81,23 +85,23 @@ public class CopsAndRobberGameGraphAlgorithm implements Algorithm {
 		if ( e.hasErrors() )
 			throw e;
 		
-		AlgorithmResult result = new AlgorithmResult( getGameGraphFromCAR( (DirectedGraph<CopsAndRobberVertex, DefaultEdge>)CopsAndRobberAlgorithm.getCopsAndRobberGameGraph( getGraph(), getDagWidth( ), isCopMonotone(), isRobberMonotone() ) ) );
+		AlgorithmResult result = new AlgorithmResult( getGameGraphFromCAR( (DirectedGraph<CopsAndRobberVertex, DefaultEdge>)CopsAndRobberAlgorithm.getCopsAndRobberGameGraph( getGraph().getGraph(), getDagWidth( ), isCopMonotone(), isRobberMonotone() ) ) );
 		result.setSingleContent( new AlgorithmResultContent() );
 		return result;
 	}
 	
-	public DirectedGraph<GameGraphVertex, DefaultEdge> getGameGraphFromCAR( DirectedGraph<CopsAndRobberVertex, DefaultEdge> cargraph ) {
-		DirectedGraph<GameGraphVertex, DefaultEdge> graph = (DirectedGraph<GameGraphVertex, DefaultEdge>)new GameGraphTypeInfo().newInstance();
+	public GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> getGameGraphFromCAR( DirectedGraph<CopsAndRobberVertex, DefaultEdge> cargraph ) throws UserException {
+		GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> graph = (GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>>)GralogGraphFactory.createGraphSupport( new GameGraphTypeInfo() );
 		Hashtable<CopsAndRobberVertex, GameGraphVertex> vertexes = new Hashtable<CopsAndRobberVertex, GameGraphVertex>();
 		for ( CopsAndRobberVertex vertex : cargraph.vertexSet() ) {
 			GameGraphVertex v = new GameGraphVertex( vertex.getLabel(), vertex.isPlayer0() );
 			vertexes.put( vertex, v );
-			graph.addVertex( v );
+			graph.getGraph().addVertex( v );
 		}
 		for ( DefaultEdge edge : cargraph.edgeSet() ) {
 			GameGraphVertex from = vertexes.get( cargraph.getEdgeSource( edge ) );
 			GameGraphVertex to = vertexes.get( cargraph.getEdgeTarget( edge ) );
-			graph.addEdge( from, to );
+			graph.getGraph().addEdge( from, to );
 		}
 		return graph;
 	}

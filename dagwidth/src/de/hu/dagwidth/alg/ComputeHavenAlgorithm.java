@@ -15,23 +15,25 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.LabeledGraphVertex;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
+import de.hu.gralog.finitegames.alg.Simple2PlayerGameAlgorithm;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 
-public class ComputeHavenAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {
+public class ComputeHavenAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private DirectedGraph<V,E> graph;
+	private GralogGraphSupport<V,E,?,G> graph;
 	private int dagWidth = 1;
 	private boolean robberMonotone = false;
 	private boolean copMonotone = false;
@@ -63,12 +65,12 @@ public class ComputeHavenAlgorithm<V extends LabeledGraphVertex,E extends Defaul
 		this.dagWidth = dagWidth;
 	}
 
-	public DirectedGraph<V,E> getGraph() {
+	public GralogGraphSupport<V,E,?,G> getGraph() {
 		return graph;
 	}
 
 	public void setGraph(
-			DirectedGraph<V,E> graph) {
+			GralogGraphSupport<V,E,?,G> graph) {
 		this.graph = graph;
 	}
 
@@ -92,7 +94,7 @@ public class ComputeHavenAlgorithm<V extends LabeledGraphVertex,E extends Defaul
 		mode.setVertexDisplayMode( DisplayMode.HIGH2, DisplayMode.SHOW );
 		result.addDisplaySubgraphMode( DSM_COP_POSITION, mode );
 		
-		DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> gameGraph = CopsAndRobberAlgorithm.getCopsAndRobberGameGraph( graph, getDagWidth(), isCopMonotone(), isRobberMonotone() );
+		DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> gameGraph = CopsAndRobberAlgorithm.getCopsAndRobberGameGraph( graph.getGraph(), getDagWidth(), isCopMonotone(), isRobberMonotone() );
 		AlgorithmResultContent content = new HavenAlgorithmResultContent( graph, computeHaven( gameGraph ) );
 		
 		result.setSingleContent( content );

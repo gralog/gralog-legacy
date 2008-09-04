@@ -17,28 +17,29 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.DummyVertexFilter;
 import de.hu.dagwidth.alg.DAGConstruction.DAGVertex;
 import de.hu.dagwidth.alg.DAGConstruction.VertexVertexFilter;
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.algorithms.jgrapht.Algorithms;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.LabeledGraphVertex;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.Algorithms;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.GraphUtils;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
-import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
+import de.hu.gralog.finitegames.alg.Simple2PlayerGameAlgorithm;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 
-public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {
+public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private DirectedGraph<V,E> graph;
+	private GralogGraphSupport<V,E, ?, G> graph;
 	private int dagWidth = 0;
 	private boolean robberMonotone = false;
 	private boolean copMonotone = false;
@@ -61,12 +62,12 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 		this.dagWidth = dagWidth;
 	}
 
-	public DirectedGraph<V,E> getGraph() {
+	public GralogGraphSupport<V,E, ?, G> getGraph() {
 		return graph;
 	}
 
 	public void setGraph(
-			DirectedGraph<V,E> graph) {
+			GralogGraphSupport<V,E, ?, G> graph) {
 		this.graph = graph;
 	}
 
@@ -97,12 +98,12 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 		
 		AlgorithmResultContent content = null;
 		do {
-			Iterator<DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>> it = CopsAndRobberAlgorithm.getCopsAndRobberGameGraphs( graph, currWidth++, true, true );
+			Iterator<DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>> it = CopsAndRobberAlgorithm.getCopsAndRobberGameGraphs( graph.getGraph(), currWidth++, true, true );
 			while ( it.hasNext() ) {
 				DirectedGraph<DAGVertex, DefaultEdge> outGraph = getDAG( it.next() );
 			
 				if ( outGraph != null ) {
-					content = new CopStrategyAlgorithmResultContent<V,E>( getGraph(), new CopStrategy<V,E>( outGraph ) );
+					content = new CopStrategyAlgorithmResultContent<V,E,G>( getGraph(), new CopStrategy<V,E>( outGraph ) );
 					break;
 				}
 			}	
@@ -201,10 +202,10 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 	}
 
 	
-	public <VI extends CopsAndRobberVertex<V>, EI extends DefaultEdge> DirectedGraph<DAGVertex, DefaultEdge> getDAG( DirectedGraph<VI, EI> gameGraph ) {
+	public <VI extends CopsAndRobberVertex<V>, EI extends DefaultEdge> DirectedGraph<DAGVertex, DefaultEdge> getDAG( DirectedGraph<VI, EI> gameGraph ) throws UserException {
 		Set<VI> winningPlayer1 = new HashSet<VI>( new Simple2PlayerGameAlgorithm<VI,EI>( gameGraph ).execute() );
 		
-		Set<VI> winningStartVertexes = new HashSet<VI>( GraphUtils.filterVertexes( gameGraph.vertexSet(), new DummyVertexFilter<VI>() ));
+		Set<VI> winningStartVertexes = new HashSet<VI>( Algorithms.filter( gameGraph.vertexSet(), new DummyVertexFilter<VI>() ));
 		winningStartVertexes.removeAll( winningPlayer1 );
 		
 		if ( winningStartVertexes.size()  == 0 )
@@ -212,13 +213,13 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 		
 		VI start = winningStartVertexes.iterator().next();
 		
-		DirectedGraph<DAGVertex, DefaultEdge> outGraph = (DirectedGraph<DAGVertex, DefaultEdge>)new DAGVertexGraphTypeInfo().newInstance();
+		ListenableDirectedGraph<DAGVertex,DefaultEdge> outGraph = new ListenableDirectedGraph<DAGVertex, DefaultEdge>( DefaultEdge.class );
 		
 		LinkedList<VI> queue = new LinkedList<VI>();
 		queue.add( start );
 		
 		Hashtable<VI, Set<V>> reachableHash = new Hashtable<VI, Set<V>>();
-		reachableHash.put( start, graph.vertexSet() );
+		reachableHash.put( start, graph.getGraph().vertexSet() );
 		
 		outGraph.addVertex( new DAGVertex( start ) );
 		
@@ -273,8 +274,8 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 			Set<V> reachV;
 			Set<V> reachVCopy;
 			do {
-			    reachableV = Algorithms.reach( graph, v, false, new VertexVertexFilter<V>( seperator ) );
-				reachV = Algorithms.reach( graph, v, true, new VertexVertexFilter<V>( seperator ) );
+			    reachableV = Algorithms.reach( graph.getGraph(), v, false, new VertexVertexFilter<V>( seperator ) );
+				reachV = Algorithms.reach( graph.getGraph(), v, true, new VertexVertexFilter<V>( seperator ) );
 				reachVCopy = new HashSet<V>( reachV );
 				reachV.removeAll( reachableV );
 				reachV.retainAll( vertexes );
@@ -284,9 +285,9 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 			if ( previous != null ) {
 				reachVCopy.retainAll( reachableV );
 				reachVCopy.retainAll( vertexes );
-				Iterator<E> edges = graph.outgoingEdgesOf( previous ).iterator();
+				Iterator<E> edges = graph.getGraph().outgoingEdgesOf( previous ).iterator();
 				while ( edges.hasNext() ) {
-					V o = graph.getEdgeTarget( edges.next() );
+					V o = graph.getGraph().getEdgeTarget( edges.next() );
 					if ( reachVCopy.contains( o ) ) {
 						v = o;
 						break;

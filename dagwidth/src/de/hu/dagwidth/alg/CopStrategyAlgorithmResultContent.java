@@ -16,27 +16,27 @@ import java.util.Set;
 import org.jgraph.event.GraphSelectionEvent;
 import org.jgraph.graph.GraphSelectionModel;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.Subgraph;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.dagwidth.alg.ComputeCopsStrategyAlgorithm.CopStrategyAlgorithmResultContentPersistenceDelegate;
 import de.hu.dagwidth.alg.ComputeCopsStrategyAlgorithm.CopStrategyPersistenceDelegate;
 import de.hu.dagwidth.alg.DAGConstruction.VertexVertexFilter;
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.SelectionListener;
-import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
-import de.hu.gralog.graph.alg.Algorithms;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
+import de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent;
+import de.hu.gralog.algorithm.result.DisplaySubgraph;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithms.jgrapht.Algorithms;
+import de.hu.gralog.app.UserException;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.event.SelectionListener;
+import de.hu.gralog.graph.types.elements.DefaultListenableVertex;
 
-public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
+public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge, G extends ListenableDirectedGraph<VI,EI>> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
 	
 	ComputeCopsStrategyAlgorithm.CopStrategy<VI,EI> strategy = null;
 	private VI robber = null;
 	private Set<VI> cops = new HashSet<VI>();
 	private Set<VI> prevCops = new HashSet<VI>();
-	DirectedGraph<VI,EI> graph = null;
+	GralogGraphSupport<VI,EI,?,G> graph = null;
 	ArrayList<GamePosition> positions = new ArrayList<GamePosition>();
 	
 	static {
@@ -48,43 +48,47 @@ public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVerte
 		}
 	}
 	
-	public CopStrategyAlgorithmResultContent( DirectedGraph<VI,EI> graph, ComputeCopsStrategyAlgorithm.CopStrategy<VI,EI> strategy ) {
+	public CopStrategyAlgorithmResultContent( GralogGraphSupport<VI,EI,?,G> graph, ComputeCopsStrategyAlgorithm.CopStrategy<VI,EI> strategy ) {
 		super( graph );
 		this.graph = graph;
 		this.strategy = strategy;
-		graph.addSelectionListener( this );
+		graph.getGraphSelectionSupport().addSelectionListener( this );
 	}
 
 	protected void computeSubgraphs() {
-		subgraphs = new Hashtable<String, Subgraph>();
+		subgraphs = new Hashtable<String, SubgraphInfo>();
 							
-		Subgraph subgraph = SubgraphFactory.createSubgraph( graph, new HashSet( cops ), new HashSet() );
-		subgraphs.put( ComputeCopsStrategyAlgorithm.DSM_COP_POSITION, subgraph );
+		SubgraphInfo subgraphInfo = new SubgraphInfo( new HashSet( cops ), new HashSet() );
+		subgraphs.put( ComputeCopsStrategyAlgorithm.DSM_COP_POSITION, subgraphInfo );
 		
 		Set<VI> copsIntersection = new HashSet<VI>( prevCops );
 		copsIntersection.retainAll( cops );
 		
-		Set<VI> robberSpace = Algorithms.reach( graph, robber, false, new VertexVertexFilter<VI>( copsIntersection ) );
-		subgraph = SubgraphFactory.createSubgraph( graph, new HashSet( robberSpace ), new HashSet() );
-		subgraphs.put( ComputeCopsStrategyAlgorithm.DSM_ALLOWED_ROBBER_POSITIONS, subgraph );
+		Set<VI> robberSpace = Algorithms.reach( graph.getGraph(), robber, false, new VertexVertexFilter<VI>( copsIntersection ) );
+		subgraphInfo = new SubgraphInfo( new HashSet( robberSpace ), new HashSet() );
+		subgraphs.put( ComputeCopsStrategyAlgorithm.DSM_ALLOWED_ROBBER_POSITIONS, subgraphInfo );
 		displaySubgraphCache = null;
 	}
 	
 	
 	@Override
-	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) {
+	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport ) throws UserException {
 		if ( subgraphs == null )
 			computeSubgraphs();
-		return super.getDisplaySubgraphs(modes);
+		return super.getDisplaySubgraphs(modes, graphSupport );
 	}
 
-	public void valueChanged(ArrayList<VI> vertexes, ArrayList<EI> edges, GraphSelectionEvent event ) {
+	public void valueChanged(Set<VI> vertexes, Set<EI> edges, GraphSelectionEvent event ) {
 		if ( vertexes.size() == 1 ) {
 			prevCops = cops;
-			cops = strategy.getMove( vertexes.get( 0 ), cops );
-			robber = vertexes.get( 0 );
+			cops = strategy.getMove( vertexes.iterator().next(  ), cops );
+			robber = vertexes.iterator().next();
 			subgraphs = null;
-			fireContentChanged();
+			try {
+				fireContentChanged();
+			} catch( UserException e ) {
+				// can not happen
+			}
 			savePosition();
 		}
 		((GraphSelectionModel)event.getSource()).clearSelection();
@@ -110,7 +114,11 @@ public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVerte
 				robber = null;
 			}
 			subgraphs = null;
-			fireContentChanged();
+			try {
+				fireContentChanged();
+			} catch (UserException e) {
+				// can not happen
+			}
 		}
 	}
 	
@@ -124,7 +132,12 @@ public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVerte
 		robber = null;
 		subgraphs = null;
 		positions.clear();
-		fireContentChanged();
+		
+		try {
+			fireContentChanged();
+		} catch (UserException e) {
+			// cannot happen
+		}
 	}
 	
 	class GamePosition {

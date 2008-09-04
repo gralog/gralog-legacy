@@ -26,25 +26,28 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.DummyVertexFilter;
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.LabeledDirectedGraphTypeInfo;
-import de.hu.gralog.graph.LabeledGraphVertex;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.Algorithms;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.GraphUtils;
-import de.hu.gralog.jgrapht.traverse.VertexFilter;
-import de.hu.graphgames.alg.Simple2PlayerGameAlgorithm;
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
+import de.hu.gralog.algorithms.jgrapht.Algorithms;
+import de.hu.gralog.algorithms.jgrapht.Filter;
+import de.hu.gralog.app.UserException;
+import de.hu.gralog.finitegames.alg.Simple2PlayerGameAlgorithm;
+import de.hu.gralog.graph.GralogGraphFactory;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.types.LabeledSimpleDirectedGraphTypeInfo;
+import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 
-public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge> implements Algorithm {
+public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private DirectedGraph<V, E> graph;
+	private GralogGraphSupport<V, E,?,G> graph;
 	private int dagWidth = 0;
 	private int maxDAGsCount = 1;
 	
@@ -64,22 +67,22 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 		this.dagWidth = dagWidth;
 	}
 
-	public DirectedGraph<V, E> getGraph() {
+	public GralogGraphSupport<V, E,?,G> getGraph() {
 		return graph;
 	}
 
-	public void setGraph(DirectedGraph<V, E> graph) {
+	public void setGraph(GralogGraphSupport<V, E,?,G> graph) {
 		this.graph = graph;
 	}
 
 	
-	public AlgorithmResult execute(  ) throws InvalidPropertyValuesException {
+	public AlgorithmResult execute(  ) throws InvalidPropertyValuesException, UserException {
 		if ( getGraph() == null )
 			throw new InvalidPropertyValuesException( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
 		if ( graph.createVertex() instanceof CopsAndRobberVertex ) {
 			AlgorithmResult result = new AlgorithmResult();
-			result.setSingleContent( new AlgorithmResultContent( getDirectedGraphFromDAG( getDAG( (DirectedGraph<CopsAndRobberVertex, E>) graph ) ) ) );
+			result.setSingleContent( new AlgorithmResultContent( getDirectedGraphFromDAG( getDAG( (ListenableDirectedGraph<CopsAndRobberVertex, E>)graph.getGraph() ) ) ) );
 			return result;
 		}
 		
@@ -102,9 +105,9 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 			currWidth++;
 		ArrayList<AlgorithmResultContent> contents = new ArrayList<AlgorithmResultContent>();
 		do {
-			Iterator<DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>> it = CopsAndRobberAlgorithm.getCopsAndRobberGameGraphs( graph, currWidth++, true, true );
+			Iterator<DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>> it = CopsAndRobberAlgorithm.getCopsAndRobberGameGraphs( graph.getGraph(), currWidth++, true, true );
 			while ( it.hasNext() ) {
-				DirectedGraph<DAGVertex, DefaultEdge> outGraph = getDAG( it.next() );
+				ListenableDirectedGraph<DAGVertex, DefaultEdge> outGraph = getDAG( it.next() );
 				
 				if ( outGraph != null ) {
 					contents.add( new AlgorithmResultContent( getDirectedGraphFromDAG( outGraph ) ) );
@@ -117,18 +120,18 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 		return result;
 	}
 	
-	public DirectedGraph<LabeledGraphVertex, DefaultEdge> getDirectedGraphFromDAG( DirectedGraph<DAGVertex, DefaultEdge> dag ) {
-		DirectedGraph<LabeledGraphVertex, DefaultEdge> graph = (DirectedGraph<LabeledGraphVertex, DefaultEdge>)new LabeledDirectedGraphTypeInfo().newInstance();
+	public GralogGraphSupport<LabeledGraphVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledGraphVertex,DefaultEdge>> getDirectedGraphFromDAG( DirectedGraph<DAGVertex, DefaultEdge> dag ) throws UserException {
+		GralogGraphSupport<LabeledGraphVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledGraphVertex, DefaultEdge>> graph = (GralogGraphSupport<LabeledGraphVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledGraphVertex,DefaultEdge>>)GralogGraphFactory.createGraphSupport( new LabeledSimpleDirectedGraphTypeInfo() );
 		Hashtable<DAGVertex, LabeledGraphVertex> vertexes = new Hashtable<DAGVertex, LabeledGraphVertex>();
 		for ( DAGVertex vertex : dag.vertexSet() ) {
 			LabeledGraphVertex v = new LabeledGraphVertex( vertex.getLabel() );
 			vertexes.put( vertex, v );
-			graph.addVertex( v );
+			graph.getGraph().addVertex( v );
 		}
 		for ( DefaultEdge edge : dag.edgeSet() ) {
 			LabeledGraphVertex from = vertexes.get( dag.getEdgeSource( edge ) );
 			LabeledGraphVertex to = vertexes.get( dag.getEdgeTarget( edge ) );
-			graph.addEdge( from, to );
+			graph.getGraph().addEdge( from, to );
 		}
 		return graph;
 	}
@@ -143,8 +146,8 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 			Set<V> reachV;
 			Set<V> reachVCopy;
 			do {
-			    reachableV = Algorithms.reach( graph, v, false, new VertexVertexFilter<V>( seperator ) );
-				reachV = Algorithms.reach( graph, v, true, new VertexVertexFilter<V>( seperator ) );
+			    reachableV = Algorithms.reach( graph.getGraph(), v, false, new VertexVertexFilter<V>( seperator ) );
+				reachV = Algorithms.reach( graph.getGraph(), v, true, new VertexVertexFilter<V>( seperator ) );
 				reachVCopy = new HashSet<V>( reachV );
 				reachV.removeAll( reachableV );
 				reachV.retainAll( vertexes );
@@ -154,9 +157,9 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 			if ( previous != null ) {
 				reachVCopy.retainAll( reachableV );
 				reachVCopy.retainAll( vertexes );
-				Iterator<E> edges = graph.outgoingEdgesOf( previous ).iterator();
+				Iterator<E> edges = graph.getGraph().outgoingEdgesOf( previous ).iterator();
 				while ( edges.hasNext() ) {
-					V o = graph.getEdgeTarget( edges.next() );
+					V o = graph.getGraph().getEdgeTarget( edges.next() );
 					if ( reachVCopy.contains( o ) ) {
 						v = o;
 						break;
@@ -169,10 +172,10 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 		return division;
 	}
 	
-	public <VI extends CopsAndRobberVertex<V>, EI extends DefaultEdge> DirectedGraph<DAGVertex, DefaultEdge> getDAG( DirectedGraph<VI, EI> gameGraph ) {
+	public <VI extends CopsAndRobberVertex<V>, EI extends DefaultEdge> ListenableDirectedGraph<DAGVertex, DefaultEdge> getDAG( DirectedGraph<VI, EI> gameGraph ) throws UserException {
 		Set<VI> winningPlayer1 = new HashSet<VI>( new Simple2PlayerGameAlgorithm<VI,EI>( gameGraph ).execute() );
 		
-		Set<VI> winningStartVertexes = new HashSet<VI>( GraphUtils.filterVertexes( gameGraph.vertexSet(), new DummyVertexFilter<VI>() ));
+		Set<VI> winningStartVertexes = new HashSet<VI>( Algorithms.filter( gameGraph.vertexSet(), new DummyVertexFilter<VI>() ));
 		winningStartVertexes.removeAll( winningPlayer1 );
 		
 		if ( winningStartVertexes.size()  == 0 )
@@ -180,13 +183,13 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 		
 		VI start = winningStartVertexes.iterator().next();
 		
-		DirectedGraph<DAGVertex, DefaultEdge> outGraph = new DirectedGraph<DAGVertex, DefaultEdge>( DAGVertex.class );
+		ListenableDirectedGraph<DAGVertex, DefaultEdge> outGraph = new ListenableDirectedGraph<DAGVertex, DefaultEdge>( DefaultEdge.class );
 		
 		LinkedList<VI> queue = new LinkedList<VI>();
 		queue.add( start );
 		
 		Hashtable<VI, Set<V>> reachableHash = new Hashtable<VI, Set<V>>();
-		reachableHash.put( start, graph.vertexSet() );
+		reachableHash.put( start, graph.getGraph().vertexSet() );
 		
 		outGraph.addVertex( new DAGVertex( start ) );
 		
@@ -231,7 +234,7 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 		return outGraph;
 	}
 	
-	public static class VertexVertexFilter<V> implements VertexFilter<V> {
+	public static class VertexVertexFilter<V> implements Filter<V> {
 
 		private Set<V> seperator;
 		
@@ -239,7 +242,7 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 			this.seperator = seperator;
 		}
 		
-		public boolean filterVertex(V vertex) {
+		public boolean filter(V vertex) {
 			if ( seperator.contains( vertex ) )
 				return true;
 			return false;
@@ -247,14 +250,14 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge>
 		
 	}
 	
-	public static class Player0WinningVertexFilter implements VertexFilter {
-		private Set win;
+	public static class Player0WinningVertexFilter<V> implements Filter<V> {
+		private Set<V> win;
 		
-		public Player0WinningVertexFilter( Set win ) {
+		public Player0WinningVertexFilter( Set<V> win ) {
 			this.win = win;
 		}
 
-		public boolean filterVertex(Object vertex) {
+		public boolean filter(V vertex) {
 			if ( win.contains( vertex ) )
 				return true;
 			return false;

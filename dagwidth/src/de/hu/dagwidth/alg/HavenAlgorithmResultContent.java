@@ -8,28 +8,27 @@ package de.hu.dagwidth.alg;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
 import org.jgraph.event.GraphSelectionEvent;
+import org.jgrapht.ListenableGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.Subgraph;
 
 import de.hu.dagwidth.alg.ComputeHavenAlgorithm.HavenAlgorithmResultContentPersistenceDelegate;
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.SelectionListener;
-import de.hu.gralog.graph.alg.AlgorithmResultInteractiveContent;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.vertex.DefaultListenableVertex;
+import de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent;
+import de.hu.gralog.algorithm.result.DisplaySubgraph;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.app.UserException;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.event.SelectionListener;
+import de.hu.gralog.graph.types.elements.DefaultListenableVertex;
 
-public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
+public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge, GI extends ListenableGraph<VI,EI>> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
 	
 	Hashtable<Set<VI>,Set<VI>> haven;
-	DirectedGraph<VI,EI> graph = null;
+	GralogGraphSupport<VI,EI,?,GI> graph = null;
 	Set<VI> copPosition = new HashSet<VI>();
 	Set<VI> currHaven = new HashSet<VI>();
 	
@@ -41,33 +40,33 @@ public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI e
 		}
 	}
 	
-	public HavenAlgorithmResultContent( DirectedGraph<VI,EI> graph, Hashtable<Set<VI>,Set<VI>> haven ) {
+	public HavenAlgorithmResultContent( GralogGraphSupport<VI,EI,?,GI> graph, Hashtable<Set<VI>,Set<VI>> haven ) {
 		super( graph );
 		this.graph = graph;
 		this.haven = haven;
-		graph.addSelectionListener( this );
+		graph.getGraphSelectionSupport().addSelectionListener( this );
 	}
 
 	protected void computeSubgraphs() {
-		subgraphs = new Hashtable<String, Subgraph>();
+		subgraphs = new Hashtable<String, SubgraphInfo>();
 							
-		Subgraph subgraph = SubgraphFactory.createSubgraph( graph, copPosition, new HashSet() );
-		subgraphs.put( ComputeHavenAlgorithm.DSM_COP_POSITION, subgraph );
+		SubgraphInfo subgraphInfo =  new SubgraphInfo( copPosition, new HashSet() );
+		subgraphs.put( ComputeHavenAlgorithm.DSM_COP_POSITION, subgraphInfo );
 		
-		subgraph = SubgraphFactory.createSubgraph( graph, currHaven, new HashSet() );
-		subgraphs.put( ComputeHavenAlgorithm.DSM_HAVEN, subgraph );
+		subgraphInfo = new SubgraphInfo( currHaven, new HashSet() );
+		subgraphs.put( ComputeHavenAlgorithm.DSM_HAVEN, subgraphInfo );
 		displaySubgraphCache = null;
 	}
 	
 	
 	@Override
-	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) {
+	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport ) throws UserException {
 		if ( subgraphs == null )
 			computeSubgraphs();
-		return super.getDisplaySubgraphs(modes);
+		return super.getDisplaySubgraphs( modes, graphSupport );
 	}
 
-	public void valueChanged(ArrayList<VI> vertexes, ArrayList<EI> edges, GraphSelectionEvent event ) {
+	public void valueChanged(Set<VI> vertexes, Set<EI> edges, GraphSelectionEvent event ) {
 				
 		if ( vertexes == null || vertexes.size() == 0 )
 			copPosition.clear();
@@ -78,7 +77,11 @@ public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI e
 		if ( currHaven == null )
 			currHaven = new HashSet<VI>();
 		subgraphs = null;
-		fireContentChanged();
+		try {
+			fireContentChanged();
+		} catch (UserException e) {
+			// cannot happen
+		}
 	}
 	
 	
