@@ -43,7 +43,7 @@
 
 	<target name="clean" description="Delete all generated files and directories">
     	<delete dir="${classes}/"/>
-        <delete dir="${dist}/${dist.jar}"/>
+        <delete file="${dist}/${project.jar}"/>
 		<delete dir="${doc}"/>
 	</target>
 
@@ -73,7 +73,13 @@
    	 	        </fileset>
 			</classpath>
 		</javac>
-
+		
+		<copy todir="${classes}">
+			<fileset dir="${classes}">
+				<include name="plugin.config"/>
+			</fileset>
+		</copy>
+				
 	</target>
 
 <!--  ==================== Apidoc ==================== -->
@@ -82,8 +88,8 @@
         <javadoc 
 	    		sourcepath="${source}" 
 	    		destdir="${doc}" 
-        		overview="overview.html" 
-    			subpackages="${package.root}" 
+        		overview="${source}/overview.html" 
+    			packagenames="${package.root}.*" 
         		doctitle="${project.name}-Api-Specification" 
 	    		source="1.5" 
         		nodeprecated="false" 
@@ -121,12 +127,10 @@
 
 		<mkdir dir="${dist}/tmp_fat_jar"/>
 		
-		<copy dst="${dist}/tmp_fat_jar">
-			<source>
-				<fileset dir="${classes}">
-					<include name="**/*"/>
-				</fileset>
-			</source>
+		<copy todir="${dist}/tmp_fat_jar">
+			<fileset dir="${classes}">
+				<include name="**/*"/>
+			</fileset>
 		</copy>
 		
 		<unjar dest="${dist}/tmp_fat_jar">
@@ -138,6 +142,7 @@
 
 		<jar jarfile="${dist}/${project.jar}" basedir="${dist}/tmp_fat_jar" manifest="${manifest}"/>
 		
+		<delete dir="${dist}/tmp_fat_jar"/>
 	</target>
 </project>
 

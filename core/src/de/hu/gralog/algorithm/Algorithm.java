@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Games.
+ * This file is part of Gralog.
  *
- * Games is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Games is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Games; 
+ * You should have received a copy of the GNU General Public License along with Gralog; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -27,20 +27,15 @@ import de.hu.gralog.app.UserException;
 /**
  * This interface has to be implement by all GraLog-Algorithms. An algorithm in
  * GraLog is basically a JavaBean with an execute-function defined by this
- * interface. Here we give only a short introduction to JavaBeans if you are not
- * familar with JavaBeans please refer to <a href="{@docRoot}/../pdf/beans.101.pdf">Java
- * Bean Specification</a>.
- * <p>
- * With the help of JavaBeans algorithms in gralog can be hugely customized
- * which means that they can take arbitrary parameters and provide their own
- * gui-elements for customizing these parameters.
+ * interface. Please see {@link de.hu.gralog.beans} for a generak introduction
+ * to JavaBeans and further references.
  * 
  * <h1>Plugin-Developers</h1>
  * 
  * Lets suppose you want to implement an algorithm which takes two parameters:
  * <ul>
- * <li>a parameter <b>counter</b> which should be a positive integer</li>
- * <li>a required parameter <b>graph</b> whose underlying JGraphT-Graph should
+ * <li> a parameter <b>counter</b> which should be a positive integer </li>
+ * <li> a required parameter <b>graph</b> whose underlying JGraphT-Graph should
  * be a {@link org.jgrapht.graph.SimpleDirectedGraph} whose vertices extend
  * {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} and whose edges
  * extend {@link org.jgrapht.graph.DefaultEdge}. </li>
@@ -116,33 +111,33 @@ import de.hu.gralog.app.UserException;
  * <p>
  * 
  * <pre>
- *   	public class YourAlgorithmBeanInfo extends SimpleBeanInfo {
- *   
- *   		private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( YourAlgorithm.class );
- *   		private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
- *   
- *  		static {
- *  			BEAN_DESCRIPTOR.setDisplayName( &quot;A name for YourAlgorithm&quot; );
- *  			BEAN_DESCRIPTOR.setShortDescription( 
- *  					&quot;A description for your algorithm in html.&quot; );
- *  
- *   			try {
- *   				PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( &quot;counter&quot;, YourAlgorithm.class );
- *   				PROPERTY_DESCRIPTORS[0].setShortDescription( &quot;A description for the property counter.&quot; );
- *   				PROPERTY_DESCRIPTORS[1] = new ChooseGraphPropertyDescriptor( &quot;graph&quot;, YourAlgorithm.class, new LabeledSimpleDirectedGraphTypeInfo() );
- *  	 			PROPERTY_DESCRIPTORS[1].setShortDescription( &quot;A description for the property graph.&quot; );
- *  			} catch( IntrospectionException e ) {
- *  				e.printStackTrace();
- *  			}
- *  
- *  			public BeanDescriptor getBeanDescriptor() {
- *  				return BEAN_DESCRIPTOR;
- *  			}
- *  
- *  			public PropertyDescriptor[] getPropertyDescriptors() {
- *  				return PROPERTY_DESCRIPTORS;
- *  			}
- *  	}
+ *     	public class YourAlgorithmBeanInfo extends SimpleBeanInfo {
+ *     
+ *     		private static final BeanDescriptor BEAN_DESCRIPTOR = new BeanDescriptor( YourAlgorithm.class );
+ *     		private static final PropertyDescriptor[] PROPERTY_DESCRIPTORS = new PropertyDescriptor[2];
+ *     
+ *    		static {
+ *    			BEAN_DESCRIPTOR.setDisplayName( &quot;A name for YourAlgorithm&quot; );
+ *    			BEAN_DESCRIPTOR.setShortDescription( 
+ *    					&quot;A description for your algorithm in html.&quot; );
+ *    
+ *     			try {
+ *     				PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( &quot;counter&quot;, YourAlgorithm.class );
+ *     				PROPERTY_DESCRIPTORS[0].setShortDescription( &quot;A description for the property counter.&quot; );
+ *     				PROPERTY_DESCRIPTORS[1] = new ChooseGraphPropertyDescriptor( &quot;graph&quot;, YourAlgorithm.class, new LabeledSimpleDirectedGraphTypeInfo() );
+ *    	 			PROPERTY_DESCRIPTORS[1].setShortDescription( &quot;A description for the property graph.&quot; );
+ *    			} catch( IntrospectionException e ) {
+ *    				e.printStackTrace();
+ *    			}
+ *    
+ *    			public BeanDescriptor getBeanDescriptor() {
+ *    				return BEAN_DESCRIPTOR;
+ *    			}
+ *    
+ *    			public PropertyDescriptor[] getPropertyDescriptors() {
+ *    				return PROPERTY_DESCRIPTORS;
+ *    			}
+ *    	}
  * </pre>
  * 
  * <p>

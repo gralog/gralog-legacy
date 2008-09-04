@@ -1,3 +1,21 @@
+/*
+ * Created on 2008 by Sebastian Ordyniak
+ *
+ * Copyright 2008 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
+ *
+ * This file is part of Gralog.
+ *
+ * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Gralog; 
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
+ *
+ */
 package de.hu.gralog.graph;
 
 import org.jgrapht.EdgeFactory;
@@ -19,65 +37,56 @@ import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 
 /**
- * This class defines a Gralog-Graph. 
+ * This class defines a Gralog-Graph.
  * <p>
- * A Gralog-Graph is basically 
- * a mathematical graph that allows to specify 
- * arbitrary properties for its vertices, edges and the graph itself. 
- * In Gralog this is accomplished by using the 
- * JavaBeans-Framework to define vertices, edges and a so 
- * called GraphBean object. It follows that vertices, edges and 
- * GraphBean are seen by Gralog as JavaBeans which allows 
- * them to be hugely customizable, i.e. having arbitrary properties 
- * and providing their own GUI-Components 
- * that are used by the Gralog-User to alter these properties.
+ * A Gralog-Graph is basically a mathematical graph that allows to specify
+ * arbitrary properties for its vertices, edges and the graph itself. In Gralog
+ * this is accomplished by using the JavaBeans-Framework to define vertices,
+ * edges and a so called GraphBean object. It follows that vertices, edges and
+ * GraphBean are seen by Gralog as JavaBeans which allows them to be hugely
+ * customizable, i.e. having arbitrary properties and providing their own
+ * GUI-Components that are used by the Gralog-User to alter these properties.
  * </p>
- * As metioned above a Graph in Gralog is 
- * represented by an instance of this class, which serves 
- * the following proposes:
+ * As metioned above a Graph in Gralog is represented by an instance of this
+ * class, which serves the following proposes:
  * <p>
  * <ul>
- * 	<li>
- * 	It holds mathematical structure of the graph, i.e.
- * 	its vertices and edges. Gralog uses
- * 	<a href="http://jgrapht.sourceforge.net/">JGraphT</a> to store this
- * 	structure, thus	a Gralog-Graph has an 
- * 	underlying JGraphT-graph that can be 
- * 	retrieved via {@link #getGraph()}.
- * </li>
- * <li>
- * It provides methods to create its vertices and edges. See
- * {@link #createVertex()} and {@link #getEdgeFactory()}.
- * </li>
- * <li>
- * It holds the so called GraphBeans-instance, which can be seen
- * as a holder for properties that affect the whole graph. The
- * GraphBean can be retrieved via {@link #getGraphBean()}.
- * </li>
- * <li>
- * It listens to changes on its vertices, edges and GraphBean and forwards
+ * <li> It holds mathematical structure of the graph, i.e. its vertices and
+ * edges. Gralog uses <a href="http://jgrapht.sourceforge.net/">JGraphT</a> to
+ * store this structure, thus a Gralog-Graph has an underlying JGraphT-graph
+ * that can be retrieved via {@link #getGraph()}. </li>
+ * <li> It provides methods to create its vertices and edges. See
+ * {@link #createVertex()} and {@link #getEdgeFactory()}. </li>
+ * <li> It holds the so called GraphBeans-instance, which can be seen as a
+ * holder for properties that affect the whole graph. The GraphBean can be
+ * retrieved via {@link #getGraphBean()}. </li>
+ * <li> It listens to changes on its vertices, edges and GraphBean and forwards
  * them to the listeners registered with this graph. See
- * {@link #getPropertyChangeSupport()} respectively {@link #getDisplayChangeSupport()}.
- * </li>
+ * {@link #getPropertyChangeSupport()} respectively
+ * {@link #getDisplayChangeSupport()}. </li>
  * It provides the functionality for the user to select vertices and edges and
- * informs listeners on changes of this selection. See {@link #getGraphSelectionSupport()}.
- * <li>
- * It allows Gralog to draw the graph using the Renderers provided by
- * {@link #getVertexRenderer()} and {@link #getEdgeRenderer()}.
- * </li>
+ * informs listeners on changes of this selection. See
+ * {@link #getGraphSelectionSupport()}.
+ * <li> It allows Gralog to draw the graph using the Renderers provided by
+ * {@link #getVertexRenderer()} and {@link #getEdgeRenderer()}. </li>
  * </ul>
  * 
  * <h2>Plugin-Developers</h2>
  * 
- * Please refer to {@link GralogGraphTypeInfo} if you are interested in
- * defining your own Gralog-Graph-Type.
+ * Please refer to {@link GralogGraphTypeInfo} if you are interested in defining
+ * your own Gralog-Graph-Type.
  * 
  * @author Sebastian
- *
- * @param <V> the vertexType
- * @param <E> the edgeType
- * @param <GB> the GraphBeanType
- * @param <G> the JGraphT-Type, which has to implement {@link org.jgrapht.graph.ListenableGraph<V,E>}
+ * 
+ * @param <V>
+ *            the vertexType
+ * @param <E>
+ *            the edgeType
+ * @param <GB>
+ *            the GraphBeanType
+ * @param <G>
+ *            the JGraphT-Type, which has to implement
+ *            {@link org.jgrapht.graph.ListenableGraph}
  */
 public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 
@@ -90,9 +99,9 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	private final GralogGraphTypeInfoSupport<V, E, GB, G> typeInfoSupport;
 
 	/**
-	 * Constructs a GralogGraphSupport using the given {@link GralogGraphTypeInfoSupport}-object.
-	 * This constructor is not public, please use {@link GralogGraphFactory} to
-	 * construct a GralogGraph. 
+	 * Constructs a GralogGraphSupport using the given
+	 * {@link GralogGraphTypeInfoSupport}-object. This constructor is not
+	 * public, please use {@link GralogGraphFactory} to construct a GralogGraph.
 	 * 
 	 * 
 	 * @param typeInfoSupport
@@ -139,9 +148,11 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return {@link GraphPropertyChangeSupport}, that you can use to add and remove
-	 * {@link PropertyChangeListener PropertyChangeListeners} to this graph. These Listeners
-	 * are informed on all changes in vertices, edges and the GraphBean.
+	 * @return {@link GraphPropertyChangeSupport}, that you can use to add and
+	 *         remove
+	 *         {@link java.beans.PropertyChangeListener PropertyChangeListeners}
+	 *         to this graph. These Listeners are informed on all changes in
+	 *         vertices, edges and the GraphBean.
 	 */
 	public GraphPropertyChangeSupport getPropertyChangeSupport() {
 		return propertyChangeSupport;
@@ -150,9 +161,11 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return {@link GraphPropertyChangeSupport}, that you can use to add and remove
-	 * {@link DisplayChangeListener DisplayChangeListeners} to this graph. These Listeners
-	 * are informed on all changes in vertices, edges and the GraphBean.
+	 * @return {@link GraphPropertyChangeSupport}, that you can use to add and
+	 *         remove
+	 *         {@link de.hu.gralog.beans.event.DisplayChangeListener DisplayChangeListeners}
+	 *         to this graph. These Listeners are informed on all changes in
+	 *         vertices, edges and the GraphBean.
 	 */
 	public GraphDisplayChangeSupport<V, E> getDisplayChangeSupport() {
 		return displayChangeSupport;
@@ -161,11 +174,13 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return {@link GraphSelectionSupport}, that you can use to add and remove
-	 * {@link SelectionListener SelectionListeners} to this graph. These listeners
-	 * are informed whenever the user changes his selection of vertices / edges in
-	 * the graph. You can also retrieve the currently selected vertices / edges from
-	 * this object.
+	 * @return {@link GraphSelectionSupport}, that you can use to add and
+	 *         remove
+	 *         {@link de.hu.gralog.graph.event.SelectionListener SelectionListeners}
+	 *         to this graph. These listeners are informed whenever the user
+	 *         changes his selection of vertices / edges in the graph. You can
+	 *         also retrieve the currently selected vertices / edges from this
+	 *         object.
 	 */
 	public GraphSelectionSupport<V, E> getGraphSelectionSupport() {
 		return selectionSupport;
@@ -189,7 +204,7 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 
 	/**
 	 * 
-	 * @return, if true Gralog allows the user to edit the properties of the bean 
+	 * @return if true Gralog allows the user to edit the properties of the bean
 	 */
 	public boolean isBeanEditable() {
 		boolean editable = getGraphBean() != null
@@ -199,8 +214,8 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 
 	/**
 	 * 
-	 * @return the {@link VertexFactory<V>} used by this Gralog-Graph to
-	 * construct new vertices
+	 * @return the {@link VertexFactory} used by this Gralog-Graph to construct
+	 *         new vertices
 	 */
 	public VertexFactory<V> getVertexFactory() {
 		return typeInfoSupport.getVertexFactory();
@@ -209,7 +224,7 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * Creates a vertex using {@link #getVertexFactory()}
 	 * 
-	 * @return
+	 * @return the created vertex
 	 */
 	public V createVertex() {
 		return getVertexFactory().createVertex();
@@ -218,7 +233,7 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return, if true Gralog allows the user to edit the properties of vertices
+	 * @return true if Gralog allows the user to edit the properties of vertices
 	 */
 	public boolean isVertexEditable() {
 		return createVertex() instanceof PropertyChangeListenable;
@@ -227,7 +242,7 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * @param vertex
-	 * @return true, if vertex is an instance of <b>vertexType</b>(V)
+	 * @return true if vertex is an instance of <b>vertexType</b>(V)
 	 */
 	public boolean isVertex(Object vertex) {
 		return createVertex().getClass().isInstance(vertex);
@@ -236,7 +251,7 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return, the edgeFactory used by the underlying JGraphT-Graph
+	 * @return the edgeFactory used by the underlying JGraphT-Graph
 	 */
 	public EdgeFactory<V, E> getEdgeFactory() {
 		return getGraph().getEdgeFactory();
@@ -245,7 +260,7 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return, if true Gralog allows the user to edit the properties of edges
+	 * @return true Gralog allows the user to edit the properties of edges
 	 */
 	public boolean isEdgeEditable() {
 		return getEdgeFactory().createEdge(createVertex(), createVertex()) instanceof PropertyChangeListenable;
@@ -265,8 +280,8 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return the {@link org.jgraph.graph.VertexRenderer} used by Gralog to render
-	 * the vertices of this graph.
+	 * @return the {@link org.jgraph.graph.VertexRenderer} used by Gralog to
+	 *         render the vertices of this graph.
 	 */
 	public DefaultVertexRenderer getVertexRenderer() {
 		return typeInfoSupport.getVertexRenderer();
@@ -275,8 +290,8 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return the {@link org.jgraph.graph.EdgeRenderer} used by Gralog to render
-	 * the vertices of this graph.
+	 * @return the {@link org.jgraph.graph.EdgeRenderer} used by Gralog to
+	 *         render the vertices of this graph.
 	 */
 	public DefaultEdgeRenderer getEdgeRenderer() {
 		return typeInfoSupport.getEdgeRenderer();
@@ -285,40 +300,47 @@ public class GralogGraphSupport<V, E, GB, G extends ListenableGraph<V, E>> {
 	/**
 	 * 
 	 * 
-	 * @return the {@link GralogGraphTypeInfo} with which this Gralog-Graph was created. Can
-	 * be used to construct new Gralog-Graphs of the same type by using {@link GralogGraphFactory}
+	 * @return the {@link GralogGraphTypeInfo} with which this Gralog-Graph was
+	 *         created. Can be used to construct new Gralog-Graphs of the same
+	 *         type by using {@link GralogGraphFactory#createGraphSupport(GralogGraphTypeInfo)}
 	 */
 	public GralogGraphTypeInfo<V, E, GB, G> getTypeInfo() {
 		return typeInfoSupport.getTypeInfo();
 	}
 
 	/**
-	 * Adds a vertex to the underlying JGraphT-graph. This
-	 * method is used internally by Gralog and should not be called by 
-	 * Plugin-Developers - use {@link org.jgrapht.Graph#addVertex(V)} instead. 
+	 * Adds a vertex to the underlying JGraphT-graph. This method is used
+	 * internally by Gralog and should not be called by Plugin-Developers - 
+	 * you should use the addVertex-method of the underlying JGraphT instead.
 	 * 
 	 * @param v
 	 */
-	public void addVertex(V v) {
-		getGraph().addVertex(v);
+	public boolean addVertex(V v) {
+		return getGraph().addVertex(v);
 	}
 
 	/**
-	 * Adds an edge to the underlying JGraphT-graph. This
-	 * method is used internally by Gralog and should not be called by 
-	 * Plugin-Developers - use {@link org.jgrapht.Graph#addEdge(V, V, E)} instead. 
+	 * Adds an edge to the underlying JGraphT-graph. This method is used
+	 * internally by Gralog and should not be called by Plugin-Developers - you
+	 * should use the addEdge-function of the underlying JGraphT-Graph instead
 	 * 
-	 * @param v
+	 * @param s
+	 *            the sourceVertex
+	 * @param t
+	 *            the targetVertex
+	 * @param e
+	 *            the edge
 	 */
-	public void addEdge(V s, V t, E e) {
-		getGraph().addEdge(s, t, e);
+	public boolean addEdge(V s, V t, E e) {
+		return getGraph().addEdge(s, t, e);
 	}
 
 	/**
-	 * The listener that listens to structurechanges of the underlying JGraphT-Graph.
+	 * The listener that listens to structurechanges of the underlying
+	 * JGraphT-Graph.
 	 * 
 	 * @author Sebastian
-	 *
+	 * 
 	 */
 	private class JGraphTListener implements GraphListener<V, E> {
 

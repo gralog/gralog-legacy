@@ -1,3 +1,21 @@
+/*
+ * Created on 2008 by Sebastian Ordyniak
+ *
+ * Copyright 2008 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
+ *
+ * This file is part of Gralog.
+ *
+ * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Gralog; 
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
+ *
+ */
 package de.hu.gralog.beans;
 
 import java.beans.IntrospectionException;
@@ -23,7 +41,7 @@ public class BeanUtil {
 	 * {@link java.beans.PropertyDescriptor}.
 	 * 
 	 * @param propertyDescriptor
-	 * @return
+	 * @return the Class for this property
 	 */
 	public static final Class getPropertyTypeClass(
 			PropertyDescriptor propertyDescriptor) {
@@ -112,7 +130,7 @@ public class BeanUtil {
 	/**
 	 * Returns all properties that have Read- and Write-Access on bean.
 	 * 
-	 * @param bean,
+	 * @param bean
 	 *            the bean to inspect
 	 * @return a list of propertyDescriptors containing all properties that have
 	 *         read- and write access on bean.
@@ -143,9 +161,9 @@ public class BeanUtil {
 	 * source to target bean. The targetBean has to have all properties of the
 	 * sourcebean otherwise an exception will occur.
 	 * 
-	 * @param sourceBean,
+	 * @param sourceBean
 	 *            the bean to take the values from
-	 * @param targetBean,
+	 * @param targetBean
 	 *            the bean to set the values on
 	 * @throws UserException
 	 */

@@ -1,22 +1,21 @@
 /*
- * Created on 2006 by Sebastian Ordyniak
+ * Created on 2008 by Sebastian Ordyniak
  *
- * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
+ * Copyright 2008 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Games.
+ * This file is part of Gralog.
  *
- * Games is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Games is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Games; 
+ * You should have received a copy of the GNU General Public License along with Gralog; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
-
 package de.hu.gralog.beans.propertydescriptor;
 
 import java.beans.IntrospectionException;
@@ -30,12 +29,13 @@ import de.hu.gralog.beans.propertyeditor.ChooseDependableGraphElementPropertyEdi
 /**
  * This class is a special PropertyDescriptor to define properties of
  * algorithms, graphs, vertices and edges in Gralog. This descriptor allows the
- * user to choose an element ( elements either vertices or edges )of a graph,
- * that is specified as another property of the same Bean, i.e. the bean for the
- * graph, algorithm, vertex or edge. Always make sure that the property this
- * descriptor depends on is of type {@link GralogGraphSupport} and that the
- * property defined by this descriptor has the right type according to whether
- * it is a Vertex or an edge.
+ * user to choose an element ( elements are either vertices or edges )of a
+ * graph, which is specified as another property of the same Bean, i.e. the bean
+ * for the graph, algorithm, vertex or edge. Always make sure that the property
+ * this descriptor depends on is of type
+ * {@link de.hu.gralog.graph.GralogGraphSupport} and that the property defined
+ * by this descriptor has the right type according to whether it is a vertex or
+ * an edge.
  * 
  * @author ordyniak
  * 

@@ -1,3 +1,21 @@
+/*
+ * Created on 2008 by Sebastian Ordyniak
+ *
+ * Copyright 2008 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
+ *
+ * This file is part of Gralog.
+ *
+ * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Gralog; 
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
+ *
+ */
 package de.hu.gralog.graph;
 
 import org.jgrapht.Graph;
@@ -9,29 +27,26 @@ import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 import de.hu.gralog.jgrapht.util.JGraphTUtils;
 
 /**
- * Subclasses of this class define Types of Gralog-Graphs. The
- * class basically holds all information necessary to construct
- * a Gralog-Graph ( in fact you can use subclasses of this
- * type to create a Gralog-Graph by using 
- * {@link GralogGraphFactory#createGraphSupport(GralogGraphTypeInfo)} ),
- * as return values to its abstract functions.
+ * Each subclass of this class defines a Gralog-Graph-Type. This class basically
+ * holds all information necessary to construct a Gralog-Graph ( in fact you can
+ * use subclasses of this type to create a Gralog-Graph by using
+ * {@link GralogGraphFactory#createGraphSupport(GralogGraphTypeInfo)} ), as
+ * return values to its abstract functions.
  * 
  * <h1>Plugin-Developers</h1>
- *
- * Every Gralog-Graph-Type is defined via a subclass of this class. Thus
- * in order to define your own Gralog-Type you have to extends this
- * class and provide the information necessary to construct the
- * desired {@link GralogGraphSupport} via implementing the abstract
- * methods of this class. You can then use 
- * {@link GralogGraphFactory#createGraphSupport(GralogGraphTypeInfo)} to create
- * instances of your new Gralog-Graph-Type, or just
- * provide this new Graph-Type to Gralog by mentioning it in your
- * <b>plugin.config</b>. 
  * 
- * See
- * {@link de.hu.gralog.graph.types.LabeledSimpleDirectedGralogGraphTypeInfo} and
- * {@link de.hu.gralog.graph.types.LabeledSimpleUndirectedGralogGraphTypeInfo}
- * for examples of already defined Gralog-Graph-Types. 
+ * Every Gralog-Graph-Type is defined via a subclass of this class. Thus in
+ * order to define your own Gralog-Type you have to extend this class and
+ * provide the information necessary to construct the desired
+ * {@link GralogGraphSupport} via implementing the abstract methods of this
+ * class. You can then use
+ * {@link GralogGraphFactory#createGraphSupport(GralogGraphTypeInfo)} to create
+ * instances of your new Gralog-Graph-Type, or just provide this new Graph-Type
+ * to Gralog by mentioning it in your <b>plugin.config</b>.
+ * 
+ * See {@link de.hu.gralog.graph.types.LabeledSimpleDirectedGraphTypeInfo} and
+ * {@link de.hu.gralog.graph.types.LabeledSimpleUndirectedGraphTypeInfo} for
+ * examples of already defined Gralog-Graph-Types.
  * 
  * @author Sebastian
  * 
@@ -43,7 +58,7 @@ import de.hu.gralog.jgrapht.util.JGraphTUtils;
  *            the GraphBeanType
  * @param <G>
  *            the JGraphT-Graph-Type, which has to be a
- *            {@link org.jgrapht.graph.ListenableGraph<V,E>}
+ *            {@link org.jgrapht.graph.ListenableGraph}
  */
 public abstract class GralogGraphTypeInfo<V, E, GB, G extends ListenableGraph<V, E>>
 		implements GralogGraphTypeInfoFilter {
@@ -57,12 +72,10 @@ public abstract class GralogGraphTypeInfo<V, E, GB, G extends ListenableGraph<V,
 	public abstract String getName();
 
 	/**
-	 * <h1>Plugin-Developers</h1>
+	 * Please refer to the description of {@link GraphFactory} if you want to
+	 * define your own Graph-Types in Gralog.
 	 * 
-	 * Please refer to the description of {@link GraphFactory} if you want
-	 * to define your own Graph-Types in Gralog.
-	 *  
-	 *  
+	 * 
 	 * @return the {@link GraphFactory} used by the Gralog-Graph to create an
 	 *         instance of the underlying JGraphT-Graph. The function is not
 	 *         allowed to return null.
@@ -70,10 +83,8 @@ public abstract class GralogGraphTypeInfo<V, E, GB, G extends ListenableGraph<V,
 	public abstract GraphFactory<G> getGraphFactory();
 
 	/**
-	 * <h1>Plugin-Developers</h1>
-	 * 
-	 * Please refer to the description of {@link GraphBeanFactory} if you
-	 * want to define your own type of GraphBeans for Gralog.
+	 * Please refer to the description of {@link GraphBeanFactory} if you want
+	 * to define your own type of GraphBeans for Gralog.
 	 * 
 	 * @return the {@link GraphBeanFactory} used by the Gralog-Graph to create
 	 *         an instance of the underlying GraphBean. If your graph does not
@@ -82,10 +93,10 @@ public abstract class GralogGraphTypeInfo<V, E, GB, G extends ListenableGraph<V,
 	public abstract GraphBeanFactory<GB> getGraphBeanFactory();
 
 	/**
-	 * <h1>Plugin-Developers</h1>
 	 * 
-	 * Please refer to the description of {@link de.hu.gralog.graph.types.elements} if
-	 * you want to define your own type of vertices and edges in Gralog.
+	 * Please refer to the description of
+	 * {@link de.hu.gralog.graph.types.elements} if you want to define your own
+	 * type of vertices and edges in Gralog.
 	 * 
 	 * @return the {@link VertexFactory} used by the Gralog-Graph to create its
 	 *         vertices. This function is not allowed to return null.
@@ -93,10 +104,9 @@ public abstract class GralogGraphTypeInfo<V, E, GB, G extends ListenableGraph<V,
 	public abstract VertexFactory<V> getVertexFactory();
 
 	/**
-	 * <h1>Plugin-Developers</h1>
 	 * 
-	 * Please refer to {@link de.hu.gralog.jgraph.cellview} if you
-	 * want to define your own VertexRenderer for Gralog.
+	 * Please refer to {@link de.hu.gralog.jgraph.cellview} if you want to
+	 * define your own VertexRenderer for Gralog.
 	 * 
 	 * @return {@link DefaultVertexRenderer} used by JGraph to render the
 	 *         vertices of this graph. If this function returns null, an
@@ -106,10 +116,9 @@ public abstract class GralogGraphTypeInfo<V, E, GB, G extends ListenableGraph<V,
 	public abstract DefaultVertexRenderer getVertexRenderer();
 
 	/**
-	 * <h1>Plugin-Developers</h1>
 	 * 
-	 * Please refer to {@link de.hu.gralog.jgraph.cellview} if you
-	 * want to define your own EdgeRenderer for Gralog.
+	 * Please refer to {@link de.hu.gralog.jgraph.cellview} if you want to
+	 * define your own EdgeRenderer for Gralog.
 	 * 
 	 * @return {@link DefaultEdgeRenderer} used by JGraph to render the edges of
 	 *         this graph. If this function returns null, an instance of
