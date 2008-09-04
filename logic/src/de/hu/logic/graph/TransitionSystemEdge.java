@@ -19,7 +19,7 @@
 
 package de.hu.logic.graph;
 
-import de.hu.gralog.jgrapht.edge.DefaultListenableEdge;
+import de.hu.gralog.graph.types.elements.DefaultListenableEdge;
 
 /**
  * @author kreutzer
@@ -27,14 +27,15 @@ import de.hu.gralog.jgrapht.edge.DefaultListenableEdge;
  */
 public class TransitionSystemEdge extends DefaultListenableEdge
 {
-	private String label = "";
+	private String label;
 		
 	public TransitionSystemEdge() {
-		label = "";
+		this( "" );
 	}
 	
 	public TransitionSystemEdge( String label )
 	{
+		super();
 		this.label = label;
 	}
 
@@ -43,7 +44,10 @@ public class TransitionSystemEdge extends DefaultListenableEdge
 	}
 
 	public void setLabel(String label) {
+		String oldValue = this.label;
 		this.label = label;
+		propertyChangeSupport.firePropertyChange( "label", oldValue, label );
+		displayChangeSupport.fireDisplayChangeDefault();
 	}
 	
 	public String toString() {

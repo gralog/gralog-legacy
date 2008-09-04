@@ -30,43 +30,44 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.Subgraph;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.general.EvaluationException;
 import de.hu.logic.general.EvaluationTreeNode;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
+import de.hu.logic.graph.TransitionSystemEdge;
+import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.modal.TreeNodeEvaluation;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
 
-public class EvaluateMuCalculusNew implements Algorithm {
+public class EvaluateMuCalculusNew<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
-	private TransitionSystem transitionSystem;
+	private GralogGraphSupport<V,E,GB,G> transitionSystem;
 	private String formula;
 	
 	public EvaluateMuCalculusNew() {
 		super();
 	}
 	
-	public TransitionSystem getTransitionSystem() {
+	public GralogGraphSupport<V,E,GB,G> getTransitionSystem() {
 		return transitionSystem;
 	}
 
-	public void setTransitionSystem(TransitionSystem transitionSystem) {
+	public void setTransitionSystem(GralogGraphSupport<V,E,GB,G> transitionSystem) {
 		this.transitionSystem = transitionSystem;
 	}
 	
@@ -83,7 +84,7 @@ public class EvaluateMuCalculusNew implements Algorithm {
 		
 		if ( getTransitionSystem() == null )
 			pe.addPropertyError( "transitionSystem",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
-		if ( getFormula() == null )
+		if ( getFormula() == null || getFormula().length() == 0 )
 			pe.addPropertyError( "formula",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
 		if ( pe.hasErrors() )
@@ -124,10 +125,10 @@ public class EvaluateMuCalculusNew implements Algorithm {
 		} 
 	}
 	
-	public static class MueKalkulAlgorithmResultContentTreeNode extends AlgorithmResultContentTreeNode {
+	public static class MueKalkulAlgorithmResultContentTreeNode<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> extends AlgorithmResultContentTreeNode {
 		
 		private EvaluationTreeNode evaluationTreeNode;
-		private TransitionSystem transitionSystem;
+		private GralogGraphSupport<V,E,GB,G> transitionSystem;
 		private Formula formula;
 		private transient boolean childrenBuild = false;
 		
@@ -140,31 +141,31 @@ public class EvaluateMuCalculusNew implements Algorithm {
 			}
 		}
 
-		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, Formula formula ) throws UserException {
+		public MueKalkulAlgorithmResultContentTreeNode( GralogGraphSupport<V,E,GB,G> transitionSystem, Formula formula ) throws UserException {
 			this( transitionSystem, new TreeNodeEvaluation().evaluate( transitionSystem, formula ) );
 			this.formula = formula;
 		}
 		
-		public MueKalkulAlgorithmResultContentTreeNode( TransitionSystem transitionSystem, EvaluationTreeNode evaluationTreeNode ) {
+		public MueKalkulAlgorithmResultContentTreeNode( GralogGraphSupport<V,E,GB,G> transitionSystem, EvaluationTreeNode evaluationTreeNode ) {
 			this.evaluationTreeNode = evaluationTreeNode;
 			this.transitionSystem = transitionSystem;
 		}
 		
 		private void computeSubgraphs() throws UserException {
-			subgraphs = new Hashtable<String, Subgraph>();
+			subgraphs = new Hashtable<String, SubgraphInfo>();
 			Proposition rp = evaluationTreeNode.getResult();
 			
 			if ( rp == null )
 				rp = new Proposition();
-			Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertices() ), new HashSet() );
-			subgraphs.put( EVALUATION_SG, subgraph );
+			SubgraphInfo subgraphInfo = new SubgraphInfo( new HashSet( rp.getVertices() ), new HashSet() );
+			subgraphs.put( EVALUATION_SG, subgraphInfo );
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws UserException {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport ) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
-			return super.getDisplaySubgraphs(modes);
+			return super.getDisplaySubgraphs(modes, transitionSystem);
 		}
 
 		@Override
@@ -180,10 +181,10 @@ public class EvaluateMuCalculusNew implements Algorithm {
 
 		
 		@Override
-		protected Set<Graph> getAllGraphs() throws UserException {
-			HashSet<Graph> graphs = new HashSet<Graph>();
-			if ( getGraph() != null )
-				graphs.add( getGraph() );
+		protected Set<GralogGraphSupport> getAllGraphs() throws UserException {
+			HashSet<GralogGraphSupport> graphs = new HashSet<GralogGraphSupport>();
+			if ( getGraphSupport() != null )
+				graphs.add( getGraphSupport() );
 			return graphs;
 		}
 

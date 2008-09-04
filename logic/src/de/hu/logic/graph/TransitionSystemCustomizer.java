@@ -48,9 +48,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import de.hu.gralog.jgrapht.event.GraphPropertyListener;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
-public class TransitionSystemCustomizer extends JPanel implements Customizer, ActionListener, ListSelectionListener, ItemListener {
+import de.hu.gralog.graph.GralogGraphSupport;
+
+public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> extends JPanel implements Customizer, ActionListener, ListSelectionListener, ItemListener {
 
 	private static final String ADD_PROPOSITION = "add";
 	private static final String REMOVE_PROPOSITION = "remove";
@@ -60,7 +62,7 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 	private static final String ALL_TO_IN_LIST = "<<";
 	private static final String ALL_TO_OUT_LIST = ">>";
 	
-	private TransitionSystem transitionSystem;
+	private GralogGraphSupport<V,E,GB,G> transitionSystem;
 	private ChoosePropositionComboBoxModel choosePropositionComboBoxModel;
 	private JComboBox chooseProposition;
 	
@@ -183,7 +185,7 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 	}
 	
 	public void setObject(Object bean) {
-		transitionSystem = (TransitionSystem)bean;
+		transitionSystem = (GralogGraphSupport<V,E,GB,G>)bean;
 		createPanel();
 		updateControls();
 	}
@@ -203,12 +205,12 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 			String name = (String)chooseProposition.getSelectedItem();
 			if ( name == null )
 				return null;
-			currentProposition = transitionSystem.getProposition( name );
+			currentProposition = transitionSystem.getGraphBean().getProposition( name );
 		}
 		return currentProposition;
 	}
 	
-	private class InOutPropositionListModel extends AbstractListModel implements GraphPropertyListener {
+	private class InOutPropositionListModel extends AbstractListModel implements PropertyChangeListener {
 
 		protected Proposition currentProposition = null;
 		protected ArrayList<TransitionSystemVertex> vertexes = null;
@@ -217,7 +219,7 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 		public InOutPropositionListModel( boolean in ) {
 			this.in = in;
 
-			transitionSystem.addGraphPropertyListener( this );
+			transitionSystem.getPropertyChangeSupport().addPropertyChangeListener( this );
 		}
 		
 		protected ArrayList<TransitionSystemVertex> getVertexes() {
@@ -228,7 +230,7 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 					if ( in )
 						vertexes = getProposition().getVertices();
 					else {
-						Set<TransitionSystemVertex> vertexSet = new HashSet<TransitionSystemVertex>( transitionSystem.vertexSet() );
+						Set<TransitionSystemVertex> vertexSet = new HashSet<TransitionSystemVertex>( transitionSystem.getGraph().vertexSet() );
 						if ( getProposition() != null )
 							vertexSet.removeAll( getProposition().getVertices() );
 						vertexes = new ArrayList<TransitionSystemVertex>( vertexSet );
@@ -252,25 +254,20 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 			fireContentsChanged( this, 0, getSize() );
 		}
 		
-		public void propertyChanged(Object graphSource, PropertyChangeEvent e) {
+		public void propertyChange( PropertyChangeEvent e ) {
 			if ( e.getSource() == getProposition() ) {
 				vertexes = null;
 				fireContentsChanged( this, 0, getSize() );
 			}
 		}
-
-		public void propertyChanged(Object arg0, PropertyChangeEvent arg1, Object[] arg2) {
-			propertyChanged( arg0, arg1 );
-		}
-
 	}
 	
-	private class ChoosePropositionComboBoxModel extends AbstractListModel implements ComboBoxModel, GraphPropertyListener {
+	private class ChoosePropositionComboBoxModel extends AbstractListModel implements ComboBoxModel, PropertyChangeListener {
 
 		private String selectedPropostionName;
 		
 		public ChoosePropositionComboBoxModel() {
-			transitionSystem.addGraphPropertyListener( this );
+			transitionSystem.getPropertyChangeSupport().addPropertyChangeListener( this );
 		}
 		
 		public void setSelectedItem(Object anItem) {
@@ -282,46 +279,43 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 		}
 
 		public int getSize() {
-			return transitionSystem.getPropositions().length;
+			return transitionSystem.getGraphBean().getPropositions().length;
 		}
 
 		public Object getElementAt(int index) {
-			return transitionSystem.getPropositions( index ).getName();
+			return transitionSystem.getGraphBean().getPropositions( index ).getName();
 		}
 		
-		public void propertyChanged(Object graphSource, PropertyChangeEvent e) {
-			if ( getSelectedItem() != null && transitionSystem.getProposition( (String)getSelectedItem() ) == null ) {
+		public void propertyChange( PropertyChangeEvent e ) {
+			if ( getSelectedItem() != null && transitionSystem.getGraphBean().getProposition( (String)getSelectedItem() ) == null ) {
 				chooseProposition.setSelectedItem( null );
 				chooseProposition.repaint();
 			}
 			fireContentsChanged(this, 0, getSize() );
 		}
 
-		public void propertyChanged(Object arg0, PropertyChangeEvent arg1, Object[] arg2) {
-			propertyChanged( arg0, arg1 );
-		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		if ( e.getActionCommand().equals( ADD_PROPOSITION ) ) {
 			String name = JOptionPane.showInputDialog( this, "name: " );
 			if ( name != null ) {
-				if ( transitionSystem.getProposition( name ) == null )
-					transitionSystem.addProposition( new Proposition( name ) );
+				if ( transitionSystem.getGraphBean().getProposition( name ) == null )
+					transitionSystem.getGraphBean().addProposition( new Proposition( name ) );
 				chooseProposition.setSelectedItem( name );
 				chooseProposition.repaint();
 			}
 		}
 		if ( e.getActionCommand().equals( REMOVE_PROPOSITION ) ) {
-			transitionSystem.removeProposition( choosePropositionComboBoxModel.selectedPropostionName );
+			transitionSystem.getGraphBean().removeProposition( choosePropositionComboBoxModel.selectedPropostionName );
 			chooseProposition.setSelectedItem( null );
 			chooseProposition.repaint();
 		}
 		if ( e.getActionCommand().equals( RENAME_PROPOSITION ) ) {
 			String name = JOptionPane.showInputDialog( this, "name: " );
 			if ( name != null ) {
-				if ( transitionSystem.getProposition( name ) == null )
-					transitionSystem.getProposition( choosePropositionComboBoxModel.selectedPropostionName ).setName( name );
+				if ( transitionSystem.getGraphBean().getProposition( name ) == null )
+					transitionSystem.getGraphBean().getProposition( choosePropositionComboBoxModel.selectedPropostionName ).setName( name );
 				chooseProposition.setSelectedItem( name );
 				chooseProposition.repaint();
 			}
@@ -339,7 +333,7 @@ public class TransitionSystemCustomizer extends JPanel implements Customizer, Ac
 			outList.clearSelection();
 		}
 		if ( e.getActionCommand().equals( ALL_TO_IN_LIST ) ) {
-			for ( TransitionSystemVertex vertex : transitionSystem.vertexSet() ) {
+			for ( TransitionSystemVertex vertex : transitionSystem.getGraph().vertexSet() ) {
 				if ( ! getProposition().containsVertex( vertex ) )
 					getProposition().addVertex( vertex );
 			}

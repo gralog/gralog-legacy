@@ -11,12 +11,16 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.graph.UndirectedGraph;
-import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
+import org.jgrapht.UndirectedGraph;
+
+import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 import de.hu.logic.graph.TransitionSystem;
+
+
 
 public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 
@@ -78,32 +82,14 @@ public class FirstOrderLogicsSimpleBeanInfo extends SimpleBeanInfo {
 		return PROPERTY_DESCRIPTORS;
 	}
 	
-	public static class FOGraphTypeInfo extends GraphTypeInfo {
+	public static class FOGraphTypeInfo implements GralogGraphTypeInfoFilter {
 
-		@Override
-		public String getName() {
-			return null;
+		public boolean filterTypeInfo( GralogGraphTypeInfo typeInfo ) {
+			Graph graph = typeInfo.getGraphFactory().createGraph();
+			if ( graph instanceof UndirectedGraph || graph instanceof DirectedGraph || typeInfo.getGraphBeanFactory().createBean(  ) instanceof TransitionSystem) 
+				return false;
+			return true;
 		}
-
-		@Override
-		public GraphWithEditableElements newInstance() {
-			
-			return null;
-		}
-
-		@Override
-		public boolean isInstance(GraphWithEditableElements graph) {
-			if ( graph instanceof UndirectedGraph || graph instanceof DirectedGraph || graph instanceof TransitionSystem) 
-			{
-				// graph.createVertex() instanceof ...
-				return true;
-			}
-				
-			return false;
-		}
-		
-		
-		
 	}
 	
 }

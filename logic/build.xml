@@ -1,0 +1,146 @@
+<!--
+
+ @(#)build.xml	
+
+ Copyright (c) 2008 Sebastian Ordyniak
+
+-->
+
+<!-- ===================== Project Properties =========================== -->
+
+<project name="gralog-logic" default="all" basedir=".">
+
+	<property name="project.name" value="Gralog-Logic"/>
+	<property name="package.root" value="de.hu.logic"/>
+	
+<!-- ===================== Project Environment =========================== -->
+
+	<property name="source"    value="${basedir}/src"/>
+	<property name="lib" value="${basedir}/lib"/>
+	<property name="core.jar" value="gralog-core.jar"/>
+	<property name="manifest" value="${basedir}/META-INF/MANIFEST.MF"/>
+
+
+<!--  ==================== Compilation Options ==================== -->
+
+	<property name="compile.debug"       value="false"/>
+	<property name="compile.deprecation" value="false"/>
+	<property name="compile.optimize"    value="true"/>
+
+<!-- ===================== Build Environment =========================== -->
+
+	<property name="classes" value="${basedir}/bin"/>
+	<property name="dist" value="${basedir}/dist"/>
+	<property name="project.jar" value="gralog-logic.jar"/>
+	<property name="doc" value="${basedir}/doc/api"/>
+
+<!--  ==================== All ==================== -->
+
+	<target name="all" depends="jar, doc"
+		description="Clean up and produce all distributions"/>
+
+<!--  ==================== Clean ==================== -->
+
+	<target name="clean" description="Delete all generated files and directories">
+    	<delete dir="${classes}/"/>
+        <delete file="${dist}/${project.jar}"/>
+		<delete dir="${doc}"/>
+	</target>
+
+<!--  ==================== Init ==================== -->
+
+	<target name="init" description="Initialize the build Java ${java.specification.version} Build">
+		<tstamp/>
+		<mkdir dir="${classes}"/>
+		<mkdir dir="${doc}"/>
+		<mkdir dir="${dist}"/>
+	</target>
+
+<!--  ==================== Compile ==================== -->
+
+	<target name="compile" depends="init" description="Compile the build tree">
+
+		<!-- Compile sources -->
+		<javac srcdir="${source}"
+			debug="${compile.debug}"
+			deprecation="${compile.deprecation}"
+			optimize="${compile.optimize}"
+			destdir="${classes}">
+			<classpath>
+				<pathelement path="${classes}"/>
+				<fileset dir="${lib}">
+			        <include name="**/*.jar"/>
+   	 	        </fileset>
+			</classpath>
+		</javac>
+		
+		<copy todir="${classes}">
+			<fileset dir="${source}">
+				<include name="plugin.config"/>
+			</fileset>
+		</copy>
+				
+	</target>
+
+<!--  ==================== Apidoc ==================== -->
+
+	<target name="apidoc" depends="init" description="Generate the api specification (javadoc)">
+        <javadoc 
+	    		sourcepath="${source}" 
+	    		destdir="${doc}" 
+        		overview="${source}/overview.html" 
+    			packagenames="${package.root}.*" 
+        		doctitle="${project.name}-Api-Specification" 
+	    		source="1.5" 
+        		nodeprecated="false" 
+        		nodeprecatedlist="false" 
+        		noindex="false" 
+        		nonavbar="false" 
+        		notree="false" 
+        		splitindex="true" 
+	    		author="true" 
+        		use="true" 
+        		version="true">
+        	
+			<classpath>
+				<pathelement path="${classes}"/>
+				<fileset dir="${lib}">
+			        <include name="**/*.jar"/>
+   	 	        </fileset>
+			</classpath>
+
+            <link href="http://java.sun.com/javase/6/docs/api/"/>
+        </javadoc>
+	</target>
+
+<!--  ==================== Doc ==================== -->
+
+	<target name="doc" depends="apidoc" description="Generate all documentation"/>
+
+<!--  ==================== Jar ==================== -->
+
+	<target name="jar" depends="compile" description="Build all Java archives (JARs)">
+		<delete dir="${dist}/tmp_fat_jar"/>
+
+		<mkdir dir="${dist}/tmp_fat_jar"/>
+		
+		<copy todir="${dist}/tmp_fat_jar">
+			<fileset dir="${classes}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<unjar dest="${dist}/tmp_fat_jar">
+		    <fileset dir="${lib}">
+		        <include name="*.jar"/>
+		        <exclude name="${core.jar}"/>
+		    	<exclude name="java-cup-11a.jar"/>
+		    </fileset>
+		</unjar>
+
+		<jar jarfile="${dist}/${project.jar}" basedir="${dist}/tmp_fat_jar" manifest="${manifest}"/>
+		
+		<delete dir="${dist}/tmp_fat_jar"/>
+	</target>
+</project>
+

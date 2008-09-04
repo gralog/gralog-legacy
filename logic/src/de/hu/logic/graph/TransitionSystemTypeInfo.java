@@ -6,58 +6,57 @@
  */
 package de.hu.logic.graph;
 
-import java.util.HashMap;
+import org.jgrapht.VertexFactory;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
-import de.hu.gralog.graph.GraphTypeInfo;
-import de.hu.gralog.graph.GraphWithEditableElements;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GraphBeanFactory;
+import de.hu.gralog.graph.GraphFactory;
+import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
+import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 
-public class TransitionSystemTypeInfo extends GraphTypeInfo {
+public class TransitionSystemTypeInfo extends GralogGraphTypeInfo<TransitionSystemVertex, TransitionSystemEdge, TransitionSystem<TransitionSystemVertex, TransitionSystemEdge, ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>>, ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>> {
 
 	public String getName() {
 		return "TransitionSystem";
 	}
 
-	public GraphWithEditableElements newInstance() {
-		TransitionSystem system = new TransitionSystem();
-		system.setTypeInfo( this );
-		return system;
-	}
-	
 	@Override
-	public GraphWithEditableElements copyGraph( GraphWithEditableElements grapht, HashMap vMap ) {
-		TransitionSystem transSys = (TransitionSystem) grapht;			// original GraphT
-		TransitionSystem newTransSys = new TransitionSystem();			// cloned GraphT
-		newTransSys.setTypeInfo( this );
-
-		// Clone the vertices and add them to the cloned GraphT "newTransSys":
-		for( TransitionSystemVertex v : transSys.vertexSet() ) {
-			TransitionSystemVertex v2 = new TransitionSystemVertex( v.getLabel() );
-			vMap.put( v, v2 ); 	// "vMap" stores for each vertex "v" in transSys the corresponding vertex "v2" in newTransSys
-			newTransSys.addVertex( v2 );
-		}
-		
-		// Set the propositions:
-		Proposition[] props = transSys.getPropositions();
-		for( int i = 0; i < props.length; i++ ) {
-			Proposition newProp = new Proposition( props[i].getName() );
-			for( TransitionSystemVertex v : props[i].getVertices() ) {
-				newProp.addVertex( (TransitionSystemVertex) vMap.get(v) );
+	public GraphFactory<ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>> getGraphFactory() {
+		return new GraphFactory<ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>>() {
+			public ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge> createGraph() {
+				return new ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>( TransitionSystemEdge.class );
 			}
-			newTransSys.addProposition(newProp);
-		}
-		
-		// Clone the edges and add them to the cloned GraphT:		
-		for( TransitionSystemEdge e : transSys.edgeSet() ) {
-			TransitionSystemEdge e2 = new TransitionSystemEdge( e.getLabel() );
-			
-			newTransSys.addEdge(
-				(TransitionSystemVertex) vMap.get(transSys.getEdgeSource(e)),
-				(TransitionSystemVertex) vMap.get(transSys.getEdgeTarget(e)),
-				e2
-			);
-		}
+		};
+	}
 
-		return newTransSys; 
+	@Override
+	public GraphBeanFactory<TransitionSystem<TransitionSystemVertex, TransitionSystemEdge, ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>>> getGraphBeanFactory() {
+		return new GraphBeanFactory<TransitionSystem<TransitionSystemVertex, TransitionSystemEdge, ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>>>() {
+			
+			public TransitionSystem<TransitionSystemVertex, TransitionSystemEdge, ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>> createBean(  ) {
+				return new TransitionSystem<TransitionSystemVertex, TransitionSystemEdge, ListenableDirectedGraph<TransitionSystemVertex, TransitionSystemEdge>>(  );
+			}
+		};
+	}
+
+	@Override
+	public VertexFactory<TransitionSystemVertex> getVertexFactory() {
+		return new VertexFactory<TransitionSystemVertex>() {
+			public TransitionSystemVertex createVertex() {
+				return new TransitionSystemVertex();
+			}
+		};
+	}
+
+	@Override
+	public DefaultVertexRenderer getVertexRenderer() {
+		return new TransitionSystemVertexRenderer();
+	}
+
+	@Override
+	public DefaultEdgeRenderer getEdgeRenderer() {
+		return new DefaultEdgeRenderer();
 	}
 
 }

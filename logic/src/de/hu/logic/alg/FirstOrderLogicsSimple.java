@@ -29,19 +29,15 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.Subgraph;
-
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.fo.FOEvaluation;
 import de.hu.logic.fo.FOEvaluationTreeNode;
 import de.hu.logic.fo.Formula;
@@ -54,18 +50,18 @@ import de.hu.logic.parser.ParseException;
 public class FirstOrderLogicsSimple implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
-	private GraphWithEditableElements structure;
+	private GralogGraphSupport structure;
 	private String formula;
 	
 	public FirstOrderLogicsSimple() {
 		super();
 	}
 	
-	public GraphWithEditableElements getStructure() {
+	public GralogGraphSupport getStructure() {
 		return structure;
 	}
 
-	public void setStructure(GraphWithEditableElements structure) {
+	public void setStructure(GralogGraphSupport structure) {
 		this.structure = structure;
 	}
 	
@@ -82,7 +78,7 @@ public class FirstOrderLogicsSimple implements Algorithm {
 		
 		if ( getStructure() == null )
 			pe.addPropertyError( "structure",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
-		if ( getFormula() == null )
+		if ( getFormula() == null || getFormula().length() == 0 )
 			pe.addPropertyError( "formula",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
 		if ( pe.hasErrors() )
@@ -127,7 +123,7 @@ public class FirstOrderLogicsSimple implements Algorithm {
 	public static class SimpleFOAlgorithmResultContentTreeNode extends AlgorithmResultContentTreeNode {
 		
 		private FOEvaluationTreeNode evaluationTreeNode;
-		private GraphWithEditableElements transitionSystem;
+		private GralogGraphSupport transitionSystem;
 		private Formula formula;
 		private transient boolean childrenBuild = false;
 		
@@ -140,33 +136,33 @@ public class FirstOrderLogicsSimple implements Algorithm {
 			}
 		}
 
-		public SimpleFOAlgorithmResultContentTreeNode( GraphWithEditableElements transitionSystem, Formula formula ) throws UserException {
+		public SimpleFOAlgorithmResultContentTreeNode( GralogGraphSupport transitionSystem, Formula formula ) throws UserException {
 //			this.transitionSystem = transitionSystem;
 			
 			this( transitionSystem, new FOEvaluation().initialise( StructureAdaptorFactory.generateAdaptor(transitionSystem), formula ) );
 			this.formula = formula;
 		}
 		
-		public SimpleFOAlgorithmResultContentTreeNode( GraphWithEditableElements transitionSystem, FOEvaluationTreeNode evaluationTreeNode ) {
+		public SimpleFOAlgorithmResultContentTreeNode( GralogGraphSupport transitionSystem, FOEvaluationTreeNode evaluationTreeNode ) {
 			this.evaluationTreeNode = evaluationTreeNode;
 			this.transitionSystem = transitionSystem;
 		}
 		
 		private void computeSubgraphs() throws UserException {
-			subgraphs = new Hashtable<String, Subgraph>();
+			subgraphs = new Hashtable<String, SubgraphInfo>();
 			Relation rp = evaluationTreeNode.getResult();
 			
 			if ( rp == null )
 				rp = new Relation("",true);
-			Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertexSet() ), new HashSet() );
-			subgraphs.put( EVALUATION_SG, subgraph );
+			SubgraphInfo subgraphInfo = new SubgraphInfo( new HashSet( rp.getVertexSet() ), new HashSet() );
+			subgraphs.put( EVALUATION_SG, subgraphInfo );
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws UserException {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
-			return super.getDisplaySubgraphs(modes);
+			return super.getDisplaySubgraphs(modes, transitionSystem);
 		}
 
 		@Override
@@ -182,10 +178,10 @@ public class FirstOrderLogicsSimple implements Algorithm {
 
 		
 		@Override
-		protected Set<Graph> getAllGraphs() throws UserException {
-			HashSet<Graph> graphs = new HashSet<Graph>();
-			if ( getGraph() != null )
-				graphs.add( getGraph() );
+		protected Set<GralogGraphSupport> getAllGraphs() throws UserException {
+			HashSet<GralogGraphSupport> graphs = new HashSet<GralogGraphSupport>();
+			if ( getGraphSupport() != null )
+				graphs.add( getGraphSupport() );
 			return graphs;
 		}
 

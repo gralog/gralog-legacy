@@ -22,12 +22,10 @@ package de.hu.logic.parser;
 import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 
-import de.hu.gralog.app.UserException;
-
 import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.DefaultSymbolFactory;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
+import de.hu.gralog.app.UserException;
 
 /**
  * This class implements a few static methods used to load formulas from a file or standard in. It's 

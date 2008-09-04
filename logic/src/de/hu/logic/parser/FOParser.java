@@ -6,10 +6,12 @@
 
 package de.hu.logic.parser;
 
-import java_cup.runtime.*;
-import de.hu.logic.fo.Formula;
 import java.util.ArrayList;
-import de.hu.gralog.app.UserException;
+
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.Symbol;
+import java_cup.runtime.SymbolFactory;
+import de.hu.logic.fo.Formula;
 
 /** CUP v0.11a beta 20060608 generated parser.
   * @version Fri Aug 22 15:26:14 BST 2008

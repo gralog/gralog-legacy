@@ -2,32 +2,41 @@ package de.hu.logic.alg;
 
 import java.io.FileNotFoundException;
 
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
+
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContent;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
+import de.hu.gralog.graph.GralogGraphFactory;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.general.EvaluationException;
 import de.hu.logic.graph.TransitionSystem;
+import de.hu.logic.graph.TransitionSystemEdge;
+import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
+import de.hu.parity.graph.ParityGameGraphTypeInfo;
+import de.hu.parity.graph.ParityGameVertex;
 
-public class BuildParityGameArena implements Algorithm {
+public class BuildParityGameArena<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private TransitionSystem transitionSystem;
+	private GralogGraphSupport<V,E,GB,G> transitionSystem;
 	private String formula;// = "\\muX.(X\\or(\\nuX.(X\\andP)))";
 	
 	public BuildParityGameArena() {
 		super();
 	}
 	
-	public TransitionSystem getTransitionSystem() {
+	public GralogGraphSupport<V,E,GB,G> getTransitionSystem() {
 		return transitionSystem;
 	}
 
-	public void setTransitionSystem(TransitionSystem transitionSystem) {
+	public void setTransitionSystem(GralogGraphSupport<V,E,GB,G> transitionSystem) {
 		this.transitionSystem = transitionSystem;
 	}
 	
@@ -44,7 +53,7 @@ public class BuildParityGameArena implements Algorithm {
 		
 		if ( getTransitionSystem() == null )
 			pe.addPropertyError( "transitionSystem",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
-		if ( getFormula() == null )
+		if ( getFormula() == null || getFormula().length() == 0 )
 			pe.addPropertyError( "formula",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
 		if ( pe.hasErrors() )
@@ -66,7 +75,7 @@ public class BuildParityGameArena implements Algorithm {
 			Formula f = list.substituteMain();
 			
 			AlgorithmResult result = new AlgorithmResult();
-			result.setSingleContent( new AlgorithmResultContent( (new BuildParityGameArenaAlgorithm(transitionSystem, f)).execute() ) );
+			result.setSingleContent( new AlgorithmResultContent( GralogGraphFactory.createGraphSupport( new ParityGameGraphTypeInfo(), new ListenableDirectedGraph<ParityGameVertex, DefaultEdge>( new BuildParityGameArenaAlgorithm(transitionSystem, f).execute() ) ) ) );
 						
 			return result;
 		} catch (UserException e) {

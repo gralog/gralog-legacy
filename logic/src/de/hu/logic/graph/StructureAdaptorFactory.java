@@ -3,9 +3,10 @@
  */
 package de.hu.logic.graph;
 
-import de.hu.gralog.graph.DirectedGraph;
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.gralog.graph.UndirectedGraph;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.UndirectedGraph;
+
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.fo.Structure;
 
 /**
@@ -33,11 +34,11 @@ import de.hu.logic.fo.Structure;
  */
 public class StructureAdaptorFactory {
 
-	public static Structure generateAdaptor(GraphWithEditableElements graph)
+	public static Structure generateAdaptor( GralogGraphSupport graph)
 	{
-		if(graph instanceof UndirectedGraph)
+		if(graph.getGraph() instanceof UndirectedGraph)
 			return new UndirectedGraphAdaptor(graph);
-		else if(graph instanceof TransitionSystem)
+		else if(graph.getGraphBean() instanceof TransitionSystem)
 			return new TransitionSystemAdaptor(graph);
 		else if(graph instanceof DirectedGraph)
 			return new DirectedGraphAdaptor(graph);

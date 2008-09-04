@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hu.gralog.graph.GraphWithEditableElements;
-import de.hu.logic.fo.Relation;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.fo.Structure;
 
 /**
@@ -36,17 +35,17 @@ import de.hu.logic.fo.Structure;
  */
 public class DirectedGraphAdaptor implements Structure 
 {
-	GraphWithEditableElements _graph;
+	GralogGraphSupport _graph;
 	HashSet<String> _signature = new HashSet<String>(1);
 	
-	public DirectedGraphAdaptor(GraphWithEditableElements graph)
+	public DirectedGraphAdaptor(GralogGraphSupport graph)
 	{
 		_graph = graph;
 		_signature.add("E");		// Undirected graphs only have the edge relation E
 	}
 
 	public Set getUniverse() {
-		return _graph.vertexSet();
+		return _graph.getGraph().vertexSet();
 	}
 
 	public Set<String> getSignature() 
@@ -60,6 +59,6 @@ public class DirectedGraphAdaptor implements Structure
 			throw new Exception("Relation >"+rel+"< unknown.");
 		if(elems.size()<2)
 			throw new Exception("Not enough arguments to evaluate relation.");
-		return _graph.containsEdge(elems.get(0), elems.get(1));	
+		return _graph.getGraph().containsEdge(elems.get(0), elems.get(1));	
 	}
 }

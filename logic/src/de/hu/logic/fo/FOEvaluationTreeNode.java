@@ -6,7 +6,6 @@ package de.hu.logic.fo;
 import java.util.List;
 
 import de.hu.gralog.app.UserException;
-import de.hu.logic.fo.Relation;
 
 /**
  * @author kreutzer

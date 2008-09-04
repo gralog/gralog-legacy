@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hu.gralog.graph.GraphWithEditableElements;
+import org.jgrapht.graph.ListenableDirectedGraph;
+
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.fo.Structure;
 
 /**
@@ -33,19 +35,19 @@ import de.hu.logic.fo.Structure;
  * @author Stephan Kreutzer 
  *
  */
-public class TransitionSystemAdaptor implements Structure 
+public class TransitionSystemAdaptor<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem, G extends ListenableDirectedGraph<V,E>> implements Structure 
 {
-	TransitionSystem _graph;
+	GralogGraphSupport<V ,E, GB, G> _graph;
 	HashSet<String> _signature = new HashSet<String>(1);
 	
-	public TransitionSystemAdaptor(GraphWithEditableElements graph)
+	public TransitionSystemAdaptor( GralogGraphSupport<V,E,GB,G> graph)
 	{
-		_graph = (TransitionSystem) graph;
-		_signature = new HashSet<String>(_graph.getSignature());	
+		_graph = graph;
+		_signature = new HashSet<String>(_graph.getGraphBean().getSignature());	
 	}
 
 	public Set getUniverse() {
-		return _graph.vertexSet();
+		return _graph.getGraph().vertexSet();
 	}
 
 	public Set<String> getSignature() 
@@ -59,14 +61,14 @@ public class TransitionSystemAdaptor implements Structure
 		{
 			if(elems.size()!=2)
 				throw new Exception("Invalid number " + elems.size() + " of arguments for relation 'E'.");
-			return _graph.containsEdge((TransitionSystemVertex) elems.get(0), (TransitionSystemVertex) elems.get(1));	
+			return _graph.getGraph().containsEdge( (V)elems.get(0), (V)elems.get(1));	
 			
 		}
 		else
 		{
-			if(_graph.getSignature().contains(rel))
+			if(_graph.getGraphBean().getSignature().contains(rel))
 			{
-				Proposition prop = _graph.getProposition(rel);
+				Proposition prop = _graph.getGraphBean().getProposition(rel);
 				if(elems.size()!=1)
 					throw new Exception("Invalid number " + elems.size() + " of arguments for relation " + rel + ".");
 				

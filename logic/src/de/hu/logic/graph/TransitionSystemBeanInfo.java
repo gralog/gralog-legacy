@@ -20,7 +20,6 @@ public class TransitionSystemBeanInfo extends SimpleBeanInfo {
 		try {
 			PROPERTY_DESCRIPTORS[0] = new IndexedPropertyDescriptor( "propositions", TransitionSystem.class );
 		} catch (IntrospectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -34,6 +33,4 @@ public class TransitionSystemBeanInfo extends SimpleBeanInfo {
 	public PropertyDescriptor[] getPropertyDescriptors() {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
-	
 }

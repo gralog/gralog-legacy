@@ -22,6 +22,9 @@ package de.hu.logic.modal;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.jgrapht.graph.ListenableDirectedGraph;
+
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.general.EvaluationException;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
@@ -38,10 +41,10 @@ import de.hu.logic.graph.TransitionSystemVertex;
  * @author Stephan Kreutzer
  *
  */
-public class SetEvaluation
+public class SetEvaluation<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem, G extends ListenableDirectedGraph<V,E>>
 {
 	Interpretation _interp;
-	TransitionSystem t; 
+	GralogGraphSupport<V,E,GB,G> t; 
 	
 	private HashSet<String> _sig;	// used only internally in the checkSignatures method
 	
@@ -50,7 +53,7 @@ public class SetEvaluation
 		Proposition p;
 		if(_interp.containsKey(name))
 			return _interp.get(name);
-		else if((p=t.getProposition(name)) != null) 
+		else if((p=t.getGraphBean().getProposition(name)) != null) 
 		{
 			return p.copy();
 		}
@@ -65,11 +68,11 @@ public class SetEvaluation
 	 * @return Returns the relation containing the set of vertices at which the formula becomes true.
 	 * @throws EvaluationException Exception thrown if for some reason the formula cannot be evaluated in the system. See EvaluationException class description for the various reasons why this can happen.
 	 */
-	public Proposition evaluate(TransitionSystem trans, Formula f) throws EvaluationException
+	public Proposition evaluate(GralogGraphSupport<V,E,GB,G> trans, Formula f) throws EvaluationException
 	{
 		t = trans;
 		_interp = new Interpretation();
-		_sig = new HashSet<String>(t.getSignature());
+		_sig = new HashSet<String>(t.getGraphBean().getSignature());
 		checkSignatures(f);
 		return recursiveEvaluate(f);
 	}
@@ -83,7 +86,7 @@ public class SetEvaluation
 	 */
 	protected boolean checkSignatures(Formula f) throws EvaluationException
 	{
-		_sig = new HashSet<String>(t.getSignature());
+		_sig = new HashSet<String>(t.getGraphBean().getSignature());
 		return checkSignaturesRec(f);
 	}
 	
@@ -115,7 +118,7 @@ public class SetEvaluation
 			return checkSignaturesRec(f.subf());  
 		case Formula.mu:
 		case Formula.nu:
-			if(t.getProposition(f.ident()) == null)
+			if(t.getGraphBean().getProposition(f.ident()) == null)
 			{
 				_sig.add(f.ident());
 				return checkSignaturesRec(f.subf());
@@ -141,7 +144,7 @@ public class SetEvaluation
 		case Formula.bottom: rel = new Proposition("false"); break;
 		case Formula.top:  
 			rel = new Proposition("true"); 
-			rel.setVertices( t.vertexSet() );
+			rel.setVertices( t.getGraph().vertexSet() );
 			break;
 		case Formula.proposition: 
 			rel =  interpretation(f.ident());
@@ -156,7 +159,7 @@ public class SetEvaluation
 			return rel.union(r);
 		case Formula.neg:
 			rel = recursiveEvaluate(f.subf());
-			return rel.negate(t.vertexSet());
+			return rel.negate(t.getGraph().vertexSet());
 		case Formula.diamond:		// no break. both cases treated simultaneously 
 		case Formula.box:
 			boolean box = false;
@@ -164,24 +167,24 @@ public class SetEvaluation
 				box = true;
 			r = recursiveEvaluate(f.subf());
 			rel = new Proposition("");
-			Iterator<TransitionSystemVertex> iter = t.vertexSet().iterator();
-			Iterator<TransitionSystemEdge> out;
+			Iterator<V> iter = t.getGraph().vertexSet().iterator();
+			Iterator<E> out;
 			boolean boxAll = true;
-			TransitionSystemVertex u;
-			TransitionSystemEdge edge;
+			V u;
+			E edge;
 			while(iter.hasNext())
 			{
 				boxAll = true;
 				u = iter.next();
 					// iterator on the outgoing edges
-				out = t.outgoingEdgesOf(u).iterator();
+				out = t.getGraph().outgoingEdgesOf(u).iterator();
 				while(out.hasNext())	// at the end: boxAll == true if box and the vertex is not to be added
 				{
 					edge = out.next();
 							// check if the label of the edge matches the label in the modal operators.
 					if(edge.getLabel().equals(f.ident()) || f.ident().equals(""))	// the f.ident().equals("") means that the operator <>phi matches all labels 
 					{
-						if(r.containsVertex( t.getEdgeTarget( edge ) ) )	
+						if(r.containsVertex( t.getGraph().getEdgeTarget( edge ) ) )	
 											// in the diamond case we have found a suitable successor. 
 						{					// so we can add u and stop.
 							if(!box)
@@ -219,7 +222,7 @@ public class SetEvaluation
 			return rel;
 		case Formula.nu: 
 			rel = new Proposition(f.ident());
-			rel.setVertices(t.vertexSet());		// init greatest fixed-point induction
+			rel.setVertices(t.getGraph().vertexSet());		// init greatest fixed-point induction
 			_interp.put(f.ident(), rel);
 			old = new Proposition("old");
 			i=0;

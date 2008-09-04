@@ -28,41 +28,43 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-import org.jgrapht.graph.Subgraph;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
+import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.result.AlgorithmResult;
+import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph;
+import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.alg.Algorithm;
-import de.hu.gralog.graph.alg.AlgorithmResult;
-import de.hu.gralog.graph.alg.AlgorithmResultContentTreeNode;
-import de.hu.gralog.graph.alg.InvalidPropertyValuesException;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraphMode;
-import de.hu.gralog.jgrapht.graph.SubgraphFactory;
-import de.hu.gralog.jgrapht.graph.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.general.EvaluationException;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
+import de.hu.logic.graph.TransitionSystemEdge;
+import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.modal.SetEvaluation;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
 
-public class EvaluateMuCalculus implements Algorithm {
+public class EvaluateMuCalculus<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
-	private TransitionSystem transitionSystem;
+	private GralogGraphSupport<V,E,GB,G> transitionSystem;
 	private String formula;
 	
 	public EvaluateMuCalculus() {
 		super();
 	}
 	
-	public TransitionSystem getTransitionSystem() {
+	public GralogGraphSupport<V,E,GB,G> getTransitionSystem() {
 		return transitionSystem;
 	}
 
-	public void setTransitionSystem(TransitionSystem transitionSystem) {
+	public void setTransitionSystem(GralogGraphSupport<V,E,GB,G> transitionSystem) {
 		this.transitionSystem = transitionSystem;
 	}
 	
@@ -79,7 +81,7 @@ public class EvaluateMuCalculus implements Algorithm {
 		
 		if ( getTransitionSystem() == null )
 			pe.addPropertyError( "transitionSystem",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
-		if ( getFormula() == null )
+		if ( getFormula() == null || getFormula().length() == 0 )
 			pe.addPropertyError( "formula",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
 		if ( pe.hasErrors() )
@@ -134,10 +136,10 @@ public class EvaluateMuCalculus implements Algorithm {
 	}
 	
 	
-	public static class MueKalkulAlgorithmResultContentTreeNode extends AlgorithmResultContentTreeNode {
+	public static class MueKalkulAlgorithmResultContentTreeNode<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> extends AlgorithmResultContentTreeNode {
 		
 		Formula formula;
-		TransitionSystem transitionSystem;
+		GralogGraphSupport<V,E,GB,G> transitionSystem;
 		
 		static {
 			try {
@@ -148,32 +150,32 @@ public class EvaluateMuCalculus implements Algorithm {
 			}
 		}
 		
-		public MueKalkulAlgorithmResultContentTreeNode( Formula formula, TransitionSystem transitionSystem ) {
+		public MueKalkulAlgorithmResultContentTreeNode( Formula formula, GralogGraphSupport<V,E,GB,G> transitionSystem ) {
 			this.formula = formula;
 			this.transitionSystem = transitionSystem;
 		}
 
 		private void computeSubgraphs() {
 			try {
-				subgraphs = new Hashtable<String, Subgraph>();
+				subgraphs = new Hashtable<String, SubgraphInfo>();
 				SetEvaluation eval = new SetEvaluation();
 				Proposition rp = eval.evaluate( transitionSystem, formula );
 				
-				Subgraph subgraph = SubgraphFactory.createSubgraph( transitionSystem, new HashSet( rp.getVertices() ), new HashSet() );
-				subgraphs.put( EVALUATION_SG, subgraph );
+				SubgraphInfo subgraphInfo = new SubgraphInfo( new HashSet( rp.getVertices() ), new HashSet() );
+				subgraphs.put( EVALUATION_SG, subgraphInfo );
 			} catch (EvaluationException e) {
 				e.printStackTrace();
 			}
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes) throws UserException {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
-			return super.getDisplaySubgraphs(modes);
+			return super.getDisplaySubgraphs(modes, transitionSystem);
 		}
 		
-		protected String getName() throws UserException {
+		public String getName() {
 			return formula.toString();
 		}
 		

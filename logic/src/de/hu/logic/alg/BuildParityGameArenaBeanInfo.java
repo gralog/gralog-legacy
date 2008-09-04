@@ -5,7 +5,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
 import de.hu.logic.graph.TransitionSystemTypeInfo;
 
 public class BuildParityGameArenaBeanInfo extends SimpleBeanInfo {

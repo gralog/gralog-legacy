@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 
 import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.DefaultSymbolFactory;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
 import de.hu.gralog.app.UserException;

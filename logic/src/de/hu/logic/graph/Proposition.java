@@ -20,20 +20,16 @@
 package de.hu.logic.graph;
 
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hu.gralog.graph.NestedGraphPropertyBean;
+import de.hu.gralog.beans.support.DefaultPropertyChangeListenableBean;
 
-public class Proposition implements NestedGraphPropertyBean {
+public class Proposition<V extends TransitionSystemVertex> extends DefaultPropertyChangeListenableBean {
 
-
-	
-	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 	private String name = "name";
-	private ArrayList<TransitionSystemVertex> vertices = new ArrayList<TransitionSystemVertex>();
+	private ArrayList<V> vertices = new ArrayList<V>();
 	
 	public Proposition() {
 		this( "name" );
@@ -43,9 +39,9 @@ public class Proposition implements NestedGraphPropertyBean {
 		this.name = name;
 	}
 	
-	protected Proposition( String name, ArrayList<TransitionSystemVertex> vertices ) {
+	protected Proposition( String name, ArrayList<V> vertices ) {
 		this.name = name;
-		this.vertices = new ArrayList<TransitionSystemVertex>( vertices );
+		this.vertices = new ArrayList<V>( vertices );
 	}
 
 	public String getName() {
@@ -68,32 +64,32 @@ public class Proposition implements NestedGraphPropertyBean {
 		return vertices.toArray( new TransitionSystemVertex[ vertices.size() ] );
 	}
 	
-	public void setVertexArray( TransitionSystemVertex[] vertices ) {
-		this.vertices = new ArrayList<TransitionSystemVertex>();
-		for ( TransitionSystemVertex vertex : vertices )
+	public void setVertexArray( V[] vertices ) {
+		this.vertices = new ArrayList<V>();
+		for ( V vertex : vertices )
 			this.vertices.add( vertex );
 	}
 	
-	public void setVertexArray( int index, TransitionSystemVertex vertex ) {
-		TransitionSystemVertex oldVertex = null;
+	public void setVertexArray( int index, V vertex ) {
+		V oldVertex = null;
 		if ( index < vertices.size() )
 			oldVertex = vertices.get( index );
 		if ( vertex == null )
 			vertices.remove( index );
-		else
+		else 
 			vertices.add( index, vertex );
 		propertyChangeSupport.fireIndexedPropertyChange( "vertices", index, oldVertex, vertex );
 	}
 	
-	public boolean containsVertex( TransitionSystemVertex vertex ) {
+	public boolean containsVertex( V vertex ) {
 		return vertices.contains( vertex );
 	}
 		
-	public void addVertex( TransitionSystemVertex vertex ) {
+	public void addVertex( V vertex ) {
 		setVertexArray( vertices.size(), vertex );
 	}
 	
-	public void removeVertex( TransitionSystemVertex vertex ) {
+	public void removeVertex( V vertex ) {
 		setVertexArray( vertices.indexOf( vertex ), null );
 	}
 	
@@ -101,23 +97,23 @@ public class Proposition implements NestedGraphPropertyBean {
 	 * Sets the content of the relation to be "set".
 	 * @param set New content of the relation
 	 */
-	public void setVertices(Set<TransitionSystemVertex> vertexes )
+	public void setVertices(Set<V> vertexes )
 	{
-		this.vertices = new ArrayList<TransitionSystemVertex>( vertexes );
+		this.vertices = new ArrayList<V>( vertexes );
 	}
 	
 	/**
 	 * Sets the content of the relation to be "set".
 	 * @param set New content of the relation
 	 */
-	public void setVertices(ArrayList<TransitionSystemVertex> vertexes )
+	public void setVertices(ArrayList<V> vertexes )
 	{
-		this.vertices = new ArrayList<TransitionSystemVertex>( vertexes );
+		this.vertices = new ArrayList<V>( vertexes );
 	}
 	
 	
 	
-	public ArrayList<TransitionSystemVertex> getVertices() {
+	public ArrayList<V> getVertices() {
 		return vertices;
 	}
 	
@@ -135,12 +131,12 @@ public class Proposition implements NestedGraphPropertyBean {
 	 * @param R Relation to take union with
 	 * @return the new relation.
 	 */
-	public Proposition union(Proposition R)
+	public Proposition<V> union(Proposition<V> R)
 	{
-		Proposition set = new Proposition("(" + name + " \\cup " + R.name + ")");
+		Proposition<V> set = new Proposition<V>("(" + name + " \\cup " + R.name + ")");
 		set.setVertices( vertices );
 		
-		for ( TransitionSystemVertex t : R.getVertices() ) {
+		for ( V t : R.getVertices() ) {
 			if ( ! set.getVertices().contains( t ) )
 				set.getVertices().add( t );
 		}
@@ -153,9 +149,9 @@ public class Proposition implements NestedGraphPropertyBean {
 	 * @param R Relation to take union with
 	 * @return the new relation.
 	 */
-	public Proposition intersection(Proposition R)
+	public Proposition<V> intersection(Proposition<V> R)
 	{
-		Proposition set = new Proposition("(" + name + " \\cap " + R.name + ")");
+		Proposition<V> set = new Proposition<V>("(" + name + " \\cap " + R.name + ")");
 		set.setVertices( vertices );
 		set.getVertices().retainAll( R.getVertices() );
 		return set;
@@ -168,9 +164,9 @@ public class Proposition implements NestedGraphPropertyBean {
 	 * @param universe The "universe" in which negation is performed
 	 * @return the new relation.
 	 */
-	public Proposition negate(Set<TransitionSystemVertex> universe)
+	public Proposition<V> negate(Set<V> universe)
 	{
-		Set<TransitionSystemVertex> set = new HashSet<TransitionSystemVertex>(universe);
+		Set<V> set = new HashSet<V>(universe);
 		Proposition rel = new Proposition("neg " + name );
 		rel.setVertices(set);
 		rel.getVertices().removeAll(vertices);
@@ -184,5 +180,4 @@ public class Proposition implements NestedGraphPropertyBean {
 	public void removePropertyChangeListener(PropertyChangeListener l) {
 		propertyChangeSupport.removePropertyChangeListener( l );
 	}
-
 }

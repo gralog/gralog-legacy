@@ -4,33 +4,35 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
 
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.DirectedGraph;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.logic.graph.Proposition;
 import de.hu.logic.graph.TransitionSystem;
 import de.hu.logic.graph.TransitionSystemEdge;
 import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
-import de.hu.parity.graph.ParityGameGraphTypeInfo;
 import de.hu.parity.graph.ParityGameVertex;
 
-public class BuildParityGameArenaAlgorithm {
+public class BuildParityGameArenaAlgorithm<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> {
 	
-	private TransitionSystem transitionSystem;
+	private GralogGraphSupport<V,E,GB,G> transitionSystem;
 	private Formula formula;
 	private int maxNesting;
 	
-	private DirectedGraph<ParityGameVertex, DefaultEdge> arena = (DirectedGraph<ParityGameVertex, DefaultEdge>)new ParityGameGraphTypeInfo().newInstance();
+	private DirectedGraph<ParityGameVertex, DefaultEdge> arena = new DefaultDirectedGraph<ParityGameVertex, DefaultEdge>( DefaultEdge.class );
 	
 	private HashMap<String, Stack<String>> fpVarSubstitution;
 	
-	private HashMap<String, TransitionSystemVertex> tsVertices = new HashMap<String, TransitionSystemVertex>();
+	private HashMap<String, V> tsVertices = new HashMap<String, V>();
 	private HashMap<String, ParityGameVertex> arenaVertices = new HashMap<String, ParityGameVertex>();
 	private HashMap<String, Formula> fpVars = new HashMap<String, Formula>();
 	
-	public BuildParityGameArenaAlgorithm (TransitionSystem ts, Formula f) {
+	public BuildParityGameArenaAlgorithm (GralogGraphSupport<V,E,GB,G> ts, Formula f) {
 		transitionSystem = ts;
 		formula = f;
 	}
@@ -40,7 +42,7 @@ public class BuildParityGameArenaAlgorithm {
 	}
 	
 	public DirectedGraph<ParityGameVertex, DefaultEdge> execute() throws UserException {
-		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
+		for ( V tsv : transitionSystem.getGraph().vertexSet()) {
 			tsVertices.put(tsv.getLabel(), tsv);
 		}
 //		zu Testzwecken, verwende folgende Formel (entspricht "(X3\and\nuX.\muX.(<>P\andX\andX2))"):
@@ -49,7 +51,7 @@ public class BuildParityGameArenaAlgorithm {
 		
 		maxNesting = getMaxFPNesting(formula, 0);
 
-		for ( TransitionSystemVertex tsv : transitionSystem.vertexSet()) {
+		for ( TransitionSystemVertex tsv : transitionSystem.getGraph().vertexSet()) {
 			buildArena(tsv.getLabel(), formula, 0);
 		}
 		
@@ -373,8 +375,8 @@ public class BuildParityGameArenaAlgorithm {
 		case Formula.box:
 			returnVertex.setPlayer0(f.type() == Formula.diamond);	
 			
-			for (TransitionSystemEdge e : transitionSystem.outgoingEdgesOf(tsVertices.get(tsVertex))) {
-				arena.addEdge( returnVertex, buildArena(transitionSystem.getEdgeTarget(e).getLabel(), f.subf(), nesting) );				
+			for (E e : transitionSystem.getGraph().outgoingEdgesOf(tsVertices.get(tsVertex))) {
+				arena.addEdge( returnVertex, buildArena(transitionSystem.getGraph().getEdgeTarget(e).getLabel(), f.subf(), nesting) );				
 			}
 			break;
 			

@@ -3,7 +3,6 @@
 package de.hu.logic.parser;
 
 import java_cup.runtime.SymbolFactory;
-import java.lang.StringBuffer;
 import de.hu.gralog.app.UserException;
 
 
