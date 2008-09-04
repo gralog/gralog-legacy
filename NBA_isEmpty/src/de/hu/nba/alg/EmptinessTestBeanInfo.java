@@ -5,8 +5,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.graph.alg.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.LabeledDirectedGraphTypeInfo;
+import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.graph.AutomatonGraphTypeInfo;
 
 public class EmptinessTestBeanInfo extends SimpleBeanInfo {
 
@@ -22,7 +22,7 @@ public class EmptinessTestBeanInfo extends SimpleBeanInfo {
 				);
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", EmptinessTest.class, new LabeledDirectedGraphTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "automaton", EmptinessTest.class, new AutomatonGraphTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html>This is  the graph.</html>" );
 		} catch( IntrospectionException e ) {
 			e.printStackTrace();
