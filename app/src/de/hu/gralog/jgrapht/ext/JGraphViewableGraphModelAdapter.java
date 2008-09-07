@@ -51,13 +51,13 @@ import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.ParentMap;
+import org.jgrapht.ListenableGraph;
 import org.jgrapht.ext.JGraphModelAdapter;
 
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.beans.BeanUtil;
-import de.hu.gralog.beans.DisplayChangeListener;
-import de.hu.gralog.beans.GralogGraphBean;
-import de.hu.gralog.graph.GralogGraph;
+import de.hu.gralog.beans.event.DisplayChangeListener;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.cellview.ElementAttributes;
 
@@ -70,7 +70,7 @@ import de.hu.gralog.jgraph.cellview.ElementAttributes;
  * @author Sebastian
  *
  */
-public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> extends JGraphModelAdapter<V,E> {
+public class JGraphViewableGraphModelAdapter<V,E,GB, G extends ListenableGraph<V,E>> extends JGraphModelAdapter<V,E> {
 
 	private boolean undoDisabled = true;
 	
@@ -79,20 +79,20 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
 	private PropertyChangeListener graphPropertyListener;
 	private DisplayChangeListener<V,E> graphDisplayChangeListener;
 	
-	private final GralogGraph<V,E,GB> graph;
+	private final GralogGraphSupport<V,E,GB,G> graphSupport;
 	
-	public JGraphViewableGraphModelAdapter(GralogGraph<V,E,GB> jGraphTGraph) {
+	public JGraphViewableGraphModelAdapter(GralogGraphSupport<V,E,GB,G> jGraphTGraph) {
 		this( jGraphTGraph, null );
 	}
 	
-	public JGraphViewableGraphModelAdapter( GralogGraph<V,E,GB> jGraphTGraph, Hashtable<V,Point> vertexPositions ) {
-		super(jGraphTGraph, ElementAttributes.getVertexAttributes(  ), ElementAttributes.getEdgeAttributes( jGraphTGraph ), new MyCellFactory<V,E>( vertexPositions ) );
-		this.graph = jGraphTGraph;
+	public JGraphViewableGraphModelAdapter( GralogGraphSupport<V,E,GB,G> jGraphTGraph, Hashtable<V,Point> vertexPositions ) {
+		super(jGraphTGraph.getGraph(), ElementAttributes.getVertexAttributes(  ), ElementAttributes.getEdgeAttributes( jGraphTGraph.getGraph() ), new MyCellFactory<V,E>( vertexPositions ) );
+		this.graphSupport = jGraphTGraph;
 
 		graphPropertyListener = new GralogGraphPropertyListener();
-		jGraphTGraph.getGralogSupport().getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
+		jGraphTGraph.getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
 		graphDisplayChangeListener = new GralogGraphDisplayChangeListener<V,E>();
-		jGraphTGraph.getGralogSupport().getDisplayChangeSupport().addDisplayChangeListener( graphDisplayChangeListener );
+		jGraphTGraph.getDisplayChangeSupport().addDisplayChangeListener( graphDisplayChangeListener );
 		undoDisabled = false;
 	}
 
@@ -118,7 +118,7 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
 			value.put( GraphConstants.VALUE, object );
 			
 			AttributeMap attributes = new AttributeMap();
-			attributes.put( graph, value );
+			attributes.put( graphSupport, value );
 			GraphModelEdit edit = createEdit( null, null, attributes, null, null, null );
 			postEdit( edit );
 			//fireGraphChanged(JGraphViewableGraphModelAdapter.this, edit );
@@ -133,8 +133,10 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
 				cellsChanged( getAll( JGraphViewableGraphModelAdapter.this ) );
 			else {
 				Set scells = new HashSet();
-				scells.addAll( vertices );
-				scells.addAll( edges );
+				if ( vertices != null )
+					scells.addAll( vertices );
+				if ( edges != null )
+					scells.addAll( edges );
 				Object[] cells = getCellsForUserObjects( scells.toArray() );
 				cellsChanged( cells );
 			
@@ -344,11 +346,11 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
     						IndexedPropertyDescriptor descriptor = (IndexedPropertyDescriptor)propertyDescriptors.get( propertyName );
     						IndexedPropertyValue propertyValue = (IndexedPropertyValue)propertyMap.get( propertyName );
     	
-    						graph.getGralogSupport().getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
+    						graphSupport.getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
     						
     						descriptor.getIndexedWriteMethod().invoke( bean, new Object[] { new Integer( propertyValue.index ), propertyValue.value } );
     						
-    						graph.getGralogSupport().getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
+    						graphSupport.getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
     					} else {
     						PropertyDescriptor descriptor = propertyDescriptors.get( propertyName );
     						Object propertyValue = propertyMap.get( propertyName );
@@ -356,11 +358,11 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
     						if ( propertyValue == NULL_VALUE )
     							propertyValue = null;
     						
-    						graph.getGralogSupport().getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
+    						graphSupport.getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
     						
     						descriptor.getWriteMethod().invoke( bean, new Object[] { propertyValue } );
     						
-    						graph.getGralogSupport().getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
+    						graphSupport.getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
     					}
     				}
     			}
@@ -401,11 +403,11 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
     					Object oldValue = descriptor.getIndexedReadMethod().invoke( bean, new Object[] { new Integer( propertyValue.index ) } );
     					undoPropertyMap.put( propertyName, new IndexedPropertyValue( propertyValue.index, oldValue ) );
     					
-    					graph.getGralogSupport().getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
+    					graphSupport.getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
     					
     					descriptor.getIndexedWriteMethod().invoke( bean, new Object[] { new Integer( propertyValue.index ), propertyValue.value } );
     					
-    					graph.getGralogSupport().getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
+    					graphSupport.getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
     				} else {
     					PropertyDescriptor descriptor = propertyDescriptors.get( propertyName );
     					Object propertyValue = propertyMap.get( propertyName );
@@ -418,11 +420,11 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
     						oldValue = NULL_VALUE;
     					undoPropertyMap.put( propertyName, oldValue );
     					
-    					graph.getGralogSupport().getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
+    					graphSupport.getPropertyChangeSupport().removePropertyChangeListener( graphPropertyListener );
     					
     					descriptor.getWriteMethod().invoke( bean, new Object[] { propertyValue } );
     					
-    					graph.getGralogSupport().getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
+    					graphSupport.getPropertyChangeSupport().addPropertyChangeListener( graphPropertyListener );
     				}
     			}
     		}
@@ -506,12 +508,12 @@ public class JGraphViewableGraphModelAdapter<V,E,GB extends GralogGraphBean> ext
 	@Override
 	protected Object cloneUserObject(Object userObject) {
 		Object clone = null;
-		if ( graph.getGralogSupport().isVertex( userObject ) ) {
-			clone = graph.getGralogSupport().createVertex();
+		if ( graphSupport.isVertex( userObject ) ) {
+			clone = graphSupport.createVertex();
 			
 		} else {
-			if ( graph.getGralogSupport().isEdge( userObject ) )
-				clone = graph.getEdgeFactory().createEdge( graph.getEdgeSource( (E)userObject ), graph.getEdgeTarget( (E)userObject ) );
+			if ( graphSupport.isEdge( userObject ) )
+				clone = graphSupport.getEdgeFactory().createEdge( graphSupport.getGraph().getEdgeSource( (E)userObject ), graphSupport.getGraph().getEdgeTarget( (E)userObject ) );
 			else
 				return super.cloneUserObject( userObject );
 		}
