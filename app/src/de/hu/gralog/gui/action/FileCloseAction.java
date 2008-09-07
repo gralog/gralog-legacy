@@ -29,6 +29,7 @@ public class FileCloseAction extends AbstractAction {
 
 	public FileCloseAction() {
 		super( "Close", null );
+		super.putValue( SHORT_DESCRIPTION, "Close the document" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

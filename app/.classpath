@@ -2,19 +2,10 @@
 <classpath>
 	<classpathentry path="src" kind="src"/>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true" kind="con"/>
-	<classpathentry sourcepath="/gralog-finitegames/src" path="lib/finitegames.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/parity.jar" exported="true" kind="lib"/>
-	<classpathentry sourcepath="/gralog-logic/src" path="lib/logic.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/dfa.jar" exported="true" kind="lib"/>
-	<classpathentry sourcepath="/games-dag-width/src" path="lib/dagwidth.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/nba.jar" exported="true" kind="lib"/>
 	<classpathentry path="lib/idw-gpl.jar" exported="true" kind="lib"/>
 	<classpathentry path="lib/BrowserLauncher2-10rc4.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/java-cup-11a.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/java-cup-11a-runtime.jar" exported="true" kind="lib"/>
 	<classpathentry path="lib/jdom.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/gralog-core.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/jgraph.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/jgrapht-jdk1.5.jar" exported="true" kind="lib"/>
-	<classpathentry path="build" kind="output"/>
+	<classpathentry sourcepath="/jgraph/src" path="lib/gralog-core.jar" exported="true" kind="lib"/>
+	<classpathentry path="lib/gralog-algorithms.jar" exported="true" kind="lib"/>
+	<classpathentry path="bin" kind="output"/>
 </classpath>

@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
 
@@ -57,7 +57,7 @@ public class PluginManager {
 		ArrayList<GralogGraphTypeInfo> graphTypes = new ArrayList<GralogGraphTypeInfo>();
 		
 		for ( Plugin plugin : plugins )
-			graphTypes.addAll( plugin.getGraphTypes() );
+			graphTypes.addAll( plugin.getGraphTypeClasses() );
 		return graphTypes;
 	}
 	

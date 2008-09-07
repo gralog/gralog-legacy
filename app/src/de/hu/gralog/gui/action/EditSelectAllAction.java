@@ -35,12 +35,18 @@ public class EditSelectAllAction extends AbstractAction {
 	private String mode = BOTH;
 	
 	public EditSelectAllAction() {
-		super( BOTH, null );
+		this( BOTH );
 	}
 	
 	public EditSelectAllAction( String mode ) {
 		super( mode, null );
 		this.mode = mode;
+		if ( mode == NODES )
+			super.putValue( SHORT_DESCRIPTION, "Select all vertices" );
+		if ( mode == EDGES )
+			super.putValue( SHORT_DESCRIPTION, "Select all edges" );
+		if ( mode == BOTH )
+			super.putValue( SHORT_DESCRIPTION, "Select all elements" );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

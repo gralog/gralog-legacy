@@ -30,6 +30,7 @@ public class UndoAction extends AbstractAction {
 
 	public UndoAction(  ) {
 		super( "Undo", MainPad.createImageIcon( "designer_d_undo.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Undo a change" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

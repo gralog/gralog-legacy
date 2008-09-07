@@ -28,7 +28,7 @@ import de.hu.gralog.algorithm.result.AlgorithmInfoListener;
 import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.io.XMLDecoderIOFast;
+import de.hu.gralog.graph.io.XMLDecoderIO;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.components.GraphEditor;
 import de.hu.gralog.jgraph.GJGraph;
@@ -55,7 +55,7 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 		this.info = info;
 		info.addListener( this );
 		
-		XMLDecoderIOFast xmlIO = new XMLDecoderIOFast();
+		XMLDecoderIO xmlIO = new XMLDecoderIO();
 		if ( copy )
 			initialState = new AlgorithmResultDocumentContent( xmlIO.getDataCopy( info ), false );
 	}
@@ -109,19 +109,23 @@ public class AlgorithmResultDocumentContent extends DocumentContent implements A
 	@Override
 	public DocumentContent read(FileFormat format, InputStream in) throws InputOutputException {
 		if ( format == XML_FILE_FORMAT )
-			return new XMLDecoderIOFast().readAlgorithmResultDocumentContent( in );
+			return new XMLDecoderIO().readAlgorithmResultDocumentContent( in );
 		return null;
 	}
 
 	@Override
 	public void write(FileFormat format, OutputStream out) throws InputOutputException {
 		if ( format == XML_FILE_FORMAT )
-			new XMLDecoderIOFast().writeAlgorithmResultDocumentContent( this, out );
+			new XMLDecoderIO().writeAlgorithmResultDocumentContent( this, out );
 	}
 
 	public void graphReplaced() {
 		component = null;
 		fireComponentReplaced();
+	}
+
+	public void contentChanged() {
+		
 	}
 	
 }

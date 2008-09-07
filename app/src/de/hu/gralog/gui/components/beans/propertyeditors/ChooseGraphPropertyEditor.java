@@ -32,8 +32,8 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import de.hu.gralog.beans.propertyeditor.PropertyEditorRendererExtension;
-import de.hu.gralog.graph.GralogGraph;
-import de.hu.gralog.graph.types.GralogGraphTypeInfoFilter;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
@@ -55,7 +55,7 @@ public class ChooseGraphPropertyEditor extends PropertyEditorSupport implements 
 		for ( Document document : MainPad.getInstance().getDesktop().getOpenDocuments() ) {
 			if ( document.getContent() instanceof GJGraphDocumentContent ) {
 				GJGraphDocumentContent content = (GJGraphDocumentContent)document.getContent();
-				if ( !graphTypeInfoFilter.filterTypeInfo( content.getGraph().getGraphT().getGralogSupport().getTypeInfo() ) )
+				if ( !graphTypeInfoFilter.filterTypeInfo( content.getGraph().getGraphT().getTypeInfo() ) )
 					documents.add( document );
 			}
 		}
@@ -134,11 +134,11 @@ public class ChooseGraphPropertyEditor extends PropertyEditorSupport implements 
 			chooseCombo.setSelectedItem( getNameForValue( getValue() ) );
 		}
 		
-		private GralogGraph getCurrentGraph() {
+		private GralogGraphSupport getCurrentGraph() {
 			if ( MainPad.getInstance().getDesktop().getCurrentDocument() == null )
 				return null;
-			GralogGraph graph = MainPad.getInstance().getDesktop().getCurrentDocument().getGraph().getGraphT();
-			if ( graph != null && !graphTypeInfoFilter.filterTypeInfo( graph.getGralogSupport().getTypeInfo() ) )
+			GralogGraphSupport graph = MainPad.getInstance().getDesktop().getCurrentDocument().getGraph().getGraphT();
+			if ( graph != null && !graphTypeInfoFilter.filterTypeInfo( graph.getTypeInfo() ) )
 				return graph;
 			return null;
 		}

@@ -29,6 +29,7 @@ public class ZoomOutAction extends AbstractAction {
 
 	public ZoomOutAction(  ) {
 		super( "Zoom Out", MainPad.createImageIcon( "stock_zoom-out.png") );
+		super.putValue( SHORT_DESCRIPTION, "Zoom Out" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

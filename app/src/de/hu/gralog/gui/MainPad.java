@@ -71,9 +71,9 @@ import net.infonode.docking.util.DeveloperUtil;
 import net.infonode.docking.util.DockingUtil;
 import net.infonode.docking.util.ViewMap;
 import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.app.GralogCoreInitialize;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.beans.GralogCoreInitialize;
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.action.ChangeEditorStateAction;
 import de.hu.gralog.gui.action.EditCopyAction;
 import de.hu.gralog.gui.action.EditCutAction;
@@ -292,8 +292,8 @@ public class MainPad extends JFrame {
 		String defaultDir = System.getProperty( "user.home", "" );
 		if ( defaultDir.length() != 0 )
 			defaultDir = defaultDir + "/gralog/plugins";
-		defaultDir = defaultDir + ";" + new File( "." ).getPath() + "/plugins";
-		String pluginDirectories = PREFERENCES.get( PREFS_PLUGIN_DIRECTORIES, defaultDir );
+		defaultDir = new File( "." ).getPath() + "/plugins";
+		String pluginDirectories = defaultDir;//PREFERENCES.get( PREFS_PLUGIN_DIRECTORIES, defaultDir );
 		if ( pluginDirectories != null ) {
 			StringTokenizer st = new StringTokenizer( pluginDirectories, ";" );
 			while ( st.hasMoreTokens() ) {
@@ -506,6 +506,8 @@ public class MainPad extends JFrame {
 		tools.add( ES_CREATE_EDGE_ACTION );
 		tools.add( ES_MARQUE_ZOOM_ACTION );
 		tools.add( ES_INTERACTIVE_ZOOM_ACTION );
+		tools.addSeparator();
+		tools.add( LAYOUT_DIALOG_ACTION );
 		menuBar.add( tools );
 		
 		JMenu view = new JMenu( "View");
@@ -520,7 +522,7 @@ public class MainPad extends JFrame {
 		for( ShowViewAction action : SHOW_VIEW_ACTIONS )
 			views.add( action );
 		view.add( views );
-		
+	
 		menuBar.add( view );
 		
 		JMenu info = new JMenu( "Info");

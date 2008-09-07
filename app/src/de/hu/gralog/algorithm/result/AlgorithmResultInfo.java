@@ -14,7 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.undo.UndoManager;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraph;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.GJGraph;
 
 
@@ -22,12 +23,12 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 	private String algorithmName = null;
 	private Hashtable<String, Object> algorithmSettings = new Hashtable<String,Object>();
 	private AlgorithmResult result = null;
-	private Hashtable<GralogGraph, GJGraph> jgraphs = null;
+	private Hashtable<GralogGraphSupport, GJGraph> jgraphs = null;
 	private UndoManager undoManager = null;
 	private AlgorithmResultContent currentContent = null;
 	private transient ArrayList<AlgorithmInfoListener> listeners = new ArrayList<AlgorithmInfoListener>();
 	
-	public AlgorithmResultInfo( String algorithmName, Hashtable<String, Object> algorithmSettings, AlgorithmResult result, Hashtable<GralogGraph, GJGraph>  jgraphs ) throws UserException {
+	public AlgorithmResultInfo( String algorithmName, Hashtable<String, Object> algorithmSettings, AlgorithmResult result, Hashtable<GralogGraphSupport, GJGraph>  jgraphs ) throws UserException {
 		this.algorithmName = algorithmName;
 		this.algorithmSettings = algorithmSettings;
 		this.result = result;
@@ -37,7 +38,7 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 		init();
 	}
 	
-	public Hashtable<GralogGraph, GJGraph> getGJGraphs() {
+	public Hashtable<GralogGraphSupport, GJGraph> getGJGraphs() {
 		return jgraphs;
 	}
 	
@@ -49,18 +50,18 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 		AlgorithmResultContent oldContent = this.currentContent;
 		this.currentContent = content;
 		
-		GralogGraph oldGraph = result.getGraph( oldContent );
-		GralogGraph newGraph = result.getGraph( this.currentContent );
+		GralogGraphSupport oldGraph = result.getGraph( oldContent );
+		GralogGraphSupport newGraph = result.getGraph( this.currentContent );
 		
 		if ( oldContent != null ) {
-			if ( oldContent.getDisplaySubgraphs( result.getDisplaySubgraphModes() ) != null )
+			if ( oldContent.getDisplaySubgraphs( result.getDisplaySubgraphModes(), oldGraph ) != null )
 				getGraph( oldGraph ).deregisterAllSubgraphs();
 			if ( oldContent.getElementTips( result.getElementTipsDisplayModes() ) != null )
 				getGraph( oldGraph ).deregisterAllElementTips();
 		}
 		// show new Content
-		if ( this.currentContent.getDisplaySubgraphs( result.getDisplaySubgraphModes() ) != null ) {
-			for ( DisplaySubgraph subgraph : this.currentContent.getDisplaySubgraphs( result.getDisplaySubgraphModes() ).values() )
+		if ( this.currentContent.getDisplaySubgraphs( result.getDisplaySubgraphModes(), newGraph ) != null ) {
+			for ( DisplaySubgraph subgraph : this.currentContent.getDisplaySubgraphs( result.getDisplaySubgraphModes(), newGraph ).values() )
 				getGraph( newGraph ).registerSubgraph( subgraph );
 		}
 		if ( this.currentContent.getElementTips( result.getElementTipsDisplayModes() ) != null ) {
@@ -70,19 +71,25 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 		
 		if ( oldGraph != newGraph )
 			fireGraphReplaced();
+		fireContentChanged();
 	}
 	
 	protected void fireGraphReplaced() {
 		for ( AlgorithmInfoListener listener : listeners )
 			listener.graphReplaced();
 	}
-		
+
+	protected void fireContentChanged() {
+		for ( AlgorithmInfoListener listener : listeners )
+			listener.contentChanged();
+	}
+
 	protected void init() {
 		for( GJGraph graph : jgraphs.values() )
 			graph.setElementsAndStructureEditable( false );
 	}
 	
-	public GJGraph getGraph( GralogGraph graphT ) {
+	public GJGraph getGraph( GralogGraphSupport graphT ) {
 		GJGraph graph = jgraphs.get( graphT );
 		if ( graph == null ) {
 			graph = new GJGraph( graphT );
@@ -98,15 +105,15 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 		return getGraph( result.getGraph( currentContent ) );
 	}
 	
-	public GralogGraph getAlgorithmResultGraph() throws UserException {
+	public GralogGraphSupport getAlgorithmResultGraph() throws UserException {
 		return result.getGraph( null );
 	}
 	
-	public Set<GralogGraph> getAllGraphs() throws UserException {
+	public Set<GralogGraphSupport> getAllGraphs() throws UserException {
 		return getAllGraphs( result );
 	}
 	
-	public static Set<GralogGraph> getAllGraphs( AlgorithmResult result ) throws UserException {
+	public static Set<GralogGraphSupport> getAllGraphs( AlgorithmResult result ) throws UserException {
 		return result.getAllGraphs();
 	}
 	
@@ -142,12 +149,26 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 		return result.getDisplaySubgraphs( content );
 	}
 	
-	public Hashtable<String, ElementTipsDisplayMode> getElementTipsDisplayModes() {
-		return result.getElementTipsDisplayModes();
+	public Hashtable<String, ElementTipsDisplayMode> getElementTipsDisplayModes( boolean all ) {
+		if ( all )
+			return result.getElementTipsDisplayModes();
+		try {
+			return result.getElementTipsDisplayModes( currentContent );
+		} catch (UserException e) {
+			MainPad.getInstance().handleUserException( e );
+		}
+		return null;
 	}
 	
-	public Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes() {
-		return result.getDisplaySubgraphModes();
+	public Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes( boolean all ) {
+		if ( all )
+			return result.getDisplaySubgraphModes();
+		try {
+			return result.getDisplaySubgraphModes( currentContent );
+		} catch (UserException e) {
+			MainPad.getInstance().handleUserException( e );
+		}
+		return null;
 	}
 	
 	public void registerUndoManager(UndoManager undoManager) {

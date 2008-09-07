@@ -35,7 +35,7 @@ public class GraphInfoAction extends AbstractAction {
 	public void actionPerformed(ActionEvent arg0) {
 		JOptionPane.showMessageDialog(
                 MainPad.getInstance(),
-                "Der Graph hat " + MainPad.getInstance().getDesktop().getCurrentGraph().getGraphT().vertexSet().size() + " Knoten und " + MainPad.getInstance().getDesktop().getCurrentGraph().getGraphT().edgeSet().size() + " Kanten!",
+                "Der Graph hat " + MainPad.getInstance().getDesktop().getCurrentGraph().getGraphT().getGraph().vertexSet().size() + " Knoten und " + MainPad.getInstance().getDesktop().getCurrentGraph().getGraphT().getGraph().edgeSet().size() + " Kanten!",
                 "Neues Dokument erstellen",
                 JOptionPane.INFORMATION_MESSAGE );
 	}

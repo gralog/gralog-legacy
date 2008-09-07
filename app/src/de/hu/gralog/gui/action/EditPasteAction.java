@@ -30,6 +30,7 @@ public class EditPasteAction extends AbstractAction {
 	
 	public EditPasteAction(  ) {
 		super( "paste", MainPad.createImageIcon( "designer_d_editpaste.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Paste" );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

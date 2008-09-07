@@ -26,7 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.undo.UndoManager;
 
 import de.hu.gralog.app.InputOutputException;
-import de.hu.gralog.graph.io.XMLDecoderIOFast;
+import de.hu.gralog.graph.io.XMLDecoderIO;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.components.GraphEditor;
 import de.hu.gralog.jgraph.GJGraph;
@@ -69,14 +69,14 @@ public class GJGraphDocumentContent extends DocumentContent {
 	@Override
 	public DocumentContent read(FileFormat format, InputStream in) throws InputOutputException {
 		if ( format == XML_DECODER_FILE_FORMAT )
-			return new XMLDecoderIOFast().readGJGraphDocumentContent( in );
+			return new XMLDecoderIO().readGJGraphDocumentContent( in );
 		return null;
 	}
 
 	@Override
 	public void write(FileFormat format, OutputStream out) throws InputOutputException {
 		if ( format == XML_DECODER_FILE_FORMAT )
-			new XMLDecoderIOFast().writeGJGraphDocumentContent( this, out );
+			new XMLDecoderIO().writeGJGraphDocumentContent( this, out );
 	}
 
 	@Override

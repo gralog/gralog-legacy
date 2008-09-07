@@ -40,7 +40,7 @@ import net.infonode.docking.util.DockingUtil;
 import net.infonode.util.Direction;
 import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentContentFactory;

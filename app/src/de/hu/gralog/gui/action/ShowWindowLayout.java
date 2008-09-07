@@ -29,6 +29,7 @@ public class ShowWindowLayout extends AbstractAction {
 	
 	public ShowWindowLayout(  ) {
 		super( "Show Window Layout", null );
+		super.putValue( SHORT_DESCRIPTION, "Show Window Layout" );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

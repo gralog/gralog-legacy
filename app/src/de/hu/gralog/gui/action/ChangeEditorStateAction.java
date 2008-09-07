@@ -32,6 +32,7 @@ public class ChangeEditorStateAction extends AbstractAction {
 	
 	public ChangeEditorStateAction(EditorState editorState) {
 		super( editorState.getDisplayName(),  editorState.getIcon() );
+		super.putValue( SHORT_DESCRIPTION, editorState.getDisplayName() );
 		this.editorState = editorState;
 	}
 	

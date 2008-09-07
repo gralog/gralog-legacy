@@ -33,6 +33,7 @@ public class ShowViewAction extends AbstractAction {
 	public ShowViewAction( View view ) {
 		super( view.getTitle(), null );
 		this.view = view;
+		super.putValue( SHORT_DESCRIPTION, "Open view: " + view.getTitle() );
 	}
 
 	public View getView() {

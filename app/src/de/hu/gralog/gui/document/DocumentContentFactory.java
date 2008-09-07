@@ -31,7 +31,7 @@ import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.graph.GralogGraphFactory;
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.GJGraph;
 
@@ -111,7 +111,7 @@ public class DocumentContentFactory {
 	public DocumentContent createDocumentContent( GralogGraphTypeInfo graphType ) throws UserException {
 		DocumentContent content = null;
 		
-		content = new GJGraphDocumentContent( new GJGraph( GralogGraphFactory.createGraph( graphType ) ) );
+		content = new GJGraphDocumentContent( new GJGraph( GralogGraphFactory.createGraphSupport( graphType ) ) );
 		
 		return content;
 	}

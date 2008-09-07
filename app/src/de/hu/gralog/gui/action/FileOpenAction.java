@@ -32,6 +32,7 @@ public class FileOpenAction extends AbstractAction {
 
 	public FileOpenAction(  ) {
 		super( "Open", MainPad.createImageIcon( "designer_d_fileopen.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Open File" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

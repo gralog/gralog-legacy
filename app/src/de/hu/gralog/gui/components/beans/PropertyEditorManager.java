@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 
 import de.hu.gralog.app.UserException;
+import de.hu.gralog.beans.propertydescriptor.ChooseGraphElementPropertyDescriptor;
 import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
 import de.hu.gralog.beans.propertydescriptor.ChooseGraphTypeInfoPropertyDescriptor;
 import de.hu.gralog.gui.MainPad;
@@ -17,6 +18,8 @@ public class PropertyEditorManager {
 			return null;
 		if ( propertyDescriptor instanceof ChooseGraphPropertyDescriptor )
 			return new ChooseGraphPropertyEditor( ((ChooseGraphPropertyDescriptor)propertyDescriptor).getGraphType() );
+		if ( propertyDescriptor instanceof ChooseGraphElementPropertyDescriptor )
+			return propertyDescriptor.createPropertyEditor( MainPad.getInstance().getDesktop().getCurrentGraph().getGraphT() );
 		if ( propertyDescriptor instanceof ChooseGraphTypeInfoPropertyDescriptor )
 			return new ChooseGraphTypeInfoPropertyEditor( ((ChooseGraphTypeInfoPropertyDescriptor)propertyDescriptor).getGraphTypeInfoFilter() );
 

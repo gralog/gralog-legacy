@@ -30,6 +30,7 @@ public class EditCopyAction extends AbstractAction {
 	
 	public EditCopyAction(  ) {
 		super( "copy", MainPad.createImageIcon( "designer_d_editcopy.png" ) );
+		super.putValue( SHORT_DESCRIPTION, "Copy" );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

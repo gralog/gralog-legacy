@@ -29,6 +29,7 @@ public class FileSaveAllAction extends AbstractAction {
 
 	public FileSaveAllAction() {
 		super( "Save All", null );
+		super.putValue( SHORT_DESCRIPTION, "Save all Files" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

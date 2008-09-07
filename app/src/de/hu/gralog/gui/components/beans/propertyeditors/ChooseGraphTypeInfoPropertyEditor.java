@@ -32,9 +32,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import de.hu.gralog.beans.propertyeditor.PropertyEditorRendererExtension;
-import de.hu.gralog.graph.GralogGraph;
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
-import de.hu.gralog.graph.types.GralogGraphTypeInfoFilter;
+import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 import de.hu.gralog.gui.MainPad;
 
 public class ChooseGraphTypeInfoPropertyEditor extends PropertyEditorSupport implements PropertyEditorRendererExtension {
@@ -130,8 +130,8 @@ public class ChooseGraphTypeInfoPropertyEditor extends PropertyEditorSupport imp
 		private GralogGraphTypeInfo getCurrentGraphTypeInfo() {
 			if ( MainPad.getInstance().getDesktop().getCurrentDocument() == null )
 				return null;
-			GralogGraph graph = MainPad.getInstance().getDesktop().getCurrentDocument().getGraph().getGraphT();
-			return graph.getGralogSupport().getTypeInfo();
+			GralogGraphSupport graphSupport = MainPad.getInstance().getDesktop().getCurrentDocument().getGraph().getGraphT();
+			return graphSupport.getTypeInfo();
 		}
 		public void actionPerformed(ActionEvent e) {
 			if ( e.getActionCommand().equals( "SELECTED" ) ) {

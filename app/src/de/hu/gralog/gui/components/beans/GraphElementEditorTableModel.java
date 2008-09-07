@@ -78,9 +78,9 @@ public class GraphElementEditorTableModel extends AbstractBeanEditorTableModel i
 	protected void updatePropertyDescriptors( boolean fireTableChanged ) {
 		try {
 			if ( vertexes )
-				propertyDescriptors = BeanUtil.getRWPropertyDescriptors( graph.getGraphT().getGralogSupport().createVertex() );
+				propertyDescriptors = BeanUtil.getRWPropertyDescriptors( graph.getGraphT().createVertex() );
 			else
-				propertyDescriptors = BeanUtil.getRWPropertyDescriptors( graph.getGraphT().getGralogSupport().getEdgeFactory().createEdge( graph.getGraphT().getGralogSupport().createVertex(), graph.getGraphT().getGralogSupport().createVertex() ) );
+				propertyDescriptors = BeanUtil.getRWPropertyDescriptors( graph.getGraphT().getEdgeFactory().createEdge( graph.getGraphT().createVertex(), graph.getGraphT().createVertex() ) );
 		} catch (UserException e) {
 			MainPad.getInstance().handleUserException( e );
 		}

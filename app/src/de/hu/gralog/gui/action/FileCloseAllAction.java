@@ -29,6 +29,8 @@ public class FileCloseAllAction extends AbstractAction {
 
 	public FileCloseAllAction() {
 		super( "Close All", null );
+		super.putValue( SHORT_DESCRIPTION, "Close all documents" );
+
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

@@ -20,7 +20,7 @@ import org.jdom.input.SAXBuilder;
 
 import de.hu.gralog.algorithm.Algorithm;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 
 
@@ -34,13 +34,6 @@ public class Plugin {
 		public AlgorithmInfo( String name, Class<? extends Algorithm> type ) throws UserException {
 			this.name = name;
 			this.type = type;
-			try {
-				this.algorithm = type.newInstance();
-			} catch (InstantiationException e) {
-				throw new UserException( "unable to load plugin", e );
-			} catch (IllegalAccessException e) {
-				throw new UserException( "unable to load plugin", e );
-			}
 		}
 		
 		public String getName() {
@@ -63,11 +56,22 @@ public class Plugin {
 			return name;
 		}
 		
+		void loadAlgorithm() throws UserException {
+			try {
+				this.algorithm = type.newInstance();
+			} catch (InstantiationException e) {
+				throw new UserException( "unable to load plugin", e );
+			} catch (IllegalAccessException e) {
+				throw new UserException( "unable to load plugin", e );
+			}
+		}
 	}
 	
 	private String name;
-	private ArrayList<GralogGraphTypeInfo> graphTypes = new ArrayList<GralogGraphTypeInfo>();
+	private ArrayList<Class<GralogGraphTypeInfo>> graphTypeClasses = new ArrayList<Class<GralogGraphTypeInfo>>();
+	private ArrayList<GralogGraphTypeInfo> graphTypeInfos = null;
 	private ArrayList<AlgorithmInfo> algorithms = new ArrayList<AlgorithmInfo>();
+	private boolean algorithmsLoaded = false;
 		
 	public Plugin( File file ) throws UserException {
 		try {
@@ -131,11 +135,7 @@ public class Plugin {
 		if ( typeInfoClassName == null )
 			throw new UserException( "unable to load settings", "graphElement has no typeInfoClassattribute" );
 		try {
-			graphTypes.add( (GralogGraphTypeInfo)MainPad.getInstance().getJarLoader().loadClass( typeInfoClassName ).newInstance() );
-		} catch (InstantiationException e) {
-			throw new UserException( "unable to load plugin", e );
-		} catch (IllegalAccessException e) {
-			throw new UserException( "unable to load plugin", e );
+			graphTypeClasses.add( (Class<GralogGraphTypeInfo>)MainPad.getInstance().getJarLoader().loadClass( typeInfoClassName ) );
 		} catch (ClassNotFoundException e) {
 			throw new UserException( "unable to load plugin", e );
 		}
@@ -160,11 +160,34 @@ public class Plugin {
 		}
 	}
 	
-	public ArrayList<GralogGraphTypeInfo> getGraphTypes() {
-		return graphTypes;
+	public ArrayList<GralogGraphTypeInfo> getGraphTypeClasses() {
+		if ( graphTypeInfos == null ) {
+			graphTypeInfos = new ArrayList<GralogGraphTypeInfo>();
+			for ( Class<GralogGraphTypeInfo> typeInfoClass : graphTypeClasses ) {
+				try {
+					graphTypeInfos.add( typeInfoClass.newInstance() );
+				} catch (InstantiationException e) {
+					MainPad.getInstance().handleUserException( new UserException( "unable to load plugin", e ) );
+				} catch (IllegalAccessException e) {
+					MainPad.getInstance().handleUserException( new UserException( "unable to load plugin", e ) );
+				}
+			}
+		}
+		
+		return graphTypeInfos;
 	}
 	
 	public ArrayList<AlgorithmInfo> getAlgorithms() {
+		if ( ! algorithmsLoaded ) {
+			for ( AlgorithmInfo info : algorithms ) {
+				try {
+					info.loadAlgorithm();
+				} catch (UserException e) {
+					MainPad.getInstance().handleUserException( e );
+				}
+			}
+			algorithmsLoaded = true;
+		}
 		return algorithms;
 	}
 }

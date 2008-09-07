@@ -8,4 +8,5 @@ package de.hu.gralog.algorithm.result;
 
 public interface AlgorithmInfoListener {
 	void graphReplaced();
+	void contentChanged();
 }

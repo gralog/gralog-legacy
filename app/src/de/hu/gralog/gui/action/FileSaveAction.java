@@ -29,6 +29,7 @@ public class FileSaveAction extends AbstractAction {
 
 	public FileSaveAction( ) {
 		super( "Save", MainPad.createImageIcon( "designer_d_filesave.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Save File" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

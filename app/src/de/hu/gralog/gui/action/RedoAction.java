@@ -30,6 +30,7 @@ public class RedoAction extends AbstractAction {
 
 	public RedoAction(  ) {
 		super( "Redo", MainPad.createImageIcon( "designer_d_redo.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Redo a change" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

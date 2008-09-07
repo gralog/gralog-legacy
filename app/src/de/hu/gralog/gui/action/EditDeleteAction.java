@@ -30,6 +30,7 @@ public class EditDeleteAction extends AbstractAction {
 	
 	public EditDeleteAction(  ) {
 		super( "delete", MainPad.createImageIcon( "designer_d_editdelete.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Delete" );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

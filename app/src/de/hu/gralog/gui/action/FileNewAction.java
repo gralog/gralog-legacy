@@ -23,7 +23,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import de.hu.gralog.graph.types.GralogGraphTypeInfo;
+import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 
 public class FileNewAction extends AbstractAction {
@@ -33,6 +33,7 @@ public class FileNewAction extends AbstractAction {
 	public FileNewAction( GralogGraphTypeInfo graphType ) {
 		super( graphType.getName(), null );
 		this.graphType = graphType;
+		super.putValue( SHORT_DESCRIPTION, "Create a new " + graphType.getName() );
 	}
 
 

@@ -29,6 +29,7 @@ public class ExitAction extends AbstractAction {
 
 	public ExitAction() {
 		super( "Exit", null );
+		super.putValue( SHORT_DESCRIPTION, "Exit Gralog" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

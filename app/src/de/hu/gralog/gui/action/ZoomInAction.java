@@ -29,6 +29,7 @@ public class ZoomInAction extends AbstractAction {
 
 	public ZoomInAction(  ) {
 		super( "Zoom In", MainPad.createImageIcon( "stock_zoom-in.png") );
+		super.putValue( SHORT_DESCRIPTION, "Zoom In" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

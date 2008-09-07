@@ -30,6 +30,7 @@ public class EditCutAction extends AbstractAction {
 	
 	public EditCutAction(  ) {
 		super( "cut", MainPad.createImageIcon( "designer_d_editcut.png" ));
+		super.putValue( SHORT_DESCRIPTION, "Cut" );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

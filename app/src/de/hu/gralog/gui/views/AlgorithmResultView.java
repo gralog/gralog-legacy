@@ -37,6 +37,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -47,17 +48,20 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.JToggleButton.ToggleButtonModel;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import net.infonode.docking.View;
+import de.hu.gralog.algorithm.result.AlgorithmInfoListener;
 import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
 import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
@@ -175,12 +179,12 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 
 	protected static JPanel createResultPanel( AlgorithmResultInfo info ) {
 		JPanel panel = new JPanel();
-		panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+		panel.setLayout( new BorderLayout() );
 		
 		if ( info.getSingleContent() == null )
-			panel.add( createChooseContentPanel( info ) );
+			panel.add( createChooseContentPanel( info ), BorderLayout.CENTER );
 		
-		panel.add( createEditContentPanel( info ) );
+		panel.add( createEditContentPanel( info ), BorderLayout.SOUTH );
 		return panel;
 	}
 	
@@ -305,9 +309,25 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			this.info = info;
 			setBorder( BorderFactory.createTitledBorder( "Content Tree" ) );
 			JTree tree = new JTree( new AlgorithmResultContentTreeModel() );
+			ToolTipManager.sharedInstance().registerComponent( tree );
+			tree.setCellRenderer( new ARCTreeCellRenderer() );
 			tree.addTreeSelectionListener( this );
 			tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 			add( new JScrollPane( tree ), BorderLayout.CENTER );
+		}
+		
+		private static class ARCTreeCellRenderer extends DefaultTreeCellRenderer {
+
+			@Override
+			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+				Component comp = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf,
+						row, hasFocus);
+				AlgorithmResultContent content = (AlgorithmResultContent)value;
+				if ( content.getDescription() != null )
+					setToolTipText( content.getDescription() );
+				return comp;
+			}
+			
 		}
 		
 		private class AlgorithmResultContentTreeModel implements TreeModel {
@@ -387,12 +407,16 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 		return new GraphPanel( info );
 	}
 	
-	private static class GraphPanel extends JPanel {
+	private static class GraphPanel extends JPanel implements AlgorithmInfoListener {
 
 		private final JPanel cards = new JPanel( new CardLayout() );
 		private final JPanel cardsET = new JPanel( new CardLayout() );
+		private JComboBox chooseSubgraph;
+		private JComboBox chooseElementTip;
+		private final AlgorithmResultInfo info;
 		
 		public GraphPanel( AlgorithmResultInfo info ) {
+			this.info = info;
 			setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
 			
 			if ( info.getSingleContent() != null  && info.getSingleContent() instanceof AlgorithmResultInteractiveContent) {
@@ -419,16 +443,17 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 				}
 				
 			}
-			add ( createGraphPanel( info ) );
-			if ( info.getDisplaySubgraphModes() != null )
+			if ( info.getDisplaySubgraphModes( true ) != null )
 				add( createSubgraphPanel( info ) );
-			if ( info.getElementTipsDisplayModes() != null )
+			if ( info.getElementTipsDisplayModes( true ) != null )
 				add( createElementTipsPanel( info ) );
+			add ( createGraphPanel( info ) );
+
+			info.addListener( this );
 		}
 		
 		public JPanel createGraphPanel( final AlgorithmResultInfo info ) {
 			JPanel panel = new JPanel();
-			panel.setBorder( BorderFactory.createTitledBorder( "Graph" ) );
 			panel.setLayout( new BorderLayout() );
 			
 			JButton openGraphInNewDocument = new JButton( new AbstractAction( "Open As Graph", null ) {
@@ -446,7 +471,7 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 				
 			} );
 			
-			panel.add( openGraphInNewDocument, BorderLayout.CENTER );
+			panel.add( openGraphInNewDocument, BorderLayout.EAST );
 			return panel;
 		}
 		
@@ -454,83 +479,96 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			JPanel panel = new JPanel();
 			panel.setBorder( BorderFactory.createTitledBorder( "Subgraph Options" ) );
 
-			panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+//			panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+			panel.setLayout( new BorderLayout( ) );
 			
-			for ( String description : info.getDisplaySubgraphModes().keySet() ) {
-				final DisplaySubgraphMode displayMode = info.getDisplaySubgraphModes().get( description );
+			for ( String description : info.getDisplaySubgraphModes( true ).keySet() ) {
+				final DisplaySubgraphMode displayMode = info.getDisplaySubgraphModes( true ).get( description );
 				
 				JPanel tablePanel = new JPanel(  );
 				tablePanel.setLayout( new BoxLayout( tablePanel, BoxLayout.Y_AXIS ) );
 				JTable table = new DisplaySubgraphTable( displayMode );
-				tablePanel.add( table );
-				final JCheckBox visible = new JCheckBox( );
+								
+				tablePanel.add( table.getTableHeader(), BorderLayout.NORTH );
+				tablePanel.add( table, BorderLayout.CENTER );
+				final JCheckBox visible = new JCheckBox( "visible" );
 				visible.setModel( new DisplaySubgraphModeVisibleButtonModel( displayMode ) );
 
 				visible.setBorder( BorderFactory.createEmptyBorder( 5, 0,0,0 ) );
-				
-				tablePanel.add( visible );
+				JPanel visiblePanel = new JPanel( new BorderLayout() );
+				visiblePanel.add( visible, BorderLayout.EAST );
+				tablePanel.add( visiblePanel, BorderLayout.SOUTH );
 				cards.add( tablePanel, description );
 			}
-			
+			JPanel noSubgraph = new JPanel();
+			noSubgraph.add( new JLabel( "no subgraph selected" ) );
+			cards.add( noSubgraph, "NO_SUBGRAPH" );
 			JPanel chooseSubgraphPanel = new JPanel();
 			chooseSubgraphPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
 
 			chooseSubgraphPanel.setLayout( new BoxLayout( chooseSubgraphPanel, BoxLayout.X_AXIS ) );
 			JLabel chooseSubgraphLabel = new JLabel( "Choose Subgraph" );
 			
-			JComboBox chooseSubgraph = new JComboBox( info.getDisplaySubgraphModes().keySet().toArray() );
+			chooseSubgraph = new JComboBox( info.getDisplaySubgraphModes( false ).keySet().toArray() );
 			chooseSubgraph.setBorder( BorderFactory.createEmptyBorder( 0, 5, 0, 0 ) );
-			chooseSubgraph.addItemListener( new ItemListener() {
+			chooseSubgraph.addActionListener( new ActionListener() {
 
-				public void itemStateChanged(ItemEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					CardLayout cl = (CardLayout)(cards.getLayout());
-				    cl.show(cards, (String)e.getItem());
+					String item = (String)chooseSubgraph.getSelectedItem();
+					if( item == null )
+						item = "NO_SUBGRAPH";
+					cl.show(cards, item);
 				}
 				
 			});
+
+			chooseSubgraph.setSelectedItem( chooseSubgraph.getSelectedItem() );
 			
 			chooseSubgraphPanel.add( chooseSubgraphLabel );
 			chooseSubgraphPanel.add( chooseSubgraph );
 
-			panel.add( chooseSubgraphPanel );
-			panel.add( cards );
+			panel.add( chooseSubgraphPanel, BorderLayout.NORTH );
+			panel.add( cards, BorderLayout.CENTER );
 			return panel;
 		}
 		
 		private JPanel createElementTipsPanel( final AlgorithmResultInfo info ) {
-			JPanel panel = new JPanel();
+			JPanel panel = new JPanel( new BorderLayout() );
 			panel.setBorder( BorderFactory.createTitledBorder( "Element Tips" ) );
 			
-			for ( Map.Entry<String, ElementTipsDisplayMode> entry : info.getElementTipsDisplayModes().entrySet() ) {
-				JPanel modePanel = new JPanel();
-				JCheckBox visible = new JCheckBox();
+			for ( Map.Entry<String, ElementTipsDisplayMode> entry : info.getElementTipsDisplayModes( true ).entrySet() ) {
+				JCheckBox visible = new JCheckBox( "visible" );
 				visible.setModel( new ElementTipsDisplayModeButtonModel( entry.getValue() ) );
-				modePanel.add( visible );
-				cardsET.add( modePanel, entry.getKey() );
+				cardsET.add( visible, entry.getKey() );
 			}
 			
-			JPanel chooseElementTipPanel = new JPanel();
+			cardsET.add( new JLabel( "" ), "NO_ELEMENTTIP" );
+			JPanel chooseElementTipPanel = new JPanel( new BorderLayout() );
 			chooseElementTipPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
-
-			chooseElementTipPanel.setLayout( new BoxLayout( chooseElementTipPanel, BoxLayout.X_AXIS ) );
+			
 			JLabel chooseElementTipLabel = new JLabel( "Choose Elementtip" );
 			
-			JComboBox chooseElementTip = new JComboBox( info.getElementTipsDisplayModes().keySet().toArray() );
+			chooseElementTip = new JComboBox( info.getElementTipsDisplayModes( false ).keySet().toArray() );
 			chooseElementTip.setBorder( BorderFactory.createEmptyBorder( 0, 5, 0, 0 ) );
-			chooseElementTip.addItemListener( new ItemListener() {
+			chooseElementTip.addActionListener( new ActionListener() {
 
-				public void itemStateChanged(ItemEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					CardLayout cl = (CardLayout)(cardsET.getLayout());
-				    cl.show(cardsET, (String)e.getItem());
+					String item = (String)chooseElementTip.getSelectedItem();
+					if ( item == null )
+						item = "NO_ELEMENTTIP";
+				    cl.show(cardsET, item );
 				}
 				
 			});
 			
-			chooseElementTipPanel.add( chooseElementTipLabel );
-			chooseElementTipPanel.add( chooseElementTip );
+			chooseElementTip.setSelectedItem( chooseElementTip.getSelectedItem() );
+			chooseElementTipPanel.add( chooseElementTipLabel, BorderLayout.WEST );
+			chooseElementTipPanel.add( chooseElementTip, BorderLayout.CENTER );
 
-			panel.add( chooseElementTipPanel, BorderLayout.NORTH );
-			panel.add( cardsET, BorderLayout.CENTER );
+			panel.add( chooseElementTipPanel, BorderLayout.CENTER );
+			panel.add( cardsET, BorderLayout.EAST );
 			
 			return panel;
 		}
@@ -586,6 +624,29 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			}
 			
 		}
+
+		public void graphReplaced() {
+			
+		}
+
+		public void contentChanged() {
+			if ( chooseSubgraph != null ) {
+				String selectedItem = (String)chooseSubgraph.getSelectedItem();
+				chooseSubgraph.setModel( new DefaultComboBoxModel( info.getDisplaySubgraphModes( false ).keySet().toArray() ) );
+				chooseSubgraph.setSelectedItem( selectedItem );
+				if ( chooseSubgraph.getSelectedItem() != selectedItem )
+					chooseSubgraph.setSelectedItem( chooseSubgraph.getSelectedItem() );
+			}
+			
+			if ( chooseElementTip != null ) {
+				String selectedItem = (String)chooseElementTip.getSelectedItem();
+				chooseElementTip.setModel( new DefaultComboBoxModel( info.getElementTipsDisplayModes( false ).keySet().toArray() ) );
+				chooseElementTip.setSelectedItem( selectedItem );
+				if ( chooseElementTip.getSelectedItem() != selectedItem )
+					chooseElementTip.setSelectedItem( chooseElementTip.getSelectedItem() );
+			}
+		}
+
 	}
 	
 	private static class DisplaySubgraphTable extends JTable {
@@ -657,10 +718,10 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			@Override
 			public String getColumnName(int column) {
 				if ( column == 0 )
-					return "element type";
+					return "TYPE";
 				if ( column == 1 )
-					return "inner elements";
-				return "outer elements";
+					return "IN";
+				return "OUT";
 			}
 
 			@Override

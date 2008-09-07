@@ -33,6 +33,7 @@ public class ZoomFitInCanvasAction extends AbstractAction {
 
 	public ZoomFitInCanvasAction(  ) {
 		super( "Fit In Canvas", MainPad.createImageIcon( "stock_zoom-page.png") );
+		super.putValue( SHORT_DESCRIPTION, "Fit into canvas" );
 	}
 
 	public void actionPerformed(ActionEvent arg0) {

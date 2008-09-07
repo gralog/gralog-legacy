@@ -20,6 +20,7 @@
 package de.hu.gralog.gui.views;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -43,26 +44,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import net.infonode.docking.View;
-
-import org.jgrapht.Graph;
-
 import de.hu.gralog.algorithm.Algorithm;
 import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.GralogGraph;
+import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.components.HTMLEditorPane;
 import de.hu.gralog.gui.components.beans.BeanEditorTableModel;
@@ -126,7 +126,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 		tabPanel.addTab( "description", new JScrollPane( description ) );
 		
 		JPanel executePanel = new JPanel( new BorderLayout() );
-		executePanel.add( executeButton, BorderLayout.CENTER );
+		executePanel.add( executeButton, BorderLayout.EAST );
 
 		JSplitPane chooseAndProperties = new JSplitPane( JSplitPane.VERTICAL_SPLIT, algorithmChooserPanel, tabPanel );
 		chooseAndProperties.setDividerLocation( 100 );
@@ -265,7 +265,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 			Hashtable<String, Object> algorithmSettings = new Hashtable<String, Object>();
 			String algorithmName;
 			// erzeuge zun�chst eine Kopie des Algorithmus und aller zugeh�rigen Graphen
-			Hashtable<GralogGraph, GJGraph> jgraphs = new Hashtable<GralogGraph, GJGraph>();
+			Hashtable<GralogGraphSupport, GJGraph> jgraphs = new Hashtable<GralogGraphSupport, GJGraph>();
 			
 			Algorithm preparedAlgorithm = algorithm.getClass().newInstance();
 			
@@ -277,12 +277,12 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 			
 			for ( PropertyDescriptor propertyDescriptor : properties ) {
 				if ( propertyDescriptor.getReadMethod() != null && propertyDescriptor.getWriteMethod() != null ) {
-					Object value = propertyDescriptor.getReadMethod().invoke( algorithm, null );
+					Object value = propertyDescriptor.getReadMethod().invoke( algorithm, new Object[] {} );
 					
-					if ( value instanceof Graph ) {
-						Graph graph = (Graph)value;
+					if ( value instanceof GralogGraphSupport ) {
+						GralogGraphSupport graphSupport = (GralogGraphSupport)value;
 						for ( Document document : MainPad.getInstance().getDesktop().getOpenDocuments() ) {
-							if ( document.getContent() instanceof GJGraphDocumentContent && document.getGraph().getGraphT() == graph ) {
+							if ( document.getContent() instanceof GJGraphDocumentContent && document.getGraph().getGraphT() == graphSupport ) {
 								GJGraph jgraph = document.getGraph();
 								if ( propertyDescriptor instanceof ChooseGraphPropertyDescriptor && ((ChooseGraphPropertyDescriptor)propertyDescriptor).isMakeCopy() )
 									jgraph = GJGraphUtil.getGJGraphCopy( jgraph );
@@ -303,10 +303,10 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 			AlgorithmResult result = preparedAlgorithm.execute();
 			if ( result != null ) {
 				if ( result.isOpenContentsAsGraphs() ) {
-					for( GralogGraph graph : AlgorithmResultInfo.getAllGraphs( result ) ) {
-						GJGraph gjGraph = jgraphs.get( graph );
+					for( GralogGraphSupport graphSupport : AlgorithmResultInfo.getAllGraphs( result ) ) {
+						GJGraph gjGraph = jgraphs.get( graphSupport );
 						if ( gjGraph == null )
-							gjGraph = new GJGraph( graph );
+							gjGraph = new GJGraph( graphSupport );
 						MainPad.getInstance().getDesktop().openDocument( gjGraph );
 					}
 				} else {

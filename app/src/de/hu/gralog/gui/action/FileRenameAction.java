@@ -29,6 +29,7 @@ public class FileRenameAction extends AbstractAction {
 
 	public FileRenameAction() {
 		super( "Rename", null );
+		super.putValue( SHORT_DESCRIPTION, "Rename File" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

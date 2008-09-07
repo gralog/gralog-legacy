@@ -46,6 +46,7 @@ public class Zoom11Action extends AbstractAction {
 	
 	public Zoom11Action(  ) {
 		super( "1:1", MainPad.createImageIcon( "stock_zoom-1.png") );
+		super.putValue( SHORT_DESCRIPTION, "Zoom 1:1" );
 	}
 
 	public void actionPerformed(ActionEvent arg0) {

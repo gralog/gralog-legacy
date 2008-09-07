@@ -19,34 +19,19 @@
 
 package de.hu.gralog.graph.io;
 
-import java.awt.Point;
-import java.awt.geom.Rectangle2D;
 import java.beans.DefaultPersistenceDelegate;
 import java.beans.Encoder;
 import java.beans.ExceptionListener;
 import java.beans.Expression;
-import java.beans.Statement;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.ArrayList;
 
-import org.jgraph.graph.DefaultGraphCell;
-import org.jgraph.graph.GraphConstants;
-import org.jgrapht.graph.DirectedSubgraph;
-import org.jgrapht.graph.Subgraph;
-
-import de.hu.gralog.algorithm.result.AlgorithmResult;
-import de.hu.gralog.algorithm.result.AlgorithmResultContent;
-import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
 import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
-import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
-import de.hu.gralog.algorithm.result.ElementTipsDisplayMode;
-import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.gui.MainPad;
@@ -54,33 +39,49 @@ import de.hu.gralog.gui.document.AlgorithmResultDocumentContent;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 import de.hu.gralog.jgraph.GJGraph;
 
-public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDocumentContentIO, ExceptionListener {
+public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDocumentContentIO {
 
 	private static final GJGraphPersistenceDelegate GJGRAPH_PD =  new GJGraphPersistenceDelegate();
-	private static final SubgraphPersistenceDelegate SUBGRAPH_PD =  new SubgraphPersistenceDelegate();
-
+	
 	public XMLDecoderIO() {
 		
 	}
 
-	public GJGraph getDataCopy( GJGraph graph ) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		writeGraph( graph, out );
-		return readGraph( new ByteArrayInputStream( out.toByteArray() ) );
-	}
-	
-	protected void writeGraph( GJGraph graph, OutputStream out ) {
+	public void writeGraph( GJGraph graph, OutputStream out ) {
+		ClassLoader saveCL = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader( MainPad.getInstance().getJarLoader() );
+		XMLCoderEL el = new XMLCoderEL();
 		XMLEncoder enc = new XMLEncoder( out );
+		enc.setExceptionListener( el );
 		
 		enc.setPersistenceDelegate( graph.getClass(), GJGRAPH_PD );
+		
 		enc.writeObject( graph );
 		enc.close();
+		
+		if ( el.hasExceptions() ) {
+			for ( Exception e : el.getExceptions() ) {
+				if ( !(e instanceof UserException) )
+					e = new UserException( "unable to write graph: ", e );
+				MainPad.getInstance().handleUserException( (UserException)e );
+			}
+		}
+		
+		Thread.currentThread().setContextClassLoader( saveCL );
 	}
 	
-	protected GJGraph readGraph( InputStream in ) {
-		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getJarLoader() );
+	public GJGraph readGraph( InputStream in ) {
+		XMLCoderEL el = new XMLCoderEL();
+		XMLDecoder dec = new XMLDecoder( in, null, el, MainPad.getInstance().getJarLoader() );
+		
 		GJGraph graph = (GJGraph)dec.readObject();
-		graph.getGModel().cellsChanged( graph.getGModel().getVertexCells() );
+		if ( el.hasExceptions() ) {
+			for ( Exception e : el.getExceptions() ) {
+				if ( !(e instanceof UserException) )
+					e = new UserException( "unable to read graph: ", e );
+				MainPad.getInstance().handleUserException( (UserException)e );
+			}
+		}
 		return graph;
 	}
 	
@@ -92,11 +93,7 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 	public GJGraphDocumentContent readGJGraphDocumentContent(InputStream in)
 			throws InputOutputException {
 		GJGraph graph = null;
-		try {
-			graph = readGraph( in );
-		} catch( Throwable t ) {
-			throw new InputOutputException( "unable to read graph", t  );
-		}
+		graph = readGraph( in );
 		return new GJGraphDocumentContent( graph );
 	}
 
@@ -104,18 +101,13 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 
 		@Override
 		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			GJGraph graph = (GJGraph)oldInstance;
 			
-			for ( Object cell : graph.getGModel().getVertexCells() ) {
-				DefaultGraphCell vertexCell = (DefaultGraphCell)cell;
-				Rectangle2D bounds = GraphConstants.getBounds( graph.getAttributes( vertexCell ) );
-				out.writeStatement( new Statement( oldInstance, "positionVertexAt", new Object[] { vertexCell.getUserObject(), new Point( (int)bounds.getX(), (int)bounds.getY() ) } ) );
-			}
 		}
 
 		@Override
 		protected Expression instantiate(Object oldInstance, Encoder out) {
-			return new Expression( oldInstance, oldInstance.getClass(), "new", new Object[] { ((GJGraph)oldInstance).getGraphT() } );
+			GJGraph graph = (GJGraph)oldInstance;
+			return new Expression( graph, graph.getClass(), "new", new Object[] { graph.getGraphT(), graph.getGModel().getVertexPositions() } );
 		}
 		
 	}
@@ -127,27 +119,44 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 	}
 	
 	public AlgorithmResultInfo readAlgorithmResultInfo( InputStream in ) {
-		XMLDecoder dec = new XMLDecoder( in, null, null, MainPad.getInstance().getJarLoader() );
-		return (AlgorithmResultInfo)dec.readObject();
+		XMLCoderEL el = new XMLCoderEL();
+		XMLDecoder dec = new XMLDecoder( in, null, el, MainPad.getInstance().getJarLoader() );
+		AlgorithmResultInfo resultInfo = (AlgorithmResultInfo)dec.readObject();
+		
+		if ( el.hasExceptions() ) {
+			for ( Exception e : el.getExceptions() ) {
+				if ( !(e instanceof UserException) )
+					e = new UserException( "unable to read algorithmResultInfo: ", e );
+				MainPad.getInstance().handleUserException( (UserException)e );
+			}
+		}
+
+		return resultInfo;
 	}
 	
 	public void writeAlgorithmResultInfo( AlgorithmResultInfo info, OutputStream out ) {
+		ClassLoader saveCL = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader( MainPad.getInstance().getJarLoader() );
+
+		XMLCoderEL el = new XMLCoderEL();
 		XMLEncoder enc = new XMLEncoder( out );
-		enc.setExceptionListener( this );
-		enc.setPersistenceDelegate( info.getClass(), new AlgorithmResultInfoPersistenceDelegate() );
-		enc.setPersistenceDelegate( info.getAlgorithmResult().getClass(), new AlgorithmResultPersistenceDelegate() );
 		
-		enc.setPersistenceDelegate( DisplaySubgraphMode.class, new DisplaySubgraphModePersistenceDelegate() );
-		enc.setPersistenceDelegate( DisplayMode.class, new DisplayModePersistenceDelegate() );
-		enc.setPersistenceDelegate( ElementTipsDisplayMode.class, new ElementTipsDisplayModePersistenceDelegate() );
-		enc.setPersistenceDelegate( AlgorithmResultContent.class, new AlgorithmResultContentPersistenceDelegate() );
-		enc.setPersistenceDelegate( AlgorithmResultContentTreeNode.class, new AlgorithmResultContentTreeNodePersistenceDelegate() );
-		enc.setPersistenceDelegate( Subgraph.class, SUBGRAPH_PD );
-		enc.setPersistenceDelegate( DirectedSubgraph.class, SUBGRAPH_PD );
+		enc.setExceptionListener( el );
+		enc.setPersistenceDelegate( info.getClass(), new AlgorithmResultInfoPersistenceDelegate() );
 		enc.setPersistenceDelegate( GJGraph.class, GJGRAPH_PD );
 		
 		enc.writeObject( info );
 		enc.close();
+		
+		if ( el.hasExceptions() ) {
+			for ( Exception e : el.getExceptions() ) {
+				if ( !(e instanceof UserException) )
+					e = new UserException( "unable to write algorithmresultinfo: ", e );
+				MainPad.getInstance().handleUserException( (UserException)e );
+			}
+		}
+
+		Thread.currentThread().setContextClassLoader( saveCL );
 	}
 	
 	
@@ -167,150 +176,20 @@ public class XMLDecoderIO implements GJGraphDocumentContentIO, AlgorithmResultDo
 		}
 	}
 	
-	public static class AlgorithmResultPersistenceDelegate extends DefaultPersistenceDelegate {
+	private class XMLCoderEL implements ExceptionListener {
 
-		@Override
-		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			AlgorithmResult result = (AlgorithmResult)oldInstance;
-			
-			if ( result.getDescription() != null )
-				out.writeStatement( new Statement( oldInstance, "setDescription", new Object[] { result.getDescription() } ) );
-			if ( result.getDisplaySubgraphModes() != null ) {
-				for ( Map.Entry<String, DisplaySubgraphMode> entry : result.getDisplaySubgraphModes().entrySet() )
-					out.writeStatement( new Statement( oldInstance, "addDisplaySubgraphMode", new Object[] { entry.getKey(), entry.getValue() } ) );
-			}
-			
-			if ( result.getElementTipsDisplayModes() != null ) {
-				for ( Map.Entry<String, ElementTipsDisplayMode> entry : result.getElementTipsDisplayModes().entrySet() )
-					out.writeStatement( new Statement( oldInstance, "addElementTipsDisplayMode", new Object[] { entry.getKey(), entry.getValue() } ) );
-			}
-			
-			if ( result.getSingleContent() != null )
-				out.writeStatement( new Statement( oldInstance, "setSingleContent", new Object[] { result.getSingleContent() } ) );
-			if ( result.getContentList() != null )
-				out.writeStatement( new Statement( oldInstance, "setContentList", new Object[] { result.getContentList() } ) );
-			if ( result.getContentTree() != null )
-				out.writeStatement( new Statement( oldInstance, "setContentTree", new Object[] { result.getContentTree() } ) ); 
-		}
-
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-			AlgorithmResult result = (AlgorithmResult)oldInstance;
-			
-			if ( result.getGraph() != null )
-				return new Expression( oldInstance, oldInstance.getClass(), "new" , new Object[] { result.getGraph() } );
-			return new Expression( oldInstance, oldInstance.getClass(), "new", null );
+		private ArrayList<Exception> exceptions = new ArrayList<Exception>();
+		
+		public void exceptionThrown(Exception e) {
+			exceptions.add( e );
 		}
 		
-	}
-	
-	public static class DisplaySubgraphModePersistenceDelegate extends DefaultPersistenceDelegate {
-
-		@Override
-		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			DisplaySubgraphMode mode = (DisplaySubgraphMode)oldInstance;
-			
-			out.writeStatement( new Statement( oldInstance, "setVertexDisplayMode", new Object[] { mode.getVertexDisplayMode( false ), mode.getVertexDisplayMode( true ) } ) );
-			out.writeStatement( new Statement( oldInstance, "setEdgeDisplayMode", new Object[] { mode.getEdgeDisplayMode( false ), mode.getEdgeDisplayMode( true ) } ) );
-			out.writeStatement( new Statement( oldInstance, "setVisible", new Object[] { mode.isVisible() } ) );
-		}
-
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-			return super.instantiate(oldInstance, out);
+		public boolean hasExceptions() {
+			return !exceptions.isEmpty();
 		}
 		
-	}
-	
-	public static class DisplayModePersistenceDelegate extends DefaultPersistenceDelegate {
-
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-			return new Expression( oldInstance, oldInstance.getClass(), "parseString", new Object[] { oldInstance.toString() } );
+		public ArrayList<Exception> getExceptions() {
+			return exceptions;
 		}
-		
-	}
-	
-	public static class ElementTipsDisplayModePersistenceDelegate extends DefaultPersistenceDelegate {
-
-		@Override
-		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			ElementTipsDisplayMode mode = (ElementTipsDisplayMode)oldInstance;
-			
-			out.writeStatement( new Statement( oldInstance, "setVisible", new Object[] { mode.isVisible() } ) );
-		}
-
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-			
-			return super.instantiate(oldInstance, out);
-		}
-		
-	}
-	
-	public static class AlgorithmResultContentPersistenceDelegate extends DefaultPersistenceDelegate {
-
-		@Override
-		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			try {
-				AlgorithmResultContent content = (AlgorithmResultContent)oldInstance;
-			
-				if ( content.getName() != null )
-					out.writeStatement( new Statement( oldInstance, "setName", new Object[] { content.getName() } ) );
-
-				if ( content.getGraph() != null )
-					out.writeStatement( new Statement( oldInstance, "setGraph", new Object[] { content.getGraph() } ) );
-			
-				if ( content.getSubgraphs() != null ) {
-					for ( Map.Entry<String, Subgraph> entry : content.getSubgraphs().entrySet() )
-						out.writeStatement( new Statement( oldInstance, "addDisplaySubgraph", new Object[] { entry.getKey(), entry.getValue() } ) );
-				}
-			
-				if ( content.getTips() != null ) {
-					for ( Map.Entry<String, Hashtable> entry : content.getTips().entrySet() )
-						out.writeStatement( new Statement( oldInstance, "addElementTips", new Object[] { entry.getKey(), entry.getValue() } ) );
-				}
-			} catch( UserException e ) {
-				MainPad.getInstance().handleUserException( e );
-			}
-		}
-
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-			return super.instantiate(oldInstance, out);
-		}
-		
-	}
-	
-	public static class AlgorithmResultContentTreeNodePersistenceDelegate extends AlgorithmResultContentPersistenceDelegate {
-
-		@Override
-		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
-			super.initialize(type, oldInstance, newInstance, out);
-
-			AlgorithmResultContentTreeNode node = (AlgorithmResultContentTreeNode)oldInstance;
-			
-			try {
-				for ( AlgorithmResultContentTreeNode child : node.getChildren() )
-					out.writeStatement( new Statement( oldInstance, "addChild", new Object[] { child } ) );
-			} catch (UserException e) {
-				MainPad.getInstance().handleUserException( e );
-			}
-		}
-	}
-
-	
-	public static class SubgraphPersistenceDelegate extends DefaultPersistenceDelegate {
-		@Override
-		protected Expression instantiate(Object oldInstance, Encoder out) {
-		//	Subgraph subgraph = (Subgraph)oldInstance;
-		//	Graph base = GraphUtils.getSubgraphBase( subgraph );
-		//	return new Expression( oldInstance, SubgraphFactory.class, "createSubgraph", new Object[] { base, new HashSet( subgraph.vertexSet() ), new HashSet( subgraph.edgeSet() ) } );
-			return null;
-		}
-	}
-
-	public void exceptionThrown(Exception e) {
-		e.printStackTrace();
 	}
 }

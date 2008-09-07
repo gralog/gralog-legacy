@@ -29,6 +29,7 @@ public class FileCloseOthersAction extends AbstractAction {
 
 	public FileCloseOthersAction() {
 		super( "Close Others", null );
+		super.putValue( SHORT_DESCRIPTION, "Close other documents" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

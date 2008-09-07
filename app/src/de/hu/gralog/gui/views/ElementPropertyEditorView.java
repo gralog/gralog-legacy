@@ -77,7 +77,7 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 	public void currentDocumentSelectionChanged() {
 		Document document = MainPad.getInstance().getDesktop().getCurrentDocument();
 		if ( document != null && document.getGraph() != null && document.getGraph().isElementsAndStructureEditable() ) {
-			if ( document.getGraph().getGraphT().getGralogSupport().isVertexEditable() || document.getGraph().getGraphT().getGralogSupport().isEdgeEditable() ) {
+			if ( document.getGraph().getGraphT().isVertexEditable() || document.getGraph().getGraphT().isEdgeEditable() ) {
 				JPanel panel = getPanel( document );
 			
 				setComponent( panel );
@@ -114,7 +114,7 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 			//setBorder( BorderFactory.createTitledBorder( "Element Properties" ) );
 			add( cards, BorderLayout.CENTER );
 			
-			if ( graph.getGraphT().getGralogSupport().isVertexEditable() && graph.getGraphT().getGralogSupport().isEdgeEditable() ) {
+			if ( graph.getGraphT().isVertexEditable() && graph.getGraphT().isEdgeEditable() ) {
 				JCheckBox showVertexes = new JCheckBox();
 				showVertexes.setSelected( true );
 				showVertexes.addItemListener( this );
@@ -127,13 +127,13 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 				add( showVertexesPanel, BorderLayout.SOUTH );
 			}
 			
-			if ( graph.getGraphT().getGralogSupport().isVertexEditable() ) {
+			if ( graph.getGraphT().isVertexEditable() ) {
 				PropertyEditorTable table = new PropertyEditorTable();
 				table.setModel( new GraphElementEditorTableModel( graph ) );
 				cards.add( new JScrollPane( table ) , CARD_VERTEXES );
 			}
 				
-			if ( graph.getGraphT().getGralogSupport().isEdgeEditable() ) {
+			if ( graph.getGraphT().isEdgeEditable() ) {
 				PropertyEditorTable table = new PropertyEditorTable();
 				table.setModel( new GraphElementEditorTableModel( graph, false ) );
 				cards.add( new JScrollPane( table ) , CARD_EDGES );
