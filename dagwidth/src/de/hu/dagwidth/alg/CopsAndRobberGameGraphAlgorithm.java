@@ -85,12 +85,12 @@ public class CopsAndRobberGameGraphAlgorithm<V extends LabeledGraphVertex, E ext
 		if ( e.hasErrors() )
 			throw e;
 		
-		AlgorithmResult result = new AlgorithmResult( getGameGraphFromCAR( (DirectedGraph<CopsAndRobberVertex, DefaultEdge>)CopsAndRobberAlgorithm.getCopsAndRobberGameGraph( getGraph().getGraph(), getDagWidth( ), isCopMonotone(), isRobberMonotone() ) ) );
+		AlgorithmResult result = new AlgorithmResult( getGameGraphFromCAR( (DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>)CopsAndRobberAlgorithm.getCopsAndRobberGameGraph( getGraph().getGraph(), getDagWidth( ), isCopMonotone(), isRobberMonotone() ) ) );
 		result.setSingleContent( new AlgorithmResultContent() );
 		return result;
 	}
 	
-	public GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> getGameGraphFromCAR( DirectedGraph<CopsAndRobberVertex, DefaultEdge> cargraph ) throws UserException {
+	public GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> getGameGraphFromCAR( DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> cargraph ) throws UserException {
 		GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> graph = (GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>>)GralogGraphFactory.createGraphSupport( new GameGraphTypeInfo() );
 		Hashtable<CopsAndRobberVertex, GameGraphVertex> vertexes = new Hashtable<CopsAndRobberVertex, GameGraphVertex>();
 		for ( CopsAndRobberVertex vertex : cargraph.vertexSet() ) {

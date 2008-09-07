@@ -27,10 +27,17 @@ import javax.swing.UIManager;
 
 import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.GraphConstants;
+import org.jgraph.util.ParallelEdgeRouter;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
+import org.jgrapht.ListenableGraph;
+import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.graph.DirectedPseudograph;
+import org.jgrapht.graph.Multigraph;
+import org.jgrapht.graph.Pseudograph;
 
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
+import de.hu.gralog.jgrapht.util.JGraphTUtils;
 
 /**
  * 
@@ -71,7 +78,7 @@ public class ElementAttributes {
 		GraphConstants.setFont(map, GraphConstants.DEFAULTFONT.deriveFont(
 				Font.BOLD, 12));
 		GraphConstants.setOpaque(map, true);
-		GraphConstants.setAutoSize(map, false);
+		GraphConstants.setAutoSize(map, true);
 
 		VERTEX_ATTRIBUTES.put(DisplayMode.SHOW, map);
 		return map;
@@ -79,14 +86,6 @@ public class ElementAttributes {
 
 	public static AttributeMap getEdgeAttributes(Graph graph) {
 		AttributeMap map;
-
-		if (graph instanceof DirectedGraph)
-			map = (AttributeMap) DIRECTED_EDGE_ATTRIBUTES.get(DisplayMode.SHOW);
-		else
-			map = (AttributeMap) EDGE_ATTRIBUTES.get(DisplayMode.SHOW);
-
-		if (map != null)
-			return map;
 
 		map = new AttributeMap();
 
@@ -106,23 +105,25 @@ public class ElementAttributes {
 
 		GraphConstants.setLineWidth(map, 1);
 
-		GraphConstants.setLineStyle(map, GraphConstants.STYLE_BEZIER);
-		GraphConstants.setRouting(map, GraphConstants.ROUTING_DEFAULT);
-		GraphConstants.setBorderColor(map, Color.BLACK);
+		GraphConstants.setLineStyle(map, GraphConstants.STYLE_SPLINE);
+		
+		Graph base = JGraphTUtils.getListenableBaseGraph( (ListenableGraph)graph );
+		if ( base instanceof DirectedMultigraph ||
+				base instanceof DirectedPseudograph ||
+				base instanceof Multigraph ||
+				base instanceof Pseudograph )
+			GraphConstants.setRouting(map, ParallelEdgeRouter.getSharedInstance() );
+		else
+			GraphConstants.setRouting(map, GraphConstants.ROUTING_DEFAULT );
 		GraphConstants.setForeground(map, Color.BLACK);
 		GraphConstants.setBackground(map, UIManager
 				.getColor("Tree.textBackground"));
 		GraphConstants.setOpaque(map, false);
 		GraphConstants.setFont(map, GraphConstants.DEFAULTFONT.deriveFont(
 				Font.BOLD, 12));
-		GraphConstants.setLabelAlongEdge(map, false);
-
+		GraphConstants.setLabelAlongEdge(map, true);
+		
 		GraphConstants.setLineColor(map, Color.BLACK);
-
-		if (graph instanceof DirectedGraph)
-			DIRECTED_EDGE_ATTRIBUTES.put(DisplayMode.SHOW, map);
-		else
-			EDGE_ATTRIBUTES.put(DisplayMode.SHOW, map);
 
 		return map;
 	}

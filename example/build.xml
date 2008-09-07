@@ -136,8 +136,10 @@
 		
 		<unjar dest="${dist}/tmp_fat_jar">
 		    <fileset dir="${lib}">
-<!-- please add your external libraries here. An example, on how to do this is given below. -->
+<!-- please add your external libraries here. An example, on how to do this is given below. 
+	Note: You also have to uncoment the line <exclude name="**/*.jar"/> below -->
 <!--		        <include name="YOUR_EXTERNAL_LIBRARY.jar"/> -->
+		    	<exclude name="**/*.jar"/>
 		    </fileset>
 		</unjar>
 		

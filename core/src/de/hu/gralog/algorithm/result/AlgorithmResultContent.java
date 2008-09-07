@@ -62,6 +62,8 @@ public class AlgorithmResultContent {
 	protected Hashtable<String, DisplaySubgraph> displaySubgraphCache = null;
 
 	private String name = null;
+	
+	private String description = null;
 
 	/**
 	 * Contructs an AlgorithmResultContent without a corresponding graph. You
@@ -105,7 +107,25 @@ public class AlgorithmResultContent {
 	public String getName() {
 		return name;
 	}
+	
+	/**
+	 * Sets the description for this content that will be displayed in Gralog
+	 * 
+	 * @param description the description as an arbitrary html-String
+	 */
+	public void setDescription( String description ) {
+		this.description = description;
+	}
 
+	/**
+	 * 
+	 * 
+	 * @return the description f this content
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
 	/**
 	 * Set the graph of this content. This method has the same effect as setting
 	 * the graph via the constructor
@@ -347,8 +367,10 @@ public class AlgorithmResultContent {
 		 * 
 		 */
 		public SubgraphInfo(Set<V> vertices, Set<E> edges) {
-			this.vertices = new HashSet<V>(vertices);
-			this.edges = new HashSet<E>(edges);
+			if ( vertices != null )
+				this.vertices = new HashSet<V>(vertices);
+			if ( edges != null )
+				this.edges = new HashSet<E>(edges);
 		}
 
 		public Subgraph getSubgraph(GralogGraphSupport graphSupport) {

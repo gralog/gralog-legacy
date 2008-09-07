@@ -19,6 +19,8 @@
 package de.hu.gralog.jgraph.cellview;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.geom.Dimension2D;
 
 import javax.swing.BorderFactory;
 
@@ -42,14 +44,17 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 public class DefaultVertexRenderer extends VertexRenderer implements
 		VertexDisplayModeRenderer {
 
+	protected double gridsize;
+	
 	public DefaultVertexRenderer() {
 	}
 
 	public Component getRendererComponent(JGraph graph, CellView view,
 			boolean sel, boolean focus, boolean preview, DisplayMode displayMode) {
+		gridsize = graph.getScale()*graph.getGridSize();
+
 		if (displayMode == DisplayMode.HIDE)
 			return null;
-
 		getRendererComponent(graph, view, sel, focus, preview);
 
 		if (displayMode.getColor() != null) {
@@ -62,5 +67,20 @@ public class DefaultVertexRenderer extends VertexRenderer implements
 		}
 		this.view = null;
 		return this;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension size = super.getPreferredSize();
+
+		double newWidth = (Math.floor((size.getWidth() / gridsize)-0.01) + 1) * gridsize - 1;
+		double newHeight = (Math.floor((size.getHeight() / gridsize)-0.01) + 1) * gridsize - 1;
+
+		size.setSize( newWidth, newHeight ); 
+		return size;
+	}
+	
+	public Dimension getOriginalPS() {
+		return super.getPreferredSize();
 	}
 }

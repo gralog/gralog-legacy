@@ -8,10 +8,11 @@
 
 <!-- ===================== Project Properties =========================== -->
 
-<project name="gralog-NBA" default="all" basedir=".">
+<project name="gralog-nba" default="all" basedir=".">
 
 	<property name="project.name" value="Gralog-NBA"/>
-	<property name="package.root" value="de.hu.nba"/>
+	<property name="project.abbr" value="gralog-nba"/>
+	<property name="package.root" value="de.hu"/>
 	
 <!-- ===================== Project Environment =========================== -->
 
@@ -19,7 +20,7 @@
 	<property name="lib" value="${basedir}/lib"/>
 	<property name="core.jar" value="gralog-core.jar"/>
 	<property name="manifest" value="${basedir}/META-INF/MANIFEST.MF"/>
-
+	<property name="doc" value="${basedir}/doc"/>	
 
 <!--  ==================== Compilation Options ==================== -->
 
@@ -31,12 +32,14 @@
 
 	<property name="classes" value="${basedir}/bin"/>
 	<property name="dist" value="${basedir}/dist"/>
-	<property name="project.jar" value="gralog-nba.jar"/>
-	<property name="doc" value="${basedir}/doc/api"/>
+	<property name="dist.tmp" value="${dist}/tmp"/>
+	<property name="project.jar" value="${project.abbr}.jar"/>
+	<property name="project.zip" value="${project.abbr}.zip"/>
+	<property name="apidoc" value="${basedir}/doc/api"/>
 
 <!--  ==================== All ==================== -->
 
-	<target name="all" depends="jar, doc"
+	<target name="all" depends="dist"
 		description="Clean up and produce all distributions"/>
 
 <!--  ==================== Clean ==================== -->
@@ -44,7 +47,8 @@
 	<target name="clean" description="Delete all generated files and directories">
     	<delete dir="${classes}/"/>
         <delete file="${dist}/${project.jar}"/>
-		<delete dir="${doc}"/>
+        <delete file="${dist}/${project.zip}"/>
+		<delete dir="${apidoc}"/>
 	</target>
 
 <!--  ==================== Init ==================== -->
@@ -52,7 +56,7 @@
 	<target name="init" description="Initialize the build Java ${java.specification.version} Build">
 		<tstamp/>
 		<mkdir dir="${classes}"/>
-		<mkdir dir="${doc}"/>
+		<mkdir dir="${apidoc}"/>
 		<mkdir dir="${dist}"/>
 	</target>
 
@@ -87,7 +91,7 @@
 	<target name="apidoc" depends="init" description="Generate the api specification (javadoc)">
         <javadoc 
 	    		sourcepath="${source}" 
-	    		destdir="${doc}" 
+	    		destdir="${apidoc}" 
         		overview="${source}/overview.html" 
     			packagenames="${package.root}.*" 
         		doctitle="${project.name}-Api-Specification" 
@@ -124,23 +128,49 @@
 
 		<mkdir dir="${dist}/tmp_fat_jar"/>
 		
+		<unjar dest="${dist}/tmp_fat_jar">
+		    <fileset dir="${lib}">
+		    	<!-- please add your external libraries here. An example, on how to do this is given below. 
+		    		Note: You also have to uncoment the line <exclude name="**/*.jar"/> below -->
+		    	<!--		        <include name="YOUR_EXTERNAL_LIBRARY.jar"/> -->
+		    	<exclude name="**/*.jar"/>
+		    </fileset>
+		</unjar>
+		
 		<copy todir="${dist}/tmp_fat_jar">
 			<fileset dir="${classes}">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-		
-		<unjar dest="${dist}/tmp_fat_jar">
-		    <fileset dir="${lib}">
-		        <include name="*.jar"/>
-		        <exclude name="${core.jar}"/>
-		    	<exclude name="java-cup-11a.jar"/>
-		    </fileset>
-		</unjar>
 
 		<jar jarfile="${dist}/${project.jar}" basedir="${dist}/tmp_fat_jar" manifest="${manifest}"/>
 		
 		<delete dir="${dist}/tmp_fat_jar"/>
+	</target>
+	
+	<target name="dist" depends="jar, doc" description="Build Dist">
+		<property name="dist.whole" value="${dist.tmp}/${project.abbr}"/>
+		
+		<delete dir="${dist.tmp}"/>
+		<mkdir dir="${dist.whole}"/>
+		
+		<copy toDir="${dist.whole}">
+		    <fileset dir="${basedir}">
+		    	<include name="src/"/>
+		    	<include name="doc/"/>
+		    	<include name="lib/"/>
+		    	<include name="META-INF/"/>
+		    	<include name="build.xml"/>
+		    	<include name="COPYING"/>
+		    	<include name="README"/>
+		    </fileset>
+		</copy>
+		<mkdir dir="${dist.whole}/dist"/>
+		<copy file="${dist}/${project.jar}" toDir="${dist.whole}/dist/"/>
+		
+		<zip basedir="${dist.tmp}" zipfile="${dist}/${project.zip}"/>
+		
+		<delete dir="${dist.tmp}"/>
 	</target>
 </project>
 

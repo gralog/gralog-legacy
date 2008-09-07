@@ -102,7 +102,9 @@ public class ComputeHavenAlgorithm<V extends LabeledGraphVertex,E extends Defaul
 	}
 		
 	private Hashtable<Set<V>, Set<V>> computeHaven( DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> gameGraph ) {
-		ArrayList<CopsAndRobberVertex<V>> winningPlayer1 = new Simple2PlayerGameAlgorithm<CopsAndRobberVertex<V>, DefaultEdge>( gameGraph ).execute();
+		ArrayList<CopsAndRobberVertex<V>> winningPlayer0 = new Simple2PlayerGameAlgorithm<CopsAndRobberVertex<V>, DefaultEdge>( gameGraph ).execute();
+		ArrayList<CopsAndRobberVertex<V>> winningPlayer1 = new ArrayList<CopsAndRobberVertex<V>>( gameGraph.vertexSet() );
+		winningPlayer1.removeAll( winningPlayer0 );
 		
 		Hashtable<Set<V>, Set<V>> haven = new Hashtable<Set<V>,Set<V>>();
 		

@@ -174,7 +174,7 @@ public class AlgorithmResult implements Serializable {
 	 * 
 	 * @return the status of openContentAsGraphs
 	 */
-	boolean isOpenContentsAsGraphs() {
+	public boolean isOpenContentsAsGraphs() {
 		return openContentsAsGraphs;
 	}
 
@@ -263,11 +263,40 @@ public class AlgorithmResult implements Serializable {
 
 	/**
 	 * 
+	 * @return a Hashtable containing all stored element-tips displaymodes
+	 *         together with their descriptions
+	 */
+	Hashtable<String, ElementTipsDisplayMode> getElementTipsDisplayModes( AlgorithmResultContent content ) throws UserException {
+		Hashtable<String, ElementTipsDisplayMode> modes = new Hashtable<String, ElementTipsDisplayMode>();
+		if ( getElementTips( content ) != null ) {
+			for ( String key : getElementTips( content ).keySet() )
+				modes.put( key, elementTipsModes.get( key ) );
+		}
+		return modes;
+	}
+	
+	/**
+	 * 
 	 * @return a Hashtable containing all stored subgraph displaymodes together
 	 *         with their descriptions
 	 */
-	public Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes() {
+	public Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes( ) {
 		return subgraphModes;
+	}
+
+	
+	/**
+	 * 
+	 * @return a Hashtable containing all stored subgraph displaymodes together
+	 *         with their descriptions for this content
+	 */
+	Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes( AlgorithmResultContent content ) throws UserException {
+		Hashtable<String, DisplaySubgraphMode> modes = new Hashtable<String, DisplaySubgraphMode>();
+		if ( getDisplaySubgraphs( content ) != null ) {
+			for ( String key : getDisplaySubgraphs( content ).keySet() )
+				modes.put( key, subgraphModes.get( key ) );
+		}
+		return modes;
 	}
 
 	/**

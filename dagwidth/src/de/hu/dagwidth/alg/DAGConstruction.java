@@ -173,10 +173,10 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge,
 	}
 	
 	public <VI extends CopsAndRobberVertex<V>, EI extends DefaultEdge> ListenableDirectedGraph<DAGVertex, DefaultEdge> getDAG( DirectedGraph<VI, EI> gameGraph ) throws UserException {
-		Set<VI> winningPlayer1 = new HashSet<VI>( new Simple2PlayerGameAlgorithm<VI,EI>( gameGraph ).execute() );
+		Set<VI> winningPlayer0 = new HashSet<VI>( new Simple2PlayerGameAlgorithm<VI,EI>( gameGraph ).execute() );
 		
 		Set<VI> winningStartVertexes = new HashSet<VI>( Algorithms.filter( gameGraph.vertexSet(), new DummyVertexFilter<VI>() ));
-		winningStartVertexes.removeAll( winningPlayer1 );
+		winningStartVertexes.retainAll( winningPlayer0 );
 		
 		if ( winningStartVertexes.size()  == 0 )
 			return null;
@@ -213,7 +213,7 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge,
 					VI v2 = null;
 					while ( edgesv1.hasNext() ) {
 						VI v2h = gameGraph.getEdgeTarget( edgesv1.next() );
-						if ( ! winningPlayer1.contains( v2h ) ) {
+						if ( winningPlayer0.contains( v2h ) ) {
 							v2 = v2h;
 							if ( v2.getAdded() == v2.getRobber() )
 								break;
@@ -310,6 +310,8 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge,
 		}
 		
 		public int hashCode() {
+			if ( X == null )
+				return super.hashCode();
 			return X.hashCode();
 		}
 	}

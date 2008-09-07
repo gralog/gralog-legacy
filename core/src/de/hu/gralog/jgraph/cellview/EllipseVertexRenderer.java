@@ -98,9 +98,12 @@ public class EllipseVertexRenderer extends DefaultVertexRenderer {
 	 * Return a slightly larger preferred size than for a rectangle.
 	 */
 	public Dimension getPreferredSize() {
-		Dimension d = super.getPreferredSize();
+		Dimension d = super.getOriginalPS();
 		d.width += d.width / 8;
 		d.height += d.height / 2;
+		d.width = (int)((Math.floor((d.width / gridsize)-0.01) + 1) * gridsize - 1);
+		d.height = (int)((Math.floor((d.height / gridsize)-0.01) + 1) * gridsize - 1);
+
 		return d;
 	}
 

@@ -43,6 +43,10 @@ public class AlgorithmResultContentPersistenceDelegate extends
 				out.writeStatement(new Statement(oldInstance, "setName",
 						new Object[] { content.getName() }));
 
+			if (content.getDescription() != null)
+				out.writeStatement(new Statement(oldInstance, "setDescription",
+						new Object[] { content.getDescription() }));
+			
 			if (content.getGraphSupport() != null)
 				out.writeStatement(new Statement(oldInstance,
 						"setGraphSupport", new Object[] { content
