@@ -1,0 +1,43 @@
+This plugin can be used as a starting point
+to develop your own plugins for Gralog.
+It provides several examples on how
+to define your own algorithms and graphs for
+gralog. 
+
+All gralog-plugins come with the following
+directory-structure:
+
+src/ - contains the java-source-files that constitute the classes of the plugin
+src/plugin.conf - the plugin.conf that will be included in the jar-file for this plugin 
+				( see the gralog-core documentation for the format of this file )
+dist/ - the distribution-directory of the plugin
+dist/gralog-"pluginname".jar - the jar-file that constitutes the plugin 
+			( copy this file into the plugin-directory of your gralog-installation to test the plugin )
+dist/gralog-"pluginname".zip - this file contains the whole plugin, i.e. src/, dist/, doc/, lib/, META-INF/, build.xml
+doc/ - the documentation for this plugin
+doc/api/ - the java-doc documentation for this plugin
+lib/ - the library-directory for your plugin which always contains gralog-core.jar
+	( if you need other libraries, i.e. external libraries or other gralog-plugins you
+	can put them in this directory. See below for how to make sure that external libraries
+	are included in the plugins-jar-file )
+lib/gralog-core.jar
+META-INF/
+META-INF/MANIFEST.MF
+build.xml - the build-file for this plugin
+
+The build.xml comes with the following targets:
+
+all - builds the jar-file, zip-file and java-doc for this plugin
+dist - builds dist/gralog-"pluginname".zip
+doc - builds the java-doc for this plugin
+jar - builds the jar-file for this plugin
+clean - deletes all generated content
+
+How to include external libraries in your plugin:
+
+When you use external libraries, i.e. not other gralog-plugins,
+you have to make sure that these are included in the jar-file
+build for this plugin. The easiest way to
+do this is to search in the build.xml file for
+the comment "please include your external libraries here" and
+follow the instructions provided there.
