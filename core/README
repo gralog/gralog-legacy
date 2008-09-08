@@ -1,8 +1,7 @@
-This plugin can be used as a starting point
-to develop your own plugins for Gralog.
-It provides several examples on how
-to define your own algorithms and graphs for
-gralog. 
+This is the Gralog-Core-Library. It
+defines the interface between the Gralog-Application and
+Gralog-Plugins. Please refer to the documentation
+under doc/api how to define your own plugins for Gralog.
 
 All gralog-plugins come with the following
 directory-structure:

@@ -1,16 +1,9 @@
+This is the Gralog-Application. 
+To run it start the class de.hu.gralog.Gralog. 
+If you want Gralog to load your plugins, you have
+to copy your plugins to a folder named plugins under this
+directory. Alternatively you can set the workingdirectory
+when you run Gralog.
 
-used libraries:
+The build-file provides the following tasks:
 
-- jdom
-- idw
-- browserlauncher2
-- xpp3
-- xstream
-- java-cup
-- jgraph
-- jgrapht
-
-used icons:
-- kdevdesigner
-- kimagemapeditor
-- gwenview

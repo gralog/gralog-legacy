@@ -34,6 +34,10 @@ import de.hu.gralog.graph.GralogGraphSupport;
 public class AlgorithmResultInteractiveContent extends AlgorithmResultContent {
 	private AlgorithmResult result = null;
 
+	public AlgorithmResultInteractiveContent() {
+		super();
+	}
+	
 	/**
 	 * @see AlgorithmResultContent#AlgorithmResultContent(GralogGraphSupport)
 	 * 
@@ -59,6 +63,7 @@ public class AlgorithmResultInteractiveContent extends AlgorithmResultContent {
 	 * @throws UserException
 	 */
 	protected void fireContentChanged() throws UserException {
-		result.fireCurrentContentChanged();
+		if ( result != null )
+			result.fireCurrentContentChanged();
 	}
 }
