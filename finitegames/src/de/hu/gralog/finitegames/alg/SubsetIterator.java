@@ -98,9 +98,10 @@ public class SubsetIterator<V> implements Iterator
 					pos[i-1]++;
 					for(int j=i;j<k;j++)
 						pos[j] = pos[i-1]+j-i+1;
+					return true;
 				}
 			}
-			return true;
+			return false;		// should never happen
 		}
 	}
 	
