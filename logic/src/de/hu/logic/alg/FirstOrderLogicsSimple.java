@@ -37,31 +37,31 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 import de.hu.logic.fo.FOEvaluation;
 import de.hu.logic.fo.FOEvaluationTreeNode;
 import de.hu.logic.fo.Formula;
 import de.hu.logic.fo.Relation;
-import de.hu.logic.graph.StructureAdaptorFactory;
 import de.hu.logic.parser.FOFormulaList;
 import de.hu.logic.parser.FOLogicParser;
 import de.hu.logic.parser.ParseException;
+import de.hu.logic.structure.StructureAdaptorFactory;
 
 public class FirstOrderLogicsSimple implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
-	private GralogGraphSupport structure;
+	private Structure structure;
 	private String formula;
 	
 	public FirstOrderLogicsSimple() {
 		super();
 	}
 	
-	public GralogGraphSupport getStructure() {
+	public Structure getStructure() {
 		return structure;
 	}
 
-	public void setStructure(GralogGraphSupport structure) {
+	public void setStructure(Structure structure) {
 		this.structure = structure;
 	}
 	
@@ -123,7 +123,7 @@ public class FirstOrderLogicsSimple implements Algorithm {
 	public static class SimpleFOAlgorithmResultContentTreeNode extends AlgorithmResultContentTreeNode {
 		
 		private FOEvaluationTreeNode evaluationTreeNode;
-		private GralogGraphSupport transitionSystem;
+		private Structure transitionSystem;
 		private Formula formula;
 		private transient boolean childrenBuild = false;
 		
@@ -136,14 +136,14 @@ public class FirstOrderLogicsSimple implements Algorithm {
 			}
 		}
 
-		public SimpleFOAlgorithmResultContentTreeNode( GralogGraphSupport transitionSystem, Formula formula ) throws UserException {
+		public SimpleFOAlgorithmResultContentTreeNode( Structure transitionSystem, Formula formula ) throws UserException {
 //			this.transitionSystem = transitionSystem;
 			
 			this( transitionSystem, new FOEvaluation().initialise( StructureAdaptorFactory.generateAdaptor(transitionSystem), formula ) );
 			this.formula = formula;
 		}
 		
-		public SimpleFOAlgorithmResultContentTreeNode( GralogGraphSupport transitionSystem, FOEvaluationTreeNode evaluationTreeNode ) {
+		public SimpleFOAlgorithmResultContentTreeNode( Structure transitionSystem, FOEvaluationTreeNode evaluationTreeNode ) {
 			this.evaluationTreeNode = evaluationTreeNode;
 			this.transitionSystem = transitionSystem;
 		}
@@ -159,7 +159,7 @@ public class FirstOrderLogicsSimple implements Algorithm {
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport) throws UserException {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, Structure graphSupport) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
 			return super.getDisplaySubgraphs(modes, transitionSystem);
@@ -178,10 +178,10 @@ public class FirstOrderLogicsSimple implements Algorithm {
 
 		
 		@Override
-		protected Set<GralogGraphSupport> getAllGraphs() throws UserException {
-			HashSet<GralogGraphSupport> graphs = new HashSet<GralogGraphSupport>();
-			if ( getGraphSupport() != null )
-				graphs.add( getGraphSupport() );
+		protected Set<Structure> getAllStructures() throws UserException {
+			HashSet<Structure> graphs = new HashSet<Structure>();
+			if ( getStructure() != null )
+				graphs.add( getStructure() );
 			return graphs;
 		}
 

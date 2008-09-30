@@ -17,7 +17,7 @@
  *
  */
 
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import de.hu.gralog.beans.support.DefaultPropertyChangeListenableBean;
 public class Proposition<V extends TransitionSystemVertex> extends DefaultPropertyChangeListenableBean {
 
 	private String name = "name";
-	private ArrayList<V> vertices = new ArrayList<V>();
+	ArrayList<V> vertices = new ArrayList<V>();
 	
 	public Proposition() {
 		this( "name" );

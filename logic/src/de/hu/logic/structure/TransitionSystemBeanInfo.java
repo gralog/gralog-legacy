@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
 import java.beans.BeanDescriptor;
 import java.beans.IndexedPropertyDescriptor;
@@ -18,6 +18,16 @@ public class TransitionSystemBeanInfo extends SimpleBeanInfo {
 	
 	static {
 		try {
+			BEAN_DESCRIPTOR.setShortDescription(
+					"<html>" +
+					"This customizer allows you to " +
+					"specify the propositions " +
+					"for this transitionsystem. " +
+					"Propositions are sets of transitions " +
+					"that have a name. " +
+					"</html>"
+					);
+			
 			PROPERTY_DESCRIPTORS[0] = new IndexedPropertyDescriptor( "propositions", TransitionSystem.class );
 		} catch (IntrospectionException e) {
 			e.printStackTrace();

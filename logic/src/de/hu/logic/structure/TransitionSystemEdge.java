@@ -1,16 +1,5 @@
-/**
- * 
- */
-package de.hu.logic.graph;
-
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.UndirectedGraph;
-
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.logic.fo.Structure;
-
-/**
- * Created on 2006 by Stephan Kreutzer
+/*
+ * Created on 2006 by Sebastian Ordyniak
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
@@ -28,20 +17,40 @@ import de.hu.logic.fo.Structure;
  *
  */
 
+package de.hu.logic.structure;
+
+import de.hu.gralog.structure.types.elements.DefaultListenableEdge;
+
 /**
- * @author Stephan Kreutzer 
+ * @author kreutzer
  *
  */
-public class StructureAdaptorFactory {
-
-	public static Structure generateAdaptor( GralogGraphSupport graph)
+public class TransitionSystemEdge extends DefaultListenableEdge
+{
+	private String label;
+		
+	public TransitionSystemEdge() {
+		this( "" );
+	}
+	
+	public TransitionSystemEdge( String label )
 	{
-		if(graph.getGraph() instanceof UndirectedGraph)
-			return new UndirectedGraphAdaptor(graph);
-		else if(graph.getGraphBean() instanceof TransitionSystem)
-			return new TransitionSystemAdaptor(graph);
-		else if(graph instanceof DirectedGraph)
-			return new DirectedGraphAdaptor(graph);
-		return null;
+		super();
+		this.label = label;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		String oldValue = this.label;
+		this.label = label;
+		propertyChangeSupport.firePropertyChange( "label", oldValue, label );
+		displayChangeSupport.fireDisplayChangeDefault();
+	}
+	
+	public String toString() {
+		return label;
 	}
 }

@@ -17,10 +17,13 @@
  *
  */
 
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -48,9 +51,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.jgrapht.event.GraphVertexChangeEvent;
+import org.jgrapht.event.VertexSetListener;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> extends JPanel implements Customizer, ActionListener, ListSelectionListener, ItemListener {
 
@@ -62,7 +67,7 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 	private static final String ALL_TO_IN_LIST = "<<";
 	private static final String ALL_TO_OUT_LIST = ">>";
 	
-	private GralogGraphSupport<V,E,GB,G> transitionSystem;
+	private Structure<V,E,GB,G> transitionSystem;
 	private ChoosePropositionComboBoxModel choosePropositionComboBoxModel;
 	private JComboBox chooseProposition;
 	
@@ -100,60 +105,104 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 		
 		addProposition.setActionCommand( ADD_PROPOSITION );
 		addProposition.addActionListener( this );
+		addProposition.setToolTipText( "Adds a proposition to your transitionsystem." );
 		panel.add( addProposition );
 		panel.add( Box.createRigidArea( new Dimension( 2, 0 ) ) );
 		
 		removeProposition.setActionCommand( REMOVE_PROPOSITION );
 		removeProposition.addActionListener( this );
+		removeProposition.setToolTipText( "Removes the current proposition from your transitionsystem." );
 		panel.add( removeProposition );
 		panel.add( Box.createRigidArea( new Dimension( 2, 0 ) ) );
 		
 		renameProposition.setActionCommand( RENAME_PROPOSITION );
 		renameProposition.addActionListener( this );
+		renameProposition.setToolTipText( "Renames the current proposition." );
 		panel.add( renameProposition );
 		return panel;
 	}
 	
 	protected JPanel createEditPropositionPanel() {
-		editPanel.setLayout( new BoxLayout( editPanel, BoxLayout.X_AXIS ) );
-						
+		editPanel.setLayout( new GridBagLayout(  ) );
+		
+		
 		inList = new JList( new InOutPropositionListModel( true ) );
+		inList.setToolTipText( "This list shows all the states contained in your proposition." );
 		outList = new JList( new InOutPropositionListModel( false ) );
+		outList.setToolTipText( "This list shows all the states that are not contained in your proposition." );
 		
 		inList.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 		outList.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
 		inList.getSelectionModel().addListSelectionListener( this );
 		outList.getSelectionModel().addListSelectionListener( this );
+
+		JPanel inListPanel = new JPanel();
+		inListPanel.setLayout( new BorderLayout() );
+		inListPanel.setBorder( BorderFactory.createTitledBorder( "In-List" ) );
+		inListPanel.add( new JScrollPane( inList ) );
 		
-		editPanel.add( new JScrollPane( inList ) );
-		editPanel.add( Box.createRigidArea( new Dimension( 5, 0 ) ) );
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weighty = 1;
+		c.weightx = 1;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.fill = GridBagConstraints.BOTH;
+		editPanel.add( inListPanel, c );
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout( new BoxLayout( buttonPanel, BoxLayout.Y_AXIS ) );
 		
 		toInList.setActionCommand( TO_IN_LIST );
 		toInList.addActionListener( this );
+		toInList.setToolTipText( "<html>Adds all states that are selected in <b>Out-List</b> to your proposition.</html>" );
 		buttonPanel.add( toInList );
 		
 		toOutList.setActionCommand( TO_OUT_LIST );
 		toOutList.addActionListener( this );
+		toOutList.setToolTipText( "<html>Removes all states that are selected in <b>In-List</b> from your proposition.</html>" );
 		buttonPanel.add( toOutList );
 		
 		buttonPanel.add( Box.createVerticalGlue() );
 		
 		alltoInList.setActionCommand( ALL_TO_IN_LIST );
 		alltoInList.addActionListener( this );
+		alltoInList.setToolTipText( "Adds all available states to your proposition." );
 		buttonPanel.add( alltoInList );
 		
 		alltoOutList.setActionCommand( ALL_TO_OUT_LIST );
 		alltoOutList.addActionListener( this );
+		alltoOutList.setToolTipText( "Removes all states from your proposition." );
 		buttonPanel.add( alltoOutList );
-		
-		editPanel.add( buttonPanel );
-		editPanel.add( Box.createRigidArea( new Dimension( 5, 0 ) ) );
-		
-		editPanel.add( new JScrollPane( outList ) );
+
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.weighty = 1;
+		c.weightx = 0.01;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets( 5, 5, 5, 5 );
+		c.anchor = GridBagConstraints.CENTER;
+		editPanel.add( buttonPanel, c );
+
+		JPanel outListPanel = new JPanel();
+		outListPanel.setLayout( new BorderLayout() );
+		outListPanel.setBorder( BorderFactory.createTitledBorder( "Out-List" ) );
+		outListPanel.add( new JScrollPane( outList ) );
+
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.weighty = 1;
+		c.weightx = 1;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.fill = GridBagConstraints.BOTH;
+		editPanel.add( outListPanel, c );
 		
 		return editPanel;
 	}
@@ -171,6 +220,7 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 		
 		chooseProposition.setPreferredSize( new Dimension( 100, (int)chooseProposition.getPreferredSize().getHeight() ) );
 		chooseProposition.addItemListener( this );
+		chooseProposition.setToolTipText( "Please select the proposition you want to edit." );
 		choosePropositionPanel.add( chooseProposition );
 		choosePropositionPanel.add( Box.createRigidArea( new Dimension( 5, 0 ) ) );
 		
@@ -185,32 +235,22 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 	}
 	
 	public void setObject(Object bean) {
-		transitionSystem = (GralogGraphSupport<V,E,GB,G>)bean;
+		transitionSystem = (Structure<V,E,GB,G>)bean;
 		createPanel();
 		updateControls();
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-	
 	protected Proposition getProposition() {
 		if ( currentProposition == null ) {
 			String name = (String)chooseProposition.getSelectedItem();
 			if ( name == null )
 				return null;
-			currentProposition = transitionSystem.getGraphBean().getProposition( name );
+			currentProposition = transitionSystem.getStructureBean().getProposition( name );
 		}
 		return currentProposition;
 	}
 	
-	private class InOutPropositionListModel extends AbstractListModel implements PropertyChangeListener {
+	private class InOutPropositionListModel extends AbstractListModel implements PropertyChangeListener, VertexSetListener {
 
 		protected Proposition currentProposition = null;
 		protected ArrayList<TransitionSystemVertex> vertexes = null;
@@ -220,6 +260,7 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 			this.in = in;
 
 			transitionSystem.getPropertyChangeSupport().addPropertyChangeListener( this );
+			transitionSystem.getGraph().addVertexSetListener( this );
 		}
 		
 		protected ArrayList<TransitionSystemVertex> getVertexes() {
@@ -255,10 +296,18 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 		}
 		
 		public void propertyChange( PropertyChangeEvent e ) {
-			if ( e.getSource() == getProposition() ) {
-				vertexes = null;
-				fireContentsChanged( this, 0, getSize() );
-			}
+			vertexes = null;
+			fireContentsChanged( this, 0, getSize() );
+		}
+
+		public void vertexAdded(GraphVertexChangeEvent arg0) {
+			vertexes = null;
+			fireContentsChanged( this, 0, getSize() );
+		}
+
+		public void vertexRemoved(GraphVertexChangeEvent arg0) {
+			vertexes = null;
+			fireContentsChanged( this, 0, getSize() );
 		}
 	}
 	
@@ -279,15 +328,15 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 		}
 
 		public int getSize() {
-			return transitionSystem.getGraphBean().getPropositions().length;
+			return transitionSystem.getStructureBean().getPropositions().length;
 		}
 
 		public Object getElementAt(int index) {
-			return transitionSystem.getGraphBean().getPropositions( index ).getName();
+			return transitionSystem.getStructureBean().getPropositions( index ).getName();
 		}
 		
 		public void propertyChange( PropertyChangeEvent e ) {
-			if ( getSelectedItem() != null && transitionSystem.getGraphBean().getProposition( (String)getSelectedItem() ) == null ) {
+			if ( getSelectedItem() != null && transitionSystem.getStructureBean().getProposition( (String)getSelectedItem() ) == null ) {
 				chooseProposition.setSelectedItem( null );
 				chooseProposition.repaint();
 			}
@@ -300,22 +349,22 @@ public class TransitionSystemCustomizer<V extends TransitionSystemVertex, E exte
 		if ( e.getActionCommand().equals( ADD_PROPOSITION ) ) {
 			String name = JOptionPane.showInputDialog( this, "name: " );
 			if ( name != null ) {
-				if ( transitionSystem.getGraphBean().getProposition( name ) == null )
-					transitionSystem.getGraphBean().addProposition( new Proposition( name ) );
+				if ( transitionSystem.getStructureBean().getProposition( name ) == null )
+					transitionSystem.getStructureBean().addProposition( new Proposition( name ) );
 				chooseProposition.setSelectedItem( name );
 				chooseProposition.repaint();
 			}
 		}
 		if ( e.getActionCommand().equals( REMOVE_PROPOSITION ) ) {
-			transitionSystem.getGraphBean().removeProposition( choosePropositionComboBoxModel.selectedPropostionName );
+			transitionSystem.getStructureBean().removeProposition( choosePropositionComboBoxModel.selectedPropostionName );
 			chooseProposition.setSelectedItem( null );
 			chooseProposition.repaint();
 		}
 		if ( e.getActionCommand().equals( RENAME_PROPOSITION ) ) {
 			String name = JOptionPane.showInputDialog( this, "name: " );
 			if ( name != null ) {
-				if ( transitionSystem.getGraphBean().getProposition( name ) == null )
-					transitionSystem.getGraphBean().getProposition( choosePropositionComboBoxModel.selectedPropostionName ).setName( name );
+				if ( transitionSystem.getStructureBean().getProposition( name ) == null )
+					transitionSystem.getStructureBean().getProposition( choosePropositionComboBoxModel.selectedPropostionName ).setName( name );
 				chooseProposition.setSelectedItem( name );
 				chooseProposition.repaint();
 			}

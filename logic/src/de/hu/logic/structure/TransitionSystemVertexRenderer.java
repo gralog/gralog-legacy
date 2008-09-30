@@ -1,4 +1,4 @@
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
 import java.awt.Component;
 import java.awt.Font;

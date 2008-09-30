@@ -27,12 +27,12 @@ import java.util.List;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 import de.hu.logic.general.EvaluationException;
-import de.hu.logic.graph.Proposition;
-import de.hu.logic.graph.TransitionSystem;
-import de.hu.logic.graph.TransitionSystemEdge;
-import de.hu.logic.graph.TransitionSystemVertex;
+import de.hu.logic.structure.Proposition;
+import de.hu.logic.structure.TransitionSystem;
+import de.hu.logic.structure.TransitionSystemEdge;
+import de.hu.logic.structure.TransitionSystemVertex;
 
 /**
  * This is a very simple evaluation algorithm that evaluates the formula
@@ -47,7 +47,7 @@ import de.hu.logic.graph.TransitionSystemVertex;
 public class TreeNodeEvaluation<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem, G extends ListenableDirectedGraph<V,E>>
 {
 	Interpretation _interp;
-	GralogGraphSupport<V,E,GB,G> t; 
+	Structure<V,E,GB,G> t; 
 	
 	private HashSet<String> _sig;	// used only internally in the checkSignatures method
 	
@@ -57,7 +57,7 @@ public class TreeNodeEvaluation<V extends TransitionSystemVertex, E extends Tran
 		Proposition p;
 		if(inter.containsKey(name))
 			return inter.get(name);
-		else if((p=t.getGraphBean().getProposition(name)) != null) 
+		else if((p=t.getStructureBean().getProposition(name)) != null) 
 		{
 			return p.copy();
 		}
@@ -82,11 +82,11 @@ public class TreeNodeEvaluation<V extends TransitionSystemVertex, E extends Tran
 	 * @return Returns the relation containing the set of vertices at which the formula becomes true.
 	 * @throws UserException Exception thrown if for some reason the formula cannot be evaluated in the system. 
 	 * 	 */
-	public ModalTreeNode evaluate(GralogGraphSupport<V,E,GB,G> trans, Formula f) throws UserException
+	public ModalTreeNode evaluate(Structure<V,E,GB,G> trans, Formula f) throws UserException
 	{
 		t = trans;
 		_interp = new Interpretation();
-		_sig = new HashSet<String>(t.getGraphBean().getSignature());
+		_sig = new HashSet<String>(t.getStructureBean().getSignature());
 		checkSignatures(f);
 		ModalTreeNode t = new ModalTreeNode(f, this);
 		
@@ -282,7 +282,7 @@ public class TreeNodeEvaluation<V extends TransitionSystemVertex, E extends Tran
 	 */
 	protected boolean checkSignatures(Formula f) throws UserException
 	{
-		_sig = new HashSet<String>(t.getGraphBean().getSignature());
+		_sig = new HashSet<String>(t.getStructureBean().getSignature());
 		return checkSignaturesRec(f);
 	}
 	
@@ -314,7 +314,7 @@ public class TreeNodeEvaluation<V extends TransitionSystemVertex, E extends Tran
 			return checkSignaturesRec(f.subf());  
 		case Formula.mu:
 		case Formula.nu:
-			if(t.getGraphBean().getProposition(f.ident()) == null)
+			if(t.getStructureBean().getProposition(f.ident()) == null)
 			{
 				_sig.add(f.ident());
 				return checkSignaturesRec(f.subf());

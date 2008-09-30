@@ -6,7 +6,7 @@ package de.hu.logic.general;
 import java.util.List;
 
 import de.hu.gralog.app.UserException;
-import de.hu.logic.graph.Proposition;
+import de.hu.logic.structure.Proposition;
 
 /**
  * @author kreutzer

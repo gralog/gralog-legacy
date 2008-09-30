@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.hu.gralog.app.UserException;
 import de.hu.logic.general.EvaluationTreeNode;
-import de.hu.logic.graph.Proposition;
+import de.hu.logic.structure.Proposition;
 
 
 /**

@@ -17,7 +17,7 @@
  *
  */
 
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
 import java.beans.BeanDescriptor;
 import java.beans.IndexedPropertyDescriptor;

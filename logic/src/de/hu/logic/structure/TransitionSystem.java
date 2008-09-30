@@ -17,7 +17,7 @@
  *
  */
 
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,23 +25,25 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jgrapht.event.GraphVertexChangeEvent;
+import org.jgrapht.event.VertexSetListener;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.gralog.beans.support.DefaultPropertyAndDisplayChangeListenableBean;
-import de.hu.gralog.beans.support.GralogGraphBean;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.beans.support.StructureBean;
+import de.hu.gralog.structure.Structure;
 
 
-public class TransitionSystem<V extends TransitionSystemVertex,E, G extends ListenableDirectedGraph<V,E>> extends DefaultPropertyAndDisplayChangeListenableBean implements PropertyChangeListener, GralogGraphBean<V,E,TransitionSystem<V,E,G>,G> {
+public class TransitionSystem<V extends TransitionSystemVertex,E, G extends ListenableDirectedGraph<V,E>> extends DefaultPropertyAndDisplayChangeListenableBean implements VertexSetListener, PropertyChangeListener, StructureBean<V,E,TransitionSystem<V,E,G>,G> {
 	
 	private ArrayList<Proposition<V>> propositions = new ArrayList<Proposition<V>>();
-	private transient GralogGraphSupport<V,E,TransitionSystem<V,E,G>, G> graphSupport;
+	private transient Structure<V,E,TransitionSystem<V,E,G>, G> structure;
 	
 	public TransitionSystem(  ) {
 	}
 
-	public void setGraphSupport(GralogGraphSupport<V, E, TransitionSystem<V,E,G>, G> graphSupport) {
-		this.graphSupport = graphSupport;
+	public void setStructure(Structure<V, E, TransitionSystem<V,E,G>, G> graphSupport) {
+		this.structure = graphSupport;
 	}
 	
 	public Proposition<V>[] getPropositions() {
@@ -150,6 +152,18 @@ public class TransitionSystem<V extends TransitionSystemVertex,E, G extends List
 		for ( V v : prop.getVertices() ) {
 			int vIndex = getPropositionIndexForVertex( index, v );
 			v.insertProposition( vIndex, prop );
+		}
+	}
+
+	public void vertexAdded(GraphVertexChangeEvent arg0) {
+		// do nothing
+	}
+
+	public void vertexRemoved(GraphVertexChangeEvent event) {
+		V vertex = (V)event.getVertex();
+		for ( Proposition<V> prop : propositions ) {
+			if ( prop.containsVertex( vertex ) )
+				prop.vertices.remove( vertex );
 		}
 	}
 

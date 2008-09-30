@@ -10,17 +10,17 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.logic.graph.Proposition;
-import de.hu.logic.graph.TransitionSystem;
-import de.hu.logic.graph.TransitionSystemEdge;
-import de.hu.logic.graph.TransitionSystemVertex;
+import de.hu.gralog.structure.Structure;
 import de.hu.logic.modal.Formula;
-import de.hu.parity.graph.ParityGameVertex;
+import de.hu.logic.structure.Proposition;
+import de.hu.logic.structure.TransitionSystem;
+import de.hu.logic.structure.TransitionSystemEdge;
+import de.hu.logic.structure.TransitionSystemVertex;
+import de.hu.parity.structure.ParityGameVertex;
 
 public class BuildParityGameArenaAlgorithm<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> {
 	
-	private GralogGraphSupport<V,E,GB,G> transitionSystem;
+	private Structure<V,E,GB,G> transitionSystem;
 	private Formula formula;
 	private int maxNesting;
 	
@@ -32,7 +32,7 @@ public class BuildParityGameArenaAlgorithm<V extends TransitionSystemVertex, E e
 	private HashMap<String, ParityGameVertex> arenaVertices = new HashMap<String, ParityGameVertex>();
 	private HashMap<String, Formula> fpVars = new HashMap<String, Formula>();
 	
-	public BuildParityGameArenaAlgorithm (GralogGraphSupport<V,E,GB,G> ts, Formula f) {
+	public BuildParityGameArenaAlgorithm (Structure<V,E,GB,G> ts, Formula f) {
 		transitionSystem = ts;
 		formula = f;
 	}

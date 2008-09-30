@@ -30,7 +30,7 @@ import java.util.Set;
  * Adaptor classes provide a Structure interface for graphs recognised by gralog to the
  * FOEvaluation algorithms.
  */
-public interface Structure 
+public interface LogicStructure 
 {
 
 	public Set getUniverse();

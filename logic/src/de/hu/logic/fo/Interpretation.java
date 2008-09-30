@@ -29,11 +29,11 @@ import java.util.HashMap;
 
 public class Interpretation 
 {
-	Structure _str;
+	LogicStructure _str;
 	HashMap<String,Object> _foVars;		// Map providing interpretation for first-order vars
 	HashMap<String, Relation> _soVars;	// second order variables
 	
-	public Interpretation(Structure str)
+	public Interpretation(LogicStructure str)
 	{
 		_str = str;
 		_foVars = new HashMap<String, Object>();

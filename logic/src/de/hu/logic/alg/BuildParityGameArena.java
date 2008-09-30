@@ -10,33 +10,33 @@ import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphFactory;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
+import de.hu.gralog.structure.StructureFactory;
 import de.hu.logic.general.EvaluationException;
-import de.hu.logic.graph.TransitionSystem;
-import de.hu.logic.graph.TransitionSystemEdge;
-import de.hu.logic.graph.TransitionSystemVertex;
 import de.hu.logic.modal.Formula;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
-import de.hu.parity.graph.ParityGameGraphTypeInfo;
-import de.hu.parity.graph.ParityGameVertex;
+import de.hu.logic.structure.TransitionSystem;
+import de.hu.logic.structure.TransitionSystemEdge;
+import de.hu.logic.structure.TransitionSystemVertex;
+import de.hu.parity.structure.ParityGameArenaTypeInfo;
+import de.hu.parity.structure.ParityGameVertex;
 
 public class BuildParityGameArena<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private GralogGraphSupport<V,E,GB,G> transitionSystem;
+	private Structure<V,E,GB,G> transitionSystem;
 	private String formula;// = "\\muX.(X\\or(\\nuX.(X\\andP)))";
 	
 	public BuildParityGameArena() {
 		super();
 	}
 	
-	public GralogGraphSupport<V,E,GB,G> getTransitionSystem() {
+	public Structure<V,E,GB,G> getTransitionSystem() {
 		return transitionSystem;
 	}
 
-	public void setTransitionSystem(GralogGraphSupport<V,E,GB,G> transitionSystem) {
+	public void setTransitionSystem(Structure<V,E,GB,G> transitionSystem) {
 		this.transitionSystem = transitionSystem;
 	}
 	
@@ -75,7 +75,7 @@ public class BuildParityGameArena<V extends TransitionSystemVertex, E extends Tr
 			Formula f = list.substituteMain();
 			
 			AlgorithmResult result = new AlgorithmResult();
-			result.setSingleContent( new AlgorithmResultContent( GralogGraphFactory.createGraphSupport( new ParityGameGraphTypeInfo(), new ListenableDirectedGraph<ParityGameVertex, DefaultEdge>( new BuildParityGameArenaAlgorithm(transitionSystem, f).execute() ) ) ) );
+			result.setSingleContent( new AlgorithmResultContent( StructureFactory.createStructure( new ParityGameArenaTypeInfo(), new ListenableDirectedGraph<ParityGameVertex, DefaultEdge>( new BuildParityGameArenaAlgorithm(transitionSystem, f).execute() ) ) ) );
 						
 			return result;
 		} catch (UserException e) {

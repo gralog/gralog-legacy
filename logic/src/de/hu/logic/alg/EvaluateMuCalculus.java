@@ -25,8 +25,10 @@ import java.beans.Expression;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
 import org.jgrapht.graph.ListenableDirectedGraph;
 
@@ -38,33 +40,34 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 import de.hu.logic.general.EvaluationException;
-import de.hu.logic.graph.Proposition;
-import de.hu.logic.graph.TransitionSystem;
-import de.hu.logic.graph.TransitionSystemEdge;
-import de.hu.logic.graph.TransitionSystemVertex;
+import de.hu.logic.general.EvaluationTreeNode;
 import de.hu.logic.modal.Formula;
-import de.hu.logic.modal.SetEvaluation;
+import de.hu.logic.modal.TreeNodeEvaluation;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
+import de.hu.logic.structure.Proposition;
+import de.hu.logic.structure.TransitionSystem;
+import de.hu.logic.structure.TransitionSystemEdge;
+import de.hu.logic.structure.TransitionSystemVertex;
 
 public class EvaluateMuCalculus<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
 	private static final String EVALUATION_SG = "evaluation";
-	private GralogGraphSupport<V,E,GB,G> transitionSystem;
+	private Structure<V,E,GB,G> transitionSystem;
 	private String formula;
 	
 	public EvaluateMuCalculus() {
 		super();
 	}
 	
-	public GralogGraphSupport<V,E,GB,G> getTransitionSystem() {
+	public Structure<V,E,GB,G> getTransitionSystem() {
 		return transitionSystem;
 	}
 
-	public void setTransitionSystem(GralogGraphSupport<V,E,GB,G> transitionSystem) {
+	public void setTransitionSystem(Structure<V,E,GB,G> transitionSystem) {
 		this.transitionSystem = transitionSystem;
 	}
 	
@@ -108,7 +111,7 @@ public class EvaluateMuCalculus<V extends TransitionSystemVertex, E extends Tran
 			displayMode.setVertexDisplayMode( DisplayMode.HIGH1, DisplayMode.SHOW );
 			result.addDisplaySubgraphMode( EVALUATION_SG, displayMode );
 			
-			result.setContentTree( buildContentTree( f ) );
+			result.setContentTree( new MueKalkulAlgorithmResultContentTreeNode(  getTransitionSystem(), f ) );
 			
 			return result;
 		} catch (EvaluationException e) {
@@ -122,24 +125,12 @@ public class EvaluateMuCalculus<V extends TransitionSystemVertex, E extends Tran
 		} 
 	}
 	
-	private MueKalkulAlgorithmResultContentTreeNode buildContentTree( Formula formula ) {
-		MueKalkulAlgorithmResultContentTreeNode node = new MueKalkulAlgorithmResultContentTreeNode( formula, transitionSystem );
-		if ( formula.type() == Formula.bottom || formula.type() == Formula.top || formula.type() == Formula.proposition )
-			return node;
-		if ( formula.type() == Formula.and || formula.type() == Formula.or ) {
-			node.addChild( buildContentTree( formula.leftSubf() ) );
-			node.addChild( buildContentTree( formula.rightSubf() ) );
-			return node;
-		} 
-		node.addChild( buildContentTree( formula.subf() ) );
-		return node;
-	}
-	
-	
 	public static class MueKalkulAlgorithmResultContentTreeNode<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> extends AlgorithmResultContentTreeNode {
 		
-		Formula formula;
-		GralogGraphSupport<V,E,GB,G> transitionSystem;
+		private EvaluationTreeNode evaluationTreeNode;
+		private Structure<V,E,GB,G> transitionSystem;
+		private Formula formula;
+		private transient boolean childrenBuild = false;
 		
 		static {
 			try {
@@ -149,44 +140,72 @@ public class EvaluateMuCalculus<V extends TransitionSystemVertex, E extends Tran
 				e.printStackTrace();
 			}
 		}
-		
-		public MueKalkulAlgorithmResultContentTreeNode( Formula formula, GralogGraphSupport<V,E,GB,G> transitionSystem ) {
+
+		public MueKalkulAlgorithmResultContentTreeNode( Structure<V,E,GB,G> transitionSystem, Formula formula ) throws UserException {
+			this( transitionSystem, new TreeNodeEvaluation().evaluate( transitionSystem, formula ) );
 			this.formula = formula;
+		}
+		
+		public MueKalkulAlgorithmResultContentTreeNode( Structure<V,E,GB,G> transitionSystem, EvaluationTreeNode evaluationTreeNode ) {
+			this.evaluationTreeNode = evaluationTreeNode;
 			this.transitionSystem = transitionSystem;
 		}
-
-		private void computeSubgraphs() {
-			try {
-				subgraphs = new Hashtable<String, SubgraphInfo>();
-				SetEvaluation eval = new SetEvaluation();
-				Proposition rp = eval.evaluate( transitionSystem, formula );
-				
-				SubgraphInfo subgraphInfo = new SubgraphInfo( new HashSet( rp.getVertices() ), new HashSet() );
-				subgraphs.put( EVALUATION_SG, subgraphInfo );
-			} catch (EvaluationException e) {
-				e.printStackTrace();
-			}
+		
+		private void computeSubgraphs() throws UserException {
+			subgraphs = new Hashtable<String, SubgraphInfo>();
+			Proposition rp = evaluationTreeNode.getResult();
+			
+			if ( rp == null )
+				rp = new Proposition();
+			SubgraphInfo subgraphInfo = new SubgraphInfo( new HashSet( rp.getVertices() ), new HashSet() );
+			subgraphs.put( EVALUATION_SG, subgraphInfo );
 		}
 		
 		@Override
-		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport) throws UserException {
+		protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, Structure graphSupport ) throws UserException {
 			if ( subgraphs == null )
 				computeSubgraphs();
 			return super.getDisplaySubgraphs(modes, transitionSystem);
 		}
-		
-		public String getName() {
-			return formula.toString();
+
+		@Override
+		public ArrayList<AlgorithmResultContentTreeNode> getChildren() throws UserException 
+		{
+			if ( !childrenBuild ) {
+				for ( EvaluationTreeNode child : evaluationTreeNode.getChildren() )
+					addChild( new MueKalkulAlgorithmResultContentTreeNode( transitionSystem, child ) );
+				childrenBuild = true;
+			}
+			return super.getChildren();
 		}
+
 		
+		@Override
+		protected Set<Structure> getAllStructures() throws UserException {
+			HashSet<Structure> graphs = new HashSet<Structure>();
+			if ( getStructure() != null )
+				graphs.add( getStructure() );
+			return graphs;
+		}
+
+		public String toString() {
+			return evaluationTreeNode.getName();
+		}
 	}
 	
 	public static class MueKalkulAlgorithmResultContentTreeNodePersistenceDelegate extends DefaultPersistenceDelegate {
 
+		
+		@Override
+		protected void initialize(Class<?> type, Object oldInstance, Object newInstance, Encoder out) {
+			//super.initialize(type, oldInstance, newInstance, out);
+		}
+
 		@Override
 		protected Expression instantiate(Object oldInstance, Encoder out) {
 			MueKalkulAlgorithmResultContentTreeNode node = (MueKalkulAlgorithmResultContentTreeNode)oldInstance;
-			return new Expression( oldInstance, oldInstance.getClass(), "new", new Object[] { node.formula,  node.transitionSystem } );
+			System.out.println( node.toString() );
+			return new Expression( oldInstance, oldInstance.getClass(), "new", new Object[] { node.transitionSystem, node.formula } );
 		}
 		
 	}

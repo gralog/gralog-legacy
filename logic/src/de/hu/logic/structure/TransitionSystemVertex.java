@@ -17,40 +17,41 @@
  *
  */
 
-package de.hu.logic.graph;
+package de.hu.logic.structure;
 
-import de.hu.gralog.graph.types.elements.DefaultListenableEdge;
+import java.util.ArrayList;
+
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 
 /**
  * @author kreutzer
  *
  */
-public class TransitionSystemEdge extends DefaultListenableEdge
+public class TransitionSystemVertex extends LabeledStructureVertex
 {
-	private String label;
-		
-	public TransitionSystemEdge() {
-		this( "" );
-	}
+	private transient ArrayList<Proposition<? extends TransitionSystemVertex>> propositions = new ArrayList<Proposition<? extends TransitionSystemVertex>>();
 	
-	public TransitionSystemEdge( String label )
+	public TransitionSystemVertex()
 	{
 		super();
-		this.label = label;
 	}
-
-	public String getLabel() {
-		return label;
+	
+	public TransitionSystemVertex(String label)
+	{
+		super( label );
 	}
-
-	public void setLabel(String label) {
-		String oldValue = this.label;
-		this.label = label;
-		propertyChangeSupport.firePropertyChange( "label", oldValue, label );
+	
+	public ArrayList<Proposition<? extends TransitionSystemVertex>> getPropositions() {
+		return propositions;
+	}
+	
+	public void removeProposition( Proposition<? extends TransitionSystemVertex> prop ) {
+		propositions.remove( prop );
 		displayChangeSupport.fireDisplayChangeDefault();
 	}
 	
-	public String toString() {
-		return label;
+	public void insertProposition( int index, Proposition<? extends TransitionSystemVertex> prop ) {
+		propositions.add( index, prop );
+		displayChangeSupport.fireDisplayChangeDefault();
 	}
 }

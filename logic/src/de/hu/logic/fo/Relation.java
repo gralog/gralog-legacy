@@ -22,7 +22,7 @@ package de.hu.logic.fo;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hu.logic.graph.TransitionSystemVertex;
+import de.hu.logic.structure.TransitionSystemVertex;
 
 
 /**

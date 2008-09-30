@@ -7,15 +7,15 @@ import de.hu.logic.modal.Evaluation;
 
 public class FOEvaluation implements Evaluation 
 {
-	Structure _struct;
+	LogicStructure _struct;
 	Interpretation _inter;
 	
-	public Structure getStructure()
+	public LogicStructure getStructure()
 	{
 		return _struct;
 	}
 	
-	public FOTreeNode initialise(Structure t, Formula f)
+	public FOTreeNode initialise(LogicStructure t, Formula f)
 	{
 		_inter = new Interpretation(t);
 		_struct = t;
