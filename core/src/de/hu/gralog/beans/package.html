@@ -1,35 +1,36 @@
 <HTML>
 <BODY>
-This package and its subpackages define all classes that are needed to implement
-and use JavaBeans in Gralog.
+This package and it's subpackages define all classes that are needed to implement
+and use JavaBeans in GrALoG.
 <p>
-Gralog makes intensive use of the JavaBeans-Framework
+GrALoG makes intensive use of the JavaBeans-Framework
 ( see <a href="../../../../../pdf/beans.101.pdf">Java Bean Specification</a> )
-in order to define its {@link de.hu.gralog.algorithm Algorithms}, 
-{@link de.hu.gralog.graph.GraphBeanFactory GraphBeans}, 
-{@link de.hu.gralog.graph.types.elements.DefaultListenableVertex vertices} and 
-{@link de.hu.gralog.graph.types.elements.DefaultListenableEdge edges}. 
-The reason for this is that JavaBeans defines a solid Framework
+in order to define it's {@link de.hu.gralog.algorithm Algorithms}, 
+{@link de.hu.gralog.structure.StructureBeanFactory Structure-Beans}, 
+{@link de.hu.gralog.structure.types.elements.DefaultListenableVertex vertices} and 
+{@link de.hu.gralog.structure.types.elements.DefaultListenableEdge edges}. 
+The reason for this is that JavaBeans defines a solid Framework,
 that can be used to construct and define objects with arbitrary properties,
-that itselve can be administrated via a GUI. 
+that can be administrated via a GUI. 
 <p>
-Algorithms, GraphBeans, vertices and edges
+Algorithms, Structure-Beans, vertices and edges
 use JavaBeans to define their properties, {@link de.hu.gralog.beans.propertyeditor PropertyEditors}, 
 {@link java.beans.Customizer Customizers} and / or 
 {@link java.beans.PersistenceDelegate PersistenceDelegates}, thus it is important
 for you to understand the basics of JavaBeans. The next section
-provides a number of examples to illustrate the use of JavaBeans in Gralog.
+provides a number of examples that illustrate the use of JavaBeans in GrALoG.
 
 <h1>Plugin-Developers</h1>
 
-Every time you have to implement an Algorithm, a GraphBean, a VertexType and
-EdgeType in Gralog you basically have to define a JavaBean. But what is a JavaBean
-and what features of JavaBeans can you use in Gralog? 
+Every time you have to implement an algorithm, a structure-bean, a vertex and / or an
+edge in GrALoG you have to define a JavaBean. But what is a JavaBean
+and which features of JavaBeans can you use in GrALoG? 
 <p>
-The JavaBeans-Framework basically allows you to construct objects with arbitrary
+The JavaBeans-Framework allows you to construct objects that take arbitrary
 properties and to provide GUI-components, descriptions and persistence-features to
-these objects, that allow the user to customize, load and save these Beans.
-Lets start with a simple example of a Bean that has a label:
+these objects, that allow the user to customize, load and save them.
+<p>
+Lets start with a simple example of a JavaBean that has a label:
 
 <pre>
 	public class MyBean {
@@ -51,16 +52,16 @@ Lets start with a simple example of a Bean that has a label:
 
 You can see from this example that every property of a JavaBean has a pair
 of functions associated with it, the so called getter- and setter-methods.
-These functions are later used by Gralog to retrieve and set the properties of this Bean.
+These functions are later used by GrALoG to retrieve and set the properties for this bean.
 Since the JavaBeans-Framework provides a huge amount of default-functionality for JavaBeans,
-Gralog would already be able to customize and store this bean - using
+GrALoG would already be able to customize and store this bean - using
 the Default- {@link java.beans.PropertyEditor} and {@link java.beans.PersistenceDelegate}
- for this Bean. But
-as soon as you want to give your Bean more sophisticated properties and behaviour
-you have to know how to associate PropertyEditors, Customizers and
-PersistenceDelegates with it. The easiest way to achieve this
+ for this bean. But
+as soon as you want to implement more sophisticated properties and behaviour for your bean,
+you have to know how to associate Property-Editors, Customizers and
+PersistenceDelegates to it. The easiest way to achieve this
 is to define a class named <b>MyBeanBeanInfo</b> in the same package as your
-BeanClass that extends {@link java.beans.SimpleBeanInfo} 
+bean that extends {@link java.beans.SimpleBeanInfo} 
 and should look something like this:
 
 <p>
@@ -71,21 +72,21 @@ public class MyBeanBeanInfo extends SimpleBeanInfo {
 	
 	static {
 		/**
-		* Sets the DisplayName of this beans. This feature is only supported for Gralog-Algorithms.
+		* Sets the DisplayName of this beans. This feature is only supported for GrALoG-Algorithms.
 		*/
-		BEAN_DESCRIPTOR.setDisplayName( "A name for this bean to be displayed in Gralog" );
+		BEAN_DESCRIPTOR.setDisplayName( "A name for this bean to be displayed in GrALoG" );
 
 		/**
-		* Sets the shortDescripton of this beans. This feature is only supported for Gralog-Algorithms.
+		* Sets the shortDescripton of this beans. This feature is only supported for GrALoG-Algorithms.
 		*/
 		BEAN_DESCRIPTOR.setShortDescription( 
 			"<html>" +
-			"An html-description for this Bean to be displayed by Gralog"
+			"An html-description for this Bean to be displayed by GrALoG"
 			"</html>" 
 			);
 				
 		/**
-		* Sets the PersistenceDelegate for this Bean, that is used by Gralog to store the bean.
+		* Sets the PersistenceDelegate for this Bean, that is used by GrALoG to store the bean.
 		*/
 		BEAN_DESCRIPTOR.setValue( "persistenceDelegate", new MyBeanPersistenceDelegate() );
 
@@ -95,7 +96,7 @@ public class MyBeanBeanInfo extends SimpleBeanInfo {
 			*/
 			PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( "label", MyBean.class );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html>" +
-						"a description for this property which is displayed by Gralog" +
+						"a description for this property which is displayed by GrALoG" +
 						"</html>"
 						);
 		} catch( IntrospectionException e ) {
@@ -105,7 +106,7 @@ public class MyBeanBeanInfo extends SimpleBeanInfo {
 	
 	/**
 	* These methods need to be overriden in order to allow
-	* Gralog to retrieve the BeanDescriptor and the PropertyDescriptors for this class
+	* GrALoG to retrieve the BeanDescriptor and the PropertyDescriptors for this class
 	*/
 	public BeanDescriptor getBeanDescriptor() {
 		return BEAN_DESCRIPTOR;
@@ -117,70 +118,71 @@ public class MyBeanBeanInfo extends SimpleBeanInfo {
 }
 </pre>
 <p>
-The {@link java.beans.BeanDescriptor} provides Information to Gralog about this
-Bean as a whole. The {@link java.beans.BeanDescriptor} allows 
+The {@link java.beans.BeanDescriptor} provides information to GrALoG about the bean
+as a whole. The {@link java.beans.BeanDescriptor} allows 
 you to specify the following:
 <p>
 <ul>
 	<li>
-	A {@link java.beans.Customizer} for this Bean. This is optional. For
-	most of your Beans you do not have to specify a Customizer. A Customizer is
-	only necessary, when you want to provide your own {java.awt.Component}
-	that allows the user to customize this Bean - this Component is then displayed
-	in Gralog. Describing the usage of {@link java.beans.Customizer} is
+	A {@link java.beans.Customizer} for this bean. This is optional. For
+	most of your beans you do not have to specify a Customizer. A Customizer is
+	only necessary, in case you want to provide your own {java.awt.Component}
+	that allows the user to customize this bean - this Component is then displayed
+	in GrALoG. Describing the usage of {@link java.beans.Customizer} is
 	beyond the scope of this introduction, please look at {@link java.beans.Customizer}
 	or at <a href="../../../../../pdf/beans.101.pdf">Java Bean Specification</a>,
 	if you want to implement your own Customizer.
 	</li>
 	<li>
-	A <b>displayname</b> for this Bean. This is also optional and is currently
-	only supported for {@link de.hu.gralog.algorithm Gralog-Algorithms}, 
+	A <b>displayname</b> for this bean. This is also optional and is currently
+	only supported for {@link de.hu.gralog.algorithm GrALoG-Algorithms}, 
 	whose displayname is shown as a name for
 	the algorithm. Set the displayname 
 	with {@link java.beans.BeanDescriptor#setDisplayName( String name )}.
 	</li>
 	<li>
-	A <b>shortdescription</b> for this Bean. This is optional and currently only
-	supported by {@link de.hu.gralog.algorithm Gralog-Algorithms}, whose 
-	shortDescription provides a description of this algorithm to the user. 
-	Note that you can use arbitrary &lt;html&gt; to provide this description.
+	A <b>shortdescription</b> for this bean. This is optional and currently only
+	supported by {@link de.hu.gralog.algorithm GrALoG-Algorithms} and
+	Structure-Beans, whose 
+	shortDescription provides a description for this algorithm / structure-bean to the user. 
+	Note that you can use arbitrary &lt;html&gt; with this description.
 	</li>
 	<li>
-	A {@link java.beans.PersistenceDelegate} for this Bean. This is optional
-	and is only necessary when your Bean can not be stored using the
+	A {@link java.beans.PersistenceDelegate} for this bean. This is optional
+	and is only necessary when your bean can not be stored using the
 	{@link java.beans.DefaultPersistenceDelegate}. The {@link java.beans.DefaultPersistenceDelegate}
-	stores respectively loads a Bean by calling its empty constructor and setting / getting
-	all properties for this Bean. This is sufficient for most Beans in Gralog. 
+	stores respectively loads a bean by calling it's empty constructor and setting / getting
+	all properties for this bean. This is sufficient for most beans in GrALoG. 
 	<p>
 	Since
 	describing PersistenceDelegates is beyond the scope of this introduction we
 	again refer you to <a href="../../../../../pdf/beans.101.pdf">Java Bean Specification</a> respectively
 	the documentation for {@link java.beans.XMLEncoder}. 
 	See also {@link de.hu.gralog.algorithm.result.pd}
-	{@link de.hu.gralog.graph.pd} for examples how to implement PersistenceDelegates.
+	{@link de.hu.gralog.structure.pd} for examples on how to implement PersistenceDelegates.
 	You can specify your own
 	PersistenceDelegate for a bean by calling 
 	{@link java.beans.BeanDescriptor#setValue( String, Object)} where
-	the first parameter has to be the String "persistenceDelegate" and the 
+	the first parameter has to be the String &quote;persistenceDelegate&quote; and the 
 	second has to be an instance of
 	your PersistenceDelegate-class. 
 	</li>
 </ul>
 <p>
 The next thing you have to specify are {@link java.beans.PropertyDescriptor PropertyDescriptors}
-for each property of your Bean. {@link java.beans.PropertyDescriptor} can be used
+for each property of your bean. {@link java.beans.PropertyDescriptor} can be used
 to specify descriptions and {@link java.beans.PropertyEditor PropertyEditors} for each
 property of your bean. They can also be used to define you own getter and setter-functions
 for this bean, which can be useful in case you do not want or can not use the naming
-conventions of JavaBeans. For all features of 
+conventions of JavaBeans. For a full description of all features of 
 {@link java.beans.PropertyDescriptor PropertyDescriptors}
-please refer to its documentation. The following features are usually used
-by Gralog-Beans:
+please refer to it's documentation. The following features are usually used
+by GrALoG-Beans:
 
 <ul>
 	<li>
-	A <b>shortDescription</b> for your Property that is displayed in Gralog.
-	You can specify a shortDescription for your Property by calling
+	A <b>shortDescription</b> for your property that is displayed in GrALoG.
+	You can specify a shortDescription for your property by calling
 	{@link java.beans.PropertyDescriptor#setShortDescription( String )}. Note
 	the shortDescription can again be an arbitrary &lt;html&gt;-String.
 	</li>
@@ -189,7 +191,7 @@ by Gralog-Beans:
 	for your property by calling 
 	{@link java.beans.PropertyDescriptor#setPropertyEditorClass( Class editor )}.
 	<p>
-	Gralog has a set of special PropertyDescriptors with their own associated PropertyEditors
+	GrALoG has a set of special PropertyDescriptors with their own associated PropertyEditors
 	that you can find in {@link de.hu.gralog.beans.propertydescriptor}. Feel free
 	to add your own PropertyDescriptor, if you need more functionality.
 	</li>
@@ -200,17 +202,17 @@ has the given structure, i.e. overrides the functions {@link java.beans.SimpleBe
 {@link java.beans.SimpleBeanInfo#getPropertyDescriptors()}.
 <p>
 Note this was an introduction to the features needed equally for
-all Beans in Gralog, i.e. 
+all beans in GrALoG, i.e. 
 {@link de.hu.gralog.algorithm Algorithms}, 
-{@link de.hu.gralog.graph.GraphBeanFactory GraphBeans}, 
-{@link de.hu.gralog.graph.types.elements.DefaultListenableVertex vertices} and 
-{@link de.hu.gralog.graph.types.elements.DefaultListenableEdge edges}.
+{@link de.hu.gralog.structure.StructureBeanFactory Structure-Beans}, 
+{@link de.hu.gralog.structure.types.elements.DefaultListenableVertex vertices} and 
+{@link de.hu.gralog.structure.types.elements.DefaultListenableEdge edges}.
  
 For some of these Beans you need to implement extra functionality to
-allow Gralog to properly interact with these beans. Please
+allow GrALoG to properly interact with these beans. Please
 refer to {@link de.hu.gralog.algorithm} for specialities concerning
-Algorithm-Beans in Gralog, {@link de.hu.gralog.graph.GraphBeanFactory} for
-specialities concerning GraphBeans and {@link de.hu.gralog.graph.types.elements}
-for specialities concerning beans for vertices and edges in Gralog.
+Algorithm-Beans in GrALoG, {@link de.hu.gralog.structure.StructureBeanFactory} for
+specialities concerning Structure-Beans and {@link de.hu.gralog.structure.types.elements}
+for specialities concerning beans for vertices and edges in GrALoG.
 </BODY>
 </HTML>

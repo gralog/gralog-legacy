@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -30,8 +30,8 @@ import javax.swing.undo.UndoableEdit;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
 /**
- * This class represents a displaymode for subgraphs. Here you can specifify
- * displaymodes for the vertices and edges in- and outside of the subgraph.
+ * This class represents a display-mode for subgraphs. Here you can specifify
+ * display-modes for the vertices and edges in- and outside of the subgraph.
  * 
  * The following code shows how to construct and initialize a
  * DisplaySubgraphMode for use in an {@link AlgorithmResult}:
@@ -83,7 +83,7 @@ public class DisplaySubgraphMode implements Serializable {
 	}
 
 	/**
-	 * This method should not be called by plugin-developers. It allows gralog
+	 * This method should not be called by plugin-developers. It allows GrALoG
 	 * to change the vertexDisplayMode without informing UndoEditListeners.
 	 * 
 	 * @param sub
@@ -119,7 +119,7 @@ public class DisplaySubgraphMode implements Serializable {
 	}
 
 	/**
-	 * This method should not be called by plugin-developers. It allows gralog
+	 * This method should not be called by plugin-developers. It allows GrALoG
 	 * to change the vertexDisplayMode without informing UndoEditListeners.
 	 * 
 	 * @param sub
@@ -154,7 +154,7 @@ public class DisplaySubgraphMode implements Serializable {
 	}
 
 	/**
-	 * Sets the visibility status for this Displaymode. If <b>false</b> gralog
+	 * Sets the visibility status for this Displaymode. If <b>false</b> GrALoG
 	 * does not display the subgraph associated to this mode.
 	 * 
 	 * @param visible
@@ -164,7 +164,7 @@ public class DisplaySubgraphMode implements Serializable {
 	}
 
 	/**
-	 * This method should not be called by plugindevelopers. It allows gralog to
+	 * This method should not be called by plugindevelopers. It allows GrALoG to
 	 * change visibility without informing registered listeners.
 	 * 
 	 * @param visible

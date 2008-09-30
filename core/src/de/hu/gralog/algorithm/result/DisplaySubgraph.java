@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -27,8 +27,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Subgraph;
 
 /**
- * This class is used by gralog to display subgraphs of a graph. It is of no use
- * for plugin developers.
+ * This class is used by GrALoG to display subgraphs of a GrALoG-structure. It is of no use
+ * to plugin-developers.
  * 
  * 
  * @author ordyniak

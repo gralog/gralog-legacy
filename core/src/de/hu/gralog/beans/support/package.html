@@ -1,18 +1,17 @@
 <HTML>
 <BODY>
 This package defines classes that are especially useful to define 
-GraphBeans in Gralog. To define a GraphBean in Gralog you
-should extend one of {@link de.hu.gralog.beans.support.DefaultPropertyChangeListenableBean} 
+Structure-Beans in GrALoG. To define a Structure-Bean in GrALoG you
+should subclass one of {@link de.hu.gralog.beans.support.DefaultPropertyChangeListenableBean} 
 respectively
 {@link de.hu.gralog.beans.support.DefaultPropertyAndDisplayChangeListenableBean} depending on
 whether or not you want to fire DisplayChangeEvents. The interface
-{@link de.hu.gralog.beans.support.GralogGraphBean} gives your bean the possibility to have
-access to the {@link de.hu.gralog.graph.GralogGraphSupport}-instance it is currently
-belonging to. 
+{@link de.hu.gralog.beans.support.StructureBean} gives your bean access 
+to the {@link de.hu.gralog.structure.Structure}-instance it belongs to. 
 
 <h1>Plugin-Developers</h1>
 
-Please refer to the description of {@link de.hu.gralog.graph.GraphBeanFactory} if
-you want to implement your own GraphBean for Gralog.
+Please refer to the description of {@link de.hu.gralog.structure.StructureBeanFactory} if
+you want to implement your own Structure-Bean for GrALoG.
 </BODY>
 </HTML>

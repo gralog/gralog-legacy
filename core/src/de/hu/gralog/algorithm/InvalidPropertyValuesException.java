@@ -19,10 +19,7 @@
 
 package de.hu.gralog.algorithm;
 
-import java.util.Vector;
-
-import javax.swing.JComponent;
-import javax.swing.JTable;
+import java.util.ArrayList;
 
 /**
  * This Exception is used to return errors concerning the values of properties
@@ -39,14 +36,7 @@ public class InvalidPropertyValuesException extends Exception {
 
 	public static final String GREATER_EQUAL_ZERO = "This property should be creater or equal zero";
 
-	protected Vector errors = new Vector();
-
-	private static final Vector COLUMN_NAMES = new Vector();
-
-	static {
-		COLUMN_NAMES.add("Property");
-		COLUMN_NAMES.add("Errormessage");
-	}
+	protected ArrayList<PropertyError> errors = new ArrayList<PropertyError>();
 
 	/**
 	 * Contructs an InvalidPropertyValuesException without errors. Use
@@ -79,14 +69,7 @@ public class InvalidPropertyValuesException extends Exception {
 	 *            the errormessage to display to the user
 	 */
 	public void addPropertyError(String property, String errormsg) {
-		Vector error = new Vector();
-		error.add(property);
-		error.add(errormsg);
-		errors.add(error);
-	}
-
-	public JComponent getComponent() {
-		return new JTable(errors, COLUMN_NAMES);
+		errors.add( new PropertyError( property, errormsg ) );
 	}
 
 	/**
@@ -95,5 +78,27 @@ public class InvalidPropertyValuesException extends Exception {
 	 */
 	public boolean hasErrors() {
 		return errors.size() != 0;
+	}
+	
+	public ArrayList<PropertyError> getErrors() {
+		return errors;
+	}
+	
+	public static class PropertyError {
+		private final String property;
+		private final String message;
+		
+		public PropertyError( String property, String message ) {
+			this.property = property;
+			this.message = message;
+		}
+		
+		public String getProperty() {
+			return property;
+		}
+		
+		public String getMessage() {
+			return message;
+		}
 	}
 }

@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -25,9 +25,9 @@ import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.app.UserException;
 
 /**
- * This interface has to be implement by all GraLog-Algorithms. An algorithm in
- * GraLog is basically a JavaBean with an execute-function defined by this
- * interface. Please see {@link de.hu.gralog.beans} for a generak introduction
+ * This interface has to be implement by all GrALoG-Algorithms. An algorithm in
+ * GrALoG is a JavaBean with an execute-function defined by this
+ * interface. Please see {@link de.hu.gralog.beans} for a general introduction
  * to JavaBeans and further references.
  * 
  * <h1>Plugin-Developers</h1>
@@ -35,9 +35,9 @@ import de.hu.gralog.app.UserException;
  * Lets suppose you want to implement an algorithm which takes two parameters:
  * <ul>
  * <li> a parameter <b>counter</b> which should be a positive integer </li>
- * <li> a required parameter <b>graph</b> whose underlying JGraphT-Graph should
+ * <li> a required parameter <b>structure</b>, whose underlying JGraphT-Graph should
  * be a {@link org.jgrapht.graph.SimpleDirectedGraph} whose vertices extend
- * {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} and whose edges
+ * {@link de.hu.gralog.structure.types.elements.LabeledStructureVertex} and whose edges
  * extend {@link org.jgrapht.graph.DefaultEdge}. </li>
  * </ul>
  * <p>
@@ -46,12 +46,12 @@ import de.hu.gralog.app.UserException;
  * <p>
  * 
  * <pre>
- * public class YourAlgorithm&lt;V extends LabeledGraphVertex, E extends DefaultEdge, G extends DirectedGraph&lt;V, E&gt;&gt;
+ * public class YourAlgorithm&lt;V extends LabeledStructureVertex, E extends DefaultEdge, G extends DirectedGraph&lt;V, E&gt;&gt;
  * 		implements Algorithm {
  * 
  * 	private int counter;
  * 
- * 	private GralogGraphSupport&lt;V, E, ?, G&gt; graph;
+ * 	private Structure&lt;V, E, ?, G&gt; structure;
  * 
  * 	public void setCounter(int counter) {
  * 		this.counter = counter;
@@ -61,20 +61,20 @@ import de.hu.gralog.app.UserException;
  * 		return counter;
  * 	}
  * 
- * 	public void setGraph(GralogGraphSupport&lt;V, E, ?, G&gt; graph) {
- * 		this.graph = graph;
+ * 	public void setStructure(Structure&lt;V, E, ?, G&gt; structure) {
+ * 		this.structure = structure;
  * 	}
  * 
- * 	public GralogGraphSupport&lt;V, E, ?, G&gt; getGraph() {
- * 		return graph;
+ * 	public Structure&lt;V, E, ?, G&gt; getStructure() {
+ * 		return structure;
  * 	}
  * 
  * 	public AlgorithmResult execute() throws InvalidPropertyValuesException,
  * 			UserException {
  * 		InvalidPropertyValuesException e = new InvalidPropertyValuesException();
  * 
- * 		if (getGraph() == null)
- * 			e.addPropertyError(&quot;graph&quot;,
+ * 		if (getStructure() == null)
+ * 			e.addPropertyError(&quot;structure&quot;,
  * 					InvalidPropertyValuesException.PROPERTY_REQUIRED);
  * 		if (getCounter() &lt;= 0)
  * 			e.addPropertyError(&quot;counter&quot;,
@@ -93,14 +93,14 @@ import de.hu.gralog.app.UserException;
  * YourAlgorithm. Furthermore there are two functions for each parameter which
  * are called getter and setter ( the naming convention for these functions
  * comes from the JavaBeans-Specification ). Since there is a getter and a
- * setter for each parameter GraLog knows that YourAlgorithm takes two
- * parameters: counter and graph. Before the user executes YourAlgorithm GraLog
+ * setter for each parameter, GrALoG knows that YourAlgorithm takes two
+ * parameters: counter and structure. Before the user executes YourAlgorithm GrALoG
  * allows the user to edit these parameters, so when execute is called you can
  * suppose that all parameters are set according to the users opinion.
  * <p>
  * As we have said there are restrictions on the parameters. So the first thing
  * you should do is to check for these restrictions in your execute-method. In
- * this case it is checked whether graph is not equal to null and counter is
+ * this case it is checked whether structure is not equal to null and counter is
  * creater than zero and if not an InvalidPropertyValuesException is thrown
  * which gives the user the possibility to alter his input.
  * <p>
@@ -124,8 +124,8 @@ import de.hu.gralog.app.UserException;
  *     			try {
  *     				PROPERTY_DESCRIPTORS[0] = new PropertyDescriptor( &quot;counter&quot;, YourAlgorithm.class );
  *     				PROPERTY_DESCRIPTORS[0].setShortDescription( &quot;A description for the property counter.&quot; );
- *     				PROPERTY_DESCRIPTORS[1] = new ChooseGraphPropertyDescriptor( &quot;graph&quot;, YourAlgorithm.class, new LabeledSimpleDirectedGraphTypeInfo() );
- *    	 			PROPERTY_DESCRIPTORS[1].setShortDescription( &quot;A description for the property graph.&quot; );
+ *     				PROPERTY_DESCRIPTORS[1] = new ChooseStructurePropertyDescriptor( &quot;structure&quot;, YourAlgorithm.class, new LabeledSimpleDirectedStructureTypeInfo() );
+ *    	 			PROPERTY_DESCRIPTORS[1].setShortDescription( &quot;A description for the property structure.&quot; );
  *    			} catch( IntrospectionException e ) {
  *    				e.printStackTrace();
  *    			}
@@ -165,11 +165,11 @@ import de.hu.gralog.app.UserException;
  * types. </td>
  * </tr>
  * <tr>
- * <td>{@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor}</td>
+ * <td>{@link de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor}</td>
  * <td> This PropertyDescriptor should be used whenever you want the user to
- * choose one of the currently opened graphs in GraLog. It allows to filter
+ * choose one of the currently opened structures in GrALoG. It allows to filter
  * those which are of a certain type - in the example of the type
- * LabeledSimpleDirectedGraph. </td>
+ * LabeledSimpleDirectedStructure. </td>
  * </tr>
  * </table>
  * <p>
@@ -188,9 +188,9 @@ public interface Algorithm extends Serializable {
 	 * returns an {@link de.hu.gralog.algorithm.result.AlgorithmResult} which
 	 * describes the output of your algorithm.
 	 * 
-	 * @return it is possible to return null, which tells Gralog not to display
+	 * @return it is possible to return null, which tells GrALoG not to display
 	 *         anything. This can be useful when your Algorithm only wants to
-	 *         manipulate a Gralog-Graph but does not need to show a result.
+	 *         manipulate a GrALoG-Structure but does not need to show a result.
 	 * 
 	 * @throws InvalidPropertyValuesException
 	 *             should be thrown if not all parameters where set correctly

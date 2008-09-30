@@ -25,7 +25,7 @@ import org.jgrapht.ListenableGraph;
 import org.jgrapht.graph.GraphDelegator;
 
 /**
- * This class provides utility methods to use JGraphT-graphs.
+ * This class provides utility methods for JGraphT-graphs.
  * 
  * @author Sebastian
  * 
@@ -35,7 +35,7 @@ public class JGraphTUtils {
 	/**
 	 * This method returns the JGraphT-Graph that is wrapped by a
 	 * {@link ListenableGraph}. It can be useful for Plugin-Developers in order
-	 * to infer the reall JGraphT-Type of this Graph, i.e. wether the Graph is
+	 * to infer the real JGraphT-Type of this Graph, i.e. wether the Graph is
 	 * Simple, Multi, Pseudo etc. .
 	 * 
 	 * @param <V>

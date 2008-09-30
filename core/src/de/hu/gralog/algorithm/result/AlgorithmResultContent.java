@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -28,19 +28,19 @@ import java.util.Map.Entry;
 import org.jgrapht.graph.Subgraph;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 /**
  * The class represents a content which is displayed as part of an
  * {@link AlgorithmResult}.
  * 
- * You can use a content to display a graph, associated subgraphs and / or
- * elementtips ( for the vertices and / or edges of that graph ). Please notice
- * that you have to specify a graph for each content either by attaching the
- * graph to the content or by attaching the graph to the result the content
- * belongs to. Subgraphs and elementtips are given together with a description,
+ * You can use a content to display a structure, associated subgraphs and / or
+ * element-tips ( for the vertices and / or edges of that structure ). Please notice
+ * that you have to specify a structure for each content either by attaching the
+ * structure to the content or by attaching the structure to the result, the content
+ * belongs to. Subgraphs and element-tips are given together with a description,
  * which has to be identical to the description given for the corresponding
- * subgraph-/elementtipmode in the result the content belongs to.
+ * subgraph-/element-tip-display-mode of the result the content belongs to.
  * 
  * Please see {@link AlgorithmResult} for further information about contents and
  * results.
@@ -49,7 +49,7 @@ import de.hu.gralog.graph.GralogGraphSupport;
  * 
  */
 public class AlgorithmResultContent {
-	protected GralogGraphSupport graphSupport = null;
+	protected Structure structure = null;
 
 	protected Hashtable<String, SubgraphInfo> subgraphs = null;
 
@@ -66,10 +66,10 @@ public class AlgorithmResultContent {
 	private String description = null;
 
 	/**
-	 * Contructs an AlgorithmResultContent without a corresponding graph. You
-	 * can specify a graph later by using
-	 * {@link #setGraphSupport(GralogGraphSupport)}. If you do not specify a
-	 * graph then the graph associated with the {@link AlgorithmResult} is
+	 * Contructs an AlgorithmResultContent without a corresponding structure. You
+	 * can specify a structure later by using
+	 * {@link #setStructure(Structure)}. If you do not specify a
+	 * structure then the structure associated with the {@link AlgorithmResult} is
 	 * displayed with this content.
 	 * 
 	 */
@@ -77,19 +77,19 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * Constructs an AlgorithmResultContent with the graph to be displayed with
+	 * Constructs an AlgorithmResultContent with the structure to be displayed with
 	 * this content.
 	 * 
-	 * @param graphSupport
-	 *            the graph which should be displayed with this content
+	 * @param structure
+	 *            the structure which should be displayed with this content
 	 */
-	public AlgorithmResultContent(GralogGraphSupport graphSupport) {
-		setGraphSupport(graphSupport);
+	public AlgorithmResultContent(Structure structure) {
+		setStructure(structure);
 	}
 
 	/**
-	 * Sets the name of this AlgorithmResultContent that is displayed in gralog.
-	 * Currently Gralog only supports displaying names for
+	 * Sets the name of this AlgorithmResultContent that is displayed in GrALoG.
+	 * Currently GrALoG only supports displaying names for
 	 * {@link AlgorithmResultContentTreeNode AlgorithmResultContentTreeNode's}
 	 * 
 	 * @param name
@@ -109,7 +109,7 @@ public class AlgorithmResultContent {
 	}
 	
 	/**
-	 * Sets the description for this content that will be displayed in Gralog
+	 * Sets the description for this content that will be displayed in GrALoG
 	 * 
 	 * @param description the description as an arbitrary html-String
 	 */
@@ -120,38 +120,38 @@ public class AlgorithmResultContent {
 	/**
 	 * 
 	 * 
-	 * @return the description f this content
+	 * @return the description of this content
 	 */
 	public String getDescription() {
 		return description;
 	}
 	
 	/**
-	 * Set the graph of this content. This method has the same effect as setting
-	 * the graph via the constructor
-	 * {@link #AlgorithmResultContent(GralogGraphSupport)}.
+	 * Set the structure for this content. This method has the same effect as setting
+	 * the structure via the constructor
+	 * {@link #AlgorithmResultContent(Structure)}.
 	 * 
-	 * @param graphSupport
-	 *            the graph which should be displayed with this content
+	 * @param structure
+	 *            the structure which should be displayed with this content
 	 */
-	public void setGraphSupport(GralogGraphSupport graphSupport) {
-		this.graphSupport = graphSupport;
+	public void setStructure(Structure structure) {
+		this.structure = structure;
 	}
 
 	/**
-	 * @see #setGraphSupport(GralogGraphSupport)
+	 * @see #setStructure(Structure)
 	 * 
-	 * @return the graph which is displayed with this content, if null the graph
+	 * @return the structure which is displayed with this content, if null the structure
 	 *         associated with the {@link AlgorithmResult} containing this
 	 *         content is displayed with this content.
 	 */
-	public GralogGraphSupport getGraphSupport() throws UserException {
-		return graphSupport;
+	public Structure getStructure() throws UserException {
+		return structure;
 	}
 
 	/**
-	 * This method is called by gralog when saving this AlgorithmResultContent,
-	 * to infer all elementtips together with their description that have been
+	 * This method is called by GrALoG when saving this AlgorithmResultContent,
+	 * to infer all element-tips together with their descriptions, that have been
 	 * registered with this content.
 	 * 
 	 * @return a Hashtable containing all element-tips and their corresponding
@@ -162,17 +162,17 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * Add elementTips to be displayed with this content. Note that there has to
-	 * be a corresponding elementTipMode with the same description in the
+	 * Add element-tips to be displayed with this content. Note that there has to
+	 * be a corresponding element-tip-display-mode with the same description in the
 	 * AlgorithmResult this content belongs to.
 	 * 
 	 * @param description
-	 *            a description for this elementTip
+	 *            a description for this element-tip
 	 * @param elementTips
 	 *            elementtips should be a Hashtable from vertices and / or edges
-	 *            of the graph ( which is displayed with this content ) to
-	 *            String. When the content is displayed GraLog paints the
-	 *            Strings as tooltips on the vertices and / or edges.
+	 *            of the structure ( which is displayed with this content ) to
+	 *            String. When the content is displayed GrALoG paints the
+	 *            Strings as tool-tips on the vertices and / or edges.
 	 * 
 	 */
 	public void addElementTips(String description, Hashtable elementTips) {
@@ -182,11 +182,11 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * This method is called by gralog when this content is displayed, to infer
-	 * all ElementTips that are registered with this content and correspond to
-	 * an ElementTipsDisplayMode registered with the corresponding
+	 * This method is called by GrALoG when this content is displayed, to infer
+	 * all element-tips that are registered with this content and correspond to
+	 * an element-tips-display-mode registered with the corresponding
 	 * AlgorithmResult. Subclasses can override this method in order to build
-	 * their ElementTips on the fly.
+	 * their element-tips on the fly.
 	 * 
 	 * @param modes
 	 * @throws UserException
@@ -211,7 +211,7 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * This method is called by gralog to save this AlgorithmResultContent. It
+	 * This method is called by GrALoG to save this AlgorithmResultContent. It
 	 * returns all SubgraphInfo's together with their description that have been
 	 * registered with this AlgorithmResultContent.
 	 * 
@@ -224,7 +224,7 @@ public class AlgorithmResultContent {
 
 	/**
 	 * Add a subgraph to be displayed with this content. Note that their has to
-	 * be a corresponding DisplaySubgraphMode with the same description in the
+	 * be a corresponding subgraph-display-mode with the same description in the
 	 * AlgorithmResult this content belongs to (@see
 	 * AlgorithmResult#addDisplaySubgraphMode(String, DisplaySubgraphMode)).
 	 * 
@@ -235,7 +235,7 @@ public class AlgorithmResultContent {
 	 *            in this subgraph
 	 * 
 	 * Clearly subgraphInfo should only contain vertices and edges that are
-	 * contained in the graph belonging to this AlgorithmResultContent
+	 * contained in the structure belonging to this AlgorithmResultContent.
 	 * 
 	 */
 	public void addDisplaySubgraph(String description, SubgraphInfo subgraphInfo) {
@@ -245,12 +245,12 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * Adds subgraph to be displayed with this content. Other than
+	 * Adds a subgraph to be displayed with this content. Other than
 	 * 
 	 * @see #addDisplaySubgraph(String, SubgraphInfo) this method lets you
 	 *      directedly specify the vertices and edges to be contained in the
 	 *      subgraph. Note that their has to be a corresponding
-	 *      DisplaySubgraphMode with the same description in the AlgorithmResult
+	 *      subgraph-display-mode with the same description in the AlgorithmResult
 	 *      this content belongs to (@see
 	 *      AlgorithmResult#addDisplaySubgraphMode(String,
 	 *      DisplaySubgraphMode)).
@@ -266,8 +266,8 @@ public class AlgorithmResultContent {
 	 *            will contain all edges between vertices contained in this
 	 *            subgraph
 	 * 
-	 * Clearly the vertices and edges should be contained in the graph belonging
-	 * to this AlgorithmResultContent
+	 * Clearly the vertices and edges should be contained in the structure belonging
+	 * to this content.
 	 * 
 	 */
 	public void addDisplaySubgraph(String description, Set vertices, Set edges) {
@@ -277,19 +277,19 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * This method is called from Gralog before displaying the content and
-	 * should return all Subgraphs together with their corresponding description
+	 * This method is called from GrALoG before displaying the content and
+	 * should return all subgraphs together with their corresponding description
 	 * that should be displayed with this content. The default method uses the
-	 * parameter {@link #graphSupport} to construct all subgraphs for all
+	 * parameter {@link #structure} to construct all subgraphs for all
 	 * subgraphInfo's registered with this content. Subclasses can override this
-	 * method to change the Subgraphs that should be displayed by this content
+	 * method to change the subgraphs that should be displayed by this content
 	 * or to construct these on the fly.
 	 * 
 	 * @param modes
 	 *            the displaysubgraphmodes registered with the corresponding
 	 *            {@link AlgorithmResult}
-	 * @param graphSupport
-	 *            the gralog-graph needed to construct actual subgraphs from the
+	 * @param structure
+	 *            the GrALoG-structure needed to construct actual subgraphs from the
 	 *            subgraphInfos registered with this content
 	 * 
 	 * @return a Hashtable of subgraphs and their descriptions which should be
@@ -297,7 +297,7 @@ public class AlgorithmResultContent {
 	 */
 	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(
 			Hashtable<String, DisplaySubgraphMode> modes,
-			GralogGraphSupport graphSupport) throws UserException {
+			Structure structure) throws UserException {
 		if (subgraphs == null)
 			return null;
 		if (displaySubgraphCache == null) {
@@ -306,7 +306,7 @@ public class AlgorithmResultContent {
 					.entrySet()) {
 				SubgraphInfo subgraphInfo = subgraphs.get(entry.getKey());
 				if (subgraphInfo != null) {
-					Subgraph subgraph = subgraphInfo.getSubgraph(graphSupport);
+					Subgraph subgraph = subgraphInfo.getSubgraph(structure);
 					DisplaySubgraph display = new DisplaySubgraph(entry
 							.getValue(), subgraph);
 					displaySubgraphCache.put(entry.getKey(), display);
@@ -317,7 +317,7 @@ public class AlgorithmResultContent {
 	}
 
 	/**
-	 * This method is used by gralog to show a name for this
+	 * This method is used by GrALoG to show a name for this
 	 * AlgorithmResultContent. It currently returns the name of this
 	 * AlgorithmResultContent
 	 * 
@@ -331,7 +331,7 @@ public class AlgorithmResultContent {
 	/**
 	 * This class represents a subgraph by its edges and vertices. Note that
 	 * setting the parameters vertices / edges to null results in a subgraph
-	 * containing all vertices / edges of the corresponding graph.
+	 * containing all vertices / edges of the corresponding structure.
 	 * 
 	 * @author Sebastian
 	 * 
@@ -340,7 +340,6 @@ public class AlgorithmResultContent {
 	 * @param <E>
 	 *            the type of edges stored in this SubgraphInfo
 	 */
-
 	public static class SubgraphInfo<V, E> {
 		private Set<V> vertices;
 
@@ -373,7 +372,7 @@ public class AlgorithmResultContent {
 				this.edges = new HashSet<E>(edges);
 		}
 
-		public Subgraph getSubgraph(GralogGraphSupport graphSupport) {
+		public Subgraph getSubgraph(Structure graphSupport) {
 			if (subgraphCache == null)
 				subgraphCache = new Subgraph(graphSupport.getGraph(), vertices,
 						edges);

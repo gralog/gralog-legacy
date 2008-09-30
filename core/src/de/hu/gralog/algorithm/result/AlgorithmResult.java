@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -28,26 +28,29 @@ import java.util.Set;
 import javax.swing.event.UndoableEditListener;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 /**
  * This class basically serves as a container for
  * {@link AlgorithmResultContent AlgorithmResultContent's}. It also holds
- * global information which is shared along all contents like a description,
- * displaymodes for subgraphs and element-tips.
+ * global information that is shared among all Algorithm-Result-Contents 
+ * like a description and
+ * display-modes for subgraphs and element-tips.
  * <p>
  * An AlgorithmResult consists either of
  * <ul>
- * <li>a single content, see {@link #setSingleContent(AlgorithmResultContent)}</li>
+ * <li>no contents, in this case GrALoG displays the description for this result
+ * but does not open a new Algorithm-Result-Document</li>
+ * <li>a single-content, see {@link #setSingleContent(AlgorithmResultContent)}</li>
  * <li>a list of contents, see {@link #setContentList(ArrayList)}</li>
  * <li>a tree of contents, see
  * {@link #setContentTree(AlgorithmResultContentTreeNode)}</li>
  * </ul>
  * <p>
- * GraLog display's one content at a time but allows the user to switch between
+ * GrALoG display's one content at a time but allows the user to switch between
  * different contents. Each content consists of a graph, a list of subgraphs and
  * a list of so called element-tips. AlgorithmResult stores the contents
- * together with the displaying-modes for all subgraphs and element-tips
+ * together with the display-modes for all subgraphs and element-tips
  * contained in any content. So suppose you decide to display a certain subgraph
  * and you want to highlight all vertices contained in this subgraph. Then the
  * first thing you have to do is to define a
@@ -80,7 +83,7 @@ public class AlgorithmResult implements Serializable {
 
 	private String description = null;
 
-	protected GralogGraphSupport graphSupport = null;
+	protected Structure structure = null;
 
 	protected Hashtable<String, DisplaySubgraphMode> subgraphModes = null;
 
@@ -92,8 +95,8 @@ public class AlgorithmResult implements Serializable {
 
 	protected AlgorithmResultContentTreeNode contentTree = null;
 
-	protected boolean openContentsAsGraphs = false;
-
+	protected boolean openContentsAsStructures = false;
+	
 	/**
 	 * Contructs an AlgorithmResult
 	 * 
@@ -103,13 +106,13 @@ public class AlgorithmResult implements Serializable {
 	}
 
 	/**
-	 * Contructs an AlgorithmResult for a given graph. The graph is used as the
-	 * default graph for contents which have no graph attached.
+	 * Contructs an AlgorithmResult for a given structure. The structure is used as the
+	 * default structure for contents that have no structure attached.
 	 * 
-	 * @param graphSupport
+	 * @param structure
 	 */
-	public AlgorithmResult(GralogGraphSupport graphSupport) {
-		this.graphSupport = graphSupport;
+	public AlgorithmResult(Structure structure) {
+		this.structure = structure;
 	}
 
 	/**
@@ -117,26 +120,26 @@ public class AlgorithmResult implements Serializable {
 	 * 
 	 * @return the graph of this result
 	 */
-	public GralogGraphSupport getGraphSupport() {
-		return graphSupport;
+	public Structure getStructure() {
+		return structure;
 	}
 
 	/**
-	 * Returns the graph associated with a given {@link AlgorithmResultContent}
+	 * Returns the structure associated with a given {@link AlgorithmResultContent}
 	 * 
 	 * @param content
-	 * @return the graph for the content
+	 * @return the structure for this content
 	 * @throws UserException
 	 */
-	GralogGraphSupport getGraph(AlgorithmResultContent content)
+	Structure getStructure(AlgorithmResultContent content)
 			throws UserException {
-		if (content == null || content.getGraphSupport() == null)
-			return graphSupport;
-		return content.getGraphSupport();
+		if (content == null || content.getStructure() == null)
+			return structure;
+		return content.getStructure();
 	}
 
 	/**
-	 * Sets the description of this Result, which is displayed in GraLog. The
+	 * Sets the description of this Result, which is displayed in GrALoG. The
 	 * description can be given as html.
 	 * 
 	 * @param description
@@ -155,41 +158,47 @@ public class AlgorithmResult implements Serializable {
 		return description;
 	}
 
+	boolean hasContents() {
+		if ( getSingleContent() == null && getContentList() == null && getContentTree() == null )
+			return false;
+		return true;
+	}
+	
 	/**
-	 * Set this option to true, if you want gralog to open all graphs contained
+	 * Set this option to true, if you want GrALoG to open all graphs contained
 	 * in this result to be opened in a separate window. When this option is
 	 * true the user will not be displayed an {@link AlgorithmResult} but
-	 * instead gralog opens a new graphdocument for each graph contained in this
+	 * instead GrALoG opens a new graphdocument for each graph contained in this
 	 * algorithmresult. Setting this option to true is for example useful when
 	 * your algorithm is a graph-generator.
 	 * 
-	 * @param openContentsAsGraphs
+	 * @param openContentsAsStructures
 	 */
-	public void setOpenContentsAsGraphs(boolean openContentsAsGraphs) {
-		this.openContentsAsGraphs = openContentsAsGraphs;
+	public void setOpenContentsAsStructures(boolean openContentsAsStructures) {
+		this.openContentsAsStructures = openContentsAsStructures;
 	}
 
 	/**
-	 * @see #setOpenContentsAsGraphs(boolean)
+	 * @see #setOpenContentsAsStructures(boolean)
 	 * 
-	 * @return the status of openContentAsGraphs
+	 * @return the status of openContentAsStructures
 	 */
-	public boolean isOpenContentsAsGraphs() {
-		return openContentsAsGraphs;
+	public boolean isOpenContentsAsStructures() {
+		return openContentsAsStructures;
 	}
 
 	/**
-	 * Add an elementtip-mode to this result. If an elementtip-mode under the
+	 * Add an element-tip-display-mode to this result. If an element-tip-display-mode under the
 	 * same description already exists the mode is overriden. Please note that
 	 * when adding the corresponding element-tip to your content via
 	 * {@link AlgorithmResultContent#addElementTips(String, Hashtable)} you have
 	 * to use the same description.
 	 * 
 	 * @param description -
-	 *            A description for this elementtip-mode which is displayed in
-	 *            gralog.
+	 *            A description for this element-tip-display-mode that is displayed in
+	 *            GrALoG.
 	 * @param mode -
-	 *            An elementtip-mode which is used for all elementtips with the
+	 *            An element-tip-display-mode that is used for all element-tips with the
 	 *            same description.
 	 */
 	public void addElementTipsDisplayMode(String description,
@@ -200,17 +209,17 @@ public class AlgorithmResult implements Serializable {
 	}
 
 	/**
-	 * Add a subgraph-mode to this result. If a subgraph-mode under the same
+	 * Add a subgraph-display-mode to this result. If a subgraph-display-mode under the same
 	 * description already exists the mode is overriden. Please note that when
 	 * adding the corresponding subgraph to your content via
 	 * {@link AlgorithmResultContent#addDisplaySubgraph(String, SubgraphInfo)}
 	 * you have to use the same description.
 	 * 
 	 * @param description -
-	 *            A description for this subgraph-mode which is displayed in
-	 *            gralog.
+	 *            A description for this subgraph-display-mode which is displayed in
+	 *            GrALoG.
 	 * @param subgraph -
-	 *            A subgraph-mode which is used for all subgraphs with the same
+	 *            A subgraph-display-mode which is used for all subgraphs with the same
 	 *            description.
 	 */
 	public void addDisplaySubgraphMode(String description,
@@ -245,16 +254,16 @@ public class AlgorithmResult implements Serializable {
 	 */
 	Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(
 			AlgorithmResultContent content) throws UserException {
-		if (content.getGraphSupport() == null)
+		if (content.getStructure() == null)
 			return content
-					.getDisplaySubgraphs(subgraphModes, getGraphSupport());
+					.getDisplaySubgraphs(subgraphModes, getStructure());
 		return content.getDisplaySubgraphs(subgraphModes, content
-				.getGraphSupport());
+				.getStructure());
 	}
 
 	/**
 	 * 
-	 * @return a Hashtable containing all stored element-tips displaymodes
+	 * @return a Hashtable containing all stored element-tip-display-modes
 	 *         together with their descriptions
 	 */
 	public Hashtable<String, ElementTipsDisplayMode> getElementTipsDisplayModes() {
@@ -263,7 +272,7 @@ public class AlgorithmResult implements Serializable {
 
 	/**
 	 * 
-	 * @return a Hashtable containing all stored element-tips displaymodes
+	 * @return a Hashtable containing all stored element-tip-display-modes
 	 *         together with their descriptions
 	 */
 	Hashtable<String, ElementTipsDisplayMode> getElementTipsDisplayModes( AlgorithmResultContent content ) throws UserException {
@@ -277,7 +286,7 @@ public class AlgorithmResult implements Serializable {
 	
 	/**
 	 * 
-	 * @return a Hashtable containing all stored subgraph displaymodes together
+	 * @return a Hashtable containing all stored subgraph-display-modes together
 	 *         with their descriptions
 	 */
 	public Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes( ) {
@@ -287,7 +296,7 @@ public class AlgorithmResult implements Serializable {
 	
 	/**
 	 * 
-	 * @return a Hashtable containing all stored subgraph displaymodes together
+	 * @return a Hashtable containing all stored subgraph-display-modes together
 	 *         with their descriptions for this content
 	 */
 	Hashtable<String, DisplaySubgraphMode> getDisplaySubgraphModes( AlgorithmResultContent content ) throws UserException {
@@ -300,8 +309,8 @@ public class AlgorithmResult implements Serializable {
 	}
 
 	/**
-	 * Set a single content for this result. Each result can consists either of -
-	 * a single content - a content list - a content treenode
+	 * Set a single content for this result. Each result consists either of 
+	 * a single-content, a content-list or a content-tree.
 	 * 
 	 * @param content
 	 */
@@ -312,8 +321,8 @@ public class AlgorithmResult implements Serializable {
 	}
 
 	/**
-	 * Set a content list for this result. Each result can consists either of -
-	 * a single content - a content list - a content treenode
+	 * Set a content list for this result. Each result consists either of 
+	 * a single-content, a content-list or a content-tree.
 	 * 
 	 * @param content
 	 */
@@ -322,8 +331,8 @@ public class AlgorithmResult implements Serializable {
 	}
 
 	/**
-	 * Set a content treenode for this result. Each result can consists either
-	 * of - a single content - a content list - a content treenode
+	 * Set a content-tree for this result. Each result consists either
+	 * of a single-content, a content-list or a content-tree.
 	 * 
 	 * @param content
 	 */
@@ -334,7 +343,7 @@ public class AlgorithmResult implements Serializable {
 	/**
 	 * 
 	 * 
-	 * @return the first content to be displayed by gralog when opening this
+	 * @return the first content to be displayed by GrALoG when opening this
 	 *         result
 	 */
 	AlgorithmResultContent getFirstContent() {
@@ -357,7 +366,7 @@ public class AlgorithmResult implements Serializable {
 
 	/**
 	 * 
-	 * @return the single content stored for this result
+	 * @return the single-content stored for this result
 	 */
 	public AlgorithmResultContent getSingleContent() {
 		return singleContent;
@@ -378,12 +387,12 @@ public class AlgorithmResult implements Serializable {
 	 *         associated with contents contained in this result )
 	 * @throws UserException
 	 */
-	Set<GralogGraphSupport> getAllGraphs() throws UserException {
-		HashSet<GralogGraphSupport> graphs = new HashSet<GralogGraphSupport>();
-		if (this.graphSupport != null)
-			graphs.add(graphSupport);
-		graphs.addAll(getAllGraphsFromContents());
-		return graphs;
+	Set<Structure> getAllStructures() throws UserException {
+		HashSet<Structure> structures = new HashSet<Structure>();
+		if (this.structure != null)
+			structures.add(structure);
+		structures.addAll(getAllStructuresFromContents());
+		return structures;
 	}
 
 	/**
@@ -392,20 +401,20 @@ public class AlgorithmResult implements Serializable {
 	 *         result
 	 * @throws UserException
 	 */
-	Set<GralogGraphSupport> getAllGraphsFromContents() throws UserException {
-		HashSet<GralogGraphSupport> graphs = new HashSet<GralogGraphSupport>();
+	Set<Structure> getAllStructuresFromContents() throws UserException {
+		HashSet<Structure> structures = new HashSet<Structure>();
 		if (getSingleContent() != null
-				&& getSingleContent().getGraphSupport() != null)
-			graphs.add(getSingleContent().getGraphSupport());
+				&& getSingleContent().getStructure() != null)
+			structures.add(getSingleContent().getStructure());
 		if (getContentList() != null) {
 			for (AlgorithmResultContent content : getContentList()) {
-				if (content.getGraphSupport() != null)
-					graphs.add(content.getGraphSupport());
+				if (content.getStructure() != null)
+					structures.add(content.getStructure());
 			}
 		}
 		if (getContentTree() != null)
-			graphs.addAll(getContentTree().getAllGraphs());
-		return graphs;
+			structures.addAll(getContentTree().getAllStructures());
+		return structures;
 	}
 
 	/**

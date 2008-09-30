@@ -1,17 +1,18 @@
 <HTML>
 <BODY>
 The main propose of this library is to define the concepts of 
-{@link de.hu.gralog.graph Gralog-Graphs} and {@link de.hu.gralog.algorithm Gralog-Algorithms}
- that can be used, displayed and / or executed by Gralog. 
+{@link de.hu.gralog.structure GrALoG-Structures} and 
+{@link de.hu.gralog.algorithm GrALoG-Algorithms}
+ that can be used, displayed and / or executed by GrALoG. 
 The library can also be seen as
 a starting point for Plugin-Developers that can use these concepts
-to build their own types of {@link de.hu.gralog.graph Gralog-Graphs} 
-and {@link de.hu.gralog.algorithm Gralog-Algorithms}. 
+to build their own types of {@link de.hu.gralog.structure GrALoG-Structures} 
+and {@link de.hu.gralog.algorithm GrALoG-Algorithms}. 
 <p>
 Besides giving an introduction
-to the concepts underlying Gralog this documentation therefore 
+to the concepts underlying GrALoG this documentation therefore 
 also tries to provide hints 
-for Plugin-Developers on how to build their own Plugins for Gralog.
+for Plugin-Developers on how to build their own Plugins for GrALoG.
 Therefore most of the package-, class- or method- 
 (including this overview-) 
 -JavaDoc-comments contain a
@@ -20,38 +21,41 @@ this package, class or method when developing your own Plugin.
 <p>
 <h2>Plugin-Developers</h2>
 <p>
-A Plugin in Gralog basically consists of a definition of
-{@link de.hu.gralog.graph Gralog-Graphs} and 
-{@link de.hu.gralog.algorithm Gralog-Algorithms}. To
-define your own {@link de.hu.gralog.graph Gralog-Graph} 
+A Plugin in GrALoG basically consists of a definition of
+{@link de.hu.gralog.structure GrALoG-Structures} and 
+{@link de.hu.gralog.algorithm GrALoG-Algorithms}. To
+define your own {@link de.hu.gralog.structure GrALoG-Structure} 
 you have to subclass
-{@link de.hu.gralog.graph.GralogGraphTypeInfo} ( please
-refer to the description of {@link de.hu.gralog.graph} on
-how to do this ). {@link de.hu.gralog.algorithm Gralog-Algorithms} are basically
+{@link de.hu.gralog.structure.StructureTypeInfo} ( please
+refer to the description of {@link de.hu.gralog.structure} on
+how to do this ). {@link de.hu.gralog.algorithm GrALoG-Algorithms} are basically
 classes that implement the {@link de.hu.gralog.algorithm.Algorithm}-
 interface, please refer to {@link de.hu.gralog.algorithm}
 on how to build your own algorithms.
 <p>
 Every
-Plugin in Gralog comes as a Jar-File that must contain a file
+Plugin in GrALoG comes as a Jar-File that must contain a file
 called <b>plugin.config</b> in its root-directory. The <b>plugin.config</b>
-tells Gralog which Gralog-Graphs and -Algorithms are defined by
+tells GrALoG which GrALoG-Structures and -Algorithms are defined by
 that Plugin and where to lookup the classes that define them.
 <p>
 The <b>plugin.config</b> is an XML-File, that has the following format:
 
 <pre>
 	&lt;plugin name=&quot;<b>PLUGIN_NAME</b>&quot;&gt;
-		&lt;graphs&gt;
-			&lt;graph typeInfoClass=&quot;<b>TYPE_INFO_CLASS</b>&quot;/&gt;
-		&lt;/graphs&gt;
+		&lt;description&gt;
+			&lt;![CDATA[<b>PLUGIN-DESCRIPTION</b>]]&gt;
+		&lt;/description&gt;
+		&lt;structures&gt;
+			&lt;structure typeInfoClass=&quot;<b>TYPE_INFO_CLASS</b>&quot;/&gt;
+		&lt;/structures&gt;
 		&lt;algorithms&gt;
 			&lt;algorithm name=&quot;<b>ALGORITH_NAME</b>&quot; class=&quot;<b>ALGORITH_CLASS</b>&quot;/&gt;
 		&lt;/algorithms&gt;
 	&lt;/plugin&gt;
 </pre>
 
-Here <b>PLUGIN_NAME</b>, <b>TYPE_INFO_CLASS</b>, <b>ALGORITHM_NAME</b> and <b>ALGORITHM_CLASS</b>,
+Here <b>PLUGIN_NAME</b>, <b>PLUGIN-DESCRIPTION</b>, <b>TYPE_INFO_CLASS</b>, <b>ALGORITHM_NAME</b> and <b>ALGORITHM_CLASS</b>,
 have the following meaning:
 <p>
 <table border="1">
@@ -61,21 +65,25 @@ have the following meaning:
 	</tr>
 	<tr>
 		<td><b>PLUGIN_NAME</b></td>
-		<td>This is the name for your plugin, that is displayed to the User by Gralog</td>
+		<td>This is the name for your plugin, that is displayed to the User by GrALoG</td>
+	</tr>
+	<tr>
+		<td><b>PLUGIN_DESCRIPTION</b></td>
+		<td>The description for this plugin enclosed in a CDATA-Element. Can be an arbitrary HTML-String</td> 
 	</tr>
 	<tr>
 		<td><b>TYPE_INFO_CLASS</b></td>
-		<td>The fully qualified classname for your subclass of {@link de.hu.gralog.graph.GralogGraphTypeInfo},
-			that defines your {@link de.hu.gralog.graph Gralog-Graph}</td>
+		<td>The fully qualified classname for your subclass of {@link de.hu.gralog.structure.StructureTypeInfo},
+			that defines your {@link de.hu.gralog.structure GrALoG-Structure}</td>
 	</tr>
 	<tr>
 		<td><b>ALGORITHM_NAME</b></td>
-		<td>This is the name for your {@link de.hu.gralog.algorithm Gralog-Algorithm} that is displayed to the user by Gralog</td>
+		<td>This is the name for your {@link de.hu.gralog.algorithm GrALoG-Algorithm} that is displayed to the user by GrALoG</td>
 	</tr>
 	<tr>
 		<td><b>ALGORITHM_CLASS</b></td>
 		<td>The fully qualified classname for your class implementing {@link de.hu.gralog.algorithm.Algorithm},
-		that defines your {@link de.hu.gralog.algorithm Gralog-Algorithm}.</td>
+		that defines your {@link de.hu.gralog.algorithm GrALoG-Algorithm}.</td>
 	</tr>
 </table>		
 			

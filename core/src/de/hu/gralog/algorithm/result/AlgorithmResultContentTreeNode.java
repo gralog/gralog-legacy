@@ -3,16 +3,16 @@
  *
  * Copyright 2006 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 /**
  * This class extends {@link AlgorithmResultContent} in order to form a tree of
@@ -31,8 +31,8 @@ import de.hu.gralog.graph.GralogGraphSupport;
  * 
  * This class assumes that the whole tree is build by the algorithm. If you want
  * a lazy implementation of the tree, i.e. the children are only calculated when
- * a user decides to see them you have to override this class. Special care has
- * been taken for {@link #getAllGraphs()} - see the description of this method.
+ * the user decides to see them, you have to override this class. Special care has
+ * to be taken for the implementation of {@link #getAllStructures()} - see the description of this method.
  * 
  * @author ordyniak
  * 
@@ -79,20 +79,20 @@ public class AlgorithmResultContentTreeNode extends AlgorithmResultContent {
 	}
 
 	/**
-	 * This method returns all graphs associated with the subtree rooted at this
-	 * node. Note that this method is called by Gralog before displaying the
-	 * actual content. If you do want a lazy implementation of your Tree you
+	 * This method returns all structures associated with the subtree rooted at this
+	 * node. Note that this method is called by GrALoG before displaying the
+	 * actual content. If you do want a lazy implementation of your tree you
 	 * have to override this method.
 	 * 
 	 * @throws UserException
 	 */
-	protected Set<GralogGraphSupport> getAllGraphs() throws UserException {
-		HashSet<GralogGraphSupport> graphs = new HashSet<GralogGraphSupport>();
-		if (getGraphSupport() != null)
-			graphs.add(getGraphSupport());
+	protected Set<Structure> getAllStructures() throws UserException {
+		HashSet<Structure> structures = new HashSet<Structure>();
+		if (getStructure() != null)
+			structures.add(getStructure());
 		for (AlgorithmResultContentTreeNode content : getChildren()) {
-			graphs.addAll(content.getAllGraphs());
+			structures.addAll(content.getAllStructures());
 		}
-		return graphs;
+		return structures;
 	}
 }

@@ -3,16 +3,16 @@
  *
  * Copyright 2008 Sebastian Ordyniak (sordyniak@googlemail.com) and Stephan Kreutzer (kreutzer.stephan@googlemail.com)
  *
- * This file is part of Gralog.
+ * This file is part of GrALoG.
  *
- * Gralog is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * GrALoG is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Gralog is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * GrALoG is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Gralog; 
+ * You should have received a copy of the GNU General Public License along with GrALoG; 
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
  *
  */
@@ -20,7 +20,6 @@ package de.hu.gralog.jgraph.cellview;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.geom.Dimension2D;
 
 import javax.swing.BorderFactory;
 
@@ -33,7 +32,7 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 
 /**
  * 
- * This class should be overriden in order to implement your own VertexRenderer.
+ * This class should be extended in order to implement your own VertexRenderer.
  * It extends/changes the behavior of the JGraph-{@link VertexRenderer VertexRenderer}
  * by implementing {@link DisplayModeRenderer DisplayModeRenderer}.
  * 
