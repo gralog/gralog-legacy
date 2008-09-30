@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.beans.Customizer;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -19,17 +18,18 @@ import org.jgrapht.Graph;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.Subgraph;
 
+import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent;
 import de.hu.gralog.algorithm.result.DisplaySubgraph;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.event.SelectionListener;
+import de.hu.gralog.structure.Structure;
+import de.hu.gralog.structure.event.SelectionListener;
 
 /**
  * This example shows you how to override
  * {@link AlgorithmResultInteractiveContent} in order
- * to allow userinteraction after the result is
+ * to allow user-interaction after the result is
  * displayed to the user. It also shows
  * you how to define your own {@link Customizer}
  * for a JavaBean {@link ContentCustomizer}.
@@ -38,8 +38,8 @@ import de.hu.gralog.graph.event.SelectionListener;
  * ( see {@link ShortestPathInteractiveContentBeanInfo} on
  * how this is done ). The {@link ContentCustomizer}
  * listens to SelectionEvents fired by the
- * {@link de.hu.gralog.graph.support.GraphSelectionSupport}-object
- * of the {@link GralogGraphSupport}-instance and
+ * {@link de.hu.gralog.structure.support.StructureSelectionSupport}-object
+ * of the {@link Structure}-instance and
  * tells {@link ShortestPathInteractiveContent} when
  * to fire ContentChangeEvents.
  * 
@@ -68,8 +68,8 @@ public class ShortestPathInteractiveContent extends
 		super();
 	}
 	
-	public ShortestPathInteractiveContent(GralogGraphSupport graphSupport) {
-		super( graphSupport );
+	public ShortestPathInteractiveContent(Structure structure) {
+		super( structure );
 	}
 
 	/**
@@ -95,13 +95,13 @@ public class ShortestPathInteractiveContent extends
 	 *  
 	 */
 	@Override
-	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport ) throws UserException {
+	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, Structure structure ) throws UserException {
 		Subgraph subgraph;
 		if ( startVertex != null || endVertex != null ) {
-			List edgeList = DijkstraShortestPath.findPathBetween( this.graphSupport.getGraph(), startVertex, endVertex );
-			subgraph = new Subgraph( this.graphSupport.getGraph(), getVertices( this.graphSupport.getGraph(), edgeList ), new HashSet( edgeList ) );
+			List edgeList = DijkstraShortestPath.findPathBetween( this.structure.getGraph(), startVertex, endVertex );
+			subgraph = new Subgraph( this.structure.getGraph(), getVertices( this.structure.getGraph(), edgeList ), new HashSet( edgeList ) );
 		} else 
-			subgraph = new Subgraph( this.graphSupport.getGraph(), new HashSet(), new HashSet() );
+			subgraph = new Subgraph( this.structure.getGraph(), new HashSet(), new HashSet() );
 		Hashtable<String, DisplaySubgraph> displaySubgraphs = new Hashtable<String, DisplaySubgraph>();
 		displaySubgraphs.put( DM_SHORTEST_PATH, new DisplaySubgraph( modes.get( DM_SHORTEST_PATH ), subgraph ) );
 		return displaySubgraphs;
@@ -110,8 +110,8 @@ public class ShortestPathInteractiveContent extends
 	/**
 	 * Called by the customizer, after the user changed his selection.
 	 * This method calls {@link AlgorithmResultInteractiveContent#fireContentChanged()}
-	 * to inform Gralog, that the Content of this {@link AlgorithmResultContent}
-	 * has changed. This causes Gralog to redisplay the content. 
+	 * to inform GrALoG, that the Content of this {@link AlgorithmResultContent}
+	 * has changed. This causes GrALoG to redisplay the content. 
 	 * 
 	 * @param start
 	 * @param end
@@ -158,6 +158,7 @@ public class ShortestPathInteractiveContent extends
 					resetSelection();
 				}
 			});
+			button.setToolTipText( "Reset the current-selection and start again." );
 			innerPanel.add( button, BorderLayout.EAST );
 			
 			add( innerPanel, BorderLayout.CENTER );
@@ -165,16 +166,16 @@ public class ShortestPathInteractiveContent extends
 
 		/**
 		 * This method implements {@link Customizer#setObject(java.lang.Object)}. It
-		 * is used by Gralog to assign the bean, i.e. the instance of
+		 * is used by GrALoG to assign the bean, i.e. the instance of
 		 * {@link ShortestPathInteractiveContent}, to this Customizer.
 		 * 
-		 * Note that we use the content to add us as a {@link SelectionListener}
-		 * to the <b>graphSupport</b>-instance.
+		 * Note that we use the content to add a {@link SelectionListener}
+		 * to the <b>structure</b>-instance.
 		 *   
 		 */
 		public void setObject(Object bean) {
 			content = (ShortestPathInteractiveContent)bean;
-			content.graphSupport.getGraphSelectionSupport().addSelectionListener( this );
+			content.structure.getStructureSelectionSupport().addSelectionListener( this );
 			update();
 		}
 		
@@ -204,7 +205,7 @@ public class ShortestPathInteractiveContent extends
 
 		/**
 		 * This method implements {@link SelectionListener#valueChanged(java.util.Set, java.util.Set, org.jgraph.event.GraphSelectionEvent)} and
-		 * is called by {@link GralogGraphSupport} when the selection has changed.
+		 * is called by {@link Structure} when the selection has changed.
 		 *  
 		 * 
 		 * @param selectedVertices

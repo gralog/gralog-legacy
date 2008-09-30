@@ -1,24 +1,14 @@
-package de.hu.example.graph;
+package de.hu.example.structure;
 
-import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
-
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.ListenableGraph;
-
-import de.hu.example.alg.StronglyConnectedSets;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphElementPropertyDescriptor;
-import de.hu.gralog.beans.propertydescriptor.GraphElementFilter.VertexGraphElementFilter;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 
 /**
  * This is the <b>BeanInfo</b>-class for the {@link SimpleVertex}.
  * 
  * The only reason to provide a BeanInfo-class for this vertex is to
- * hide the property <b>isTheGoodVertex</b> from Gralog, since
+ * hide the property <b>isTheGoodVertex</b> from GrALoG, since
  * it should not be accessible to the user.
  * 
  * @author Sebastian

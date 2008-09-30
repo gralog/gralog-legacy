@@ -1,4 +1,4 @@
-package de.hu.example.graph;
+package de.hu.example.structure;
 
 import java.awt.Component;
 import java.awt.geom.Point2D;
@@ -13,7 +13,7 @@ import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 import de.hu.gralog.jgraph.cellview.EllipseVertexRenderer;
 
 /**
- * This is an example for to implement your own Renderer in Gralog.
+ * This is an example for how to implement your own Renderer in GrAloG.
  * Please see {@link de.hu.gralog.jgraph.cellview} for more
  * information on how to implement your own Renderers.
  * 

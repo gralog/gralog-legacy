@@ -1,14 +1,9 @@
 package de.hu.example.alg;
 
 import java.beans.BeanDescriptor;
-import java.beans.DefaultPersistenceDelegate;
-import java.beans.Encoder;
-import java.beans.Expression;
 import java.beans.SimpleBeanInfo;
-import java.beans.Statement;
 
 import de.hu.example.alg.ShortestPathInteractiveContent.ContentCustomizer;
-import de.hu.gralog.app.UserException;
 
 /**
  * This is the <b>BeanInfo</b>-class for {@link ShortestPathInteractiveContent}.  

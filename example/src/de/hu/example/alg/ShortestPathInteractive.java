@@ -6,16 +6,18 @@ import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 /**
- * This example show you how to use {@link de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent}
- * to allow userinteraction after the {@link AlgorithmResult} is
- * displayed in Gralog. This example also shows how
+ * This example show you how to use 
+ * {@link de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent}
+ * to allow user-interaction after the {@link AlgorithmResult} is
+ * displayed in GrALoG. This example also shows how
  * to define a {@link java.beans.Customizer} that is
- * used as a Customizer for {@link de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent}.
+ * used as a Customizer for 
+ * {@link de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent}.
  * 
- * The example takes an arbitrary GralogGraph as a parameter 
+ * The example takes an arbitrary GrALoG-Structure as a parameter 
  * and produces an {@link AlgorithmResult} with
  * a single content {@link ShortestPathInteractiveContent} that
  * extends {@link de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent}.
@@ -28,21 +30,21 @@ import de.hu.gralog.graph.GralogGraphSupport;
  */
 public class ShortestPathInteractive implements Algorithm {
 
-	private GralogGraphSupport graph;
+	private Structure structure;
 	
-	public GralogGraphSupport getGraph() {
-		return graph;
+	public Structure getStructure() {
+		return structure;
 	}
 
-	public void setGraph(GralogGraphSupport graphSupport) {
-		this.graph = graphSupport;
+	public void setStructure(Structure structure) {
+		this.structure = structure;
 	}
 
 	public AlgorithmResult execute() throws InvalidPropertyValuesException,
 			UserException {
 		InvalidPropertyValuesException e = new InvalidPropertyValuesException();
-		if ( getGraph() == null )
-			e.addPropertyError( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
+		if ( getStructure() == null )
+			e.addPropertyError( "structure", InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		if ( e.hasErrors() )
 			throw e;
 		
@@ -58,7 +60,7 @@ public class ShortestPathInteractive implements Algorithm {
 		 * for how the rest works.
 		 * 
 		 */
-		ShortestPathInteractiveContent content = new ShortestPathInteractiveContent( getGraph() );
+		ShortestPathInteractiveContent content = new ShortestPathInteractiveContent( getStructure() );
 		result.setSingleContent( content );
 		return result;
 	}

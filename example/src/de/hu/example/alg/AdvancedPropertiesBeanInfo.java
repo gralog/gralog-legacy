@@ -6,28 +6,27 @@ import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
 import org.jgrapht.ListenableGraph;
-import org.jgrapht.graph.ListenableDirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 import de.hu.example.alg.AdvancedProperties.WeekDay;
-import de.hu.gralog.beans.propertydescriptor.ChooseDependableGraphElementPropertyDescriptor;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphTypeInfoPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseDependableStructureElementPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructureTypeInfoPropertyDescriptor;
 import de.hu.gralog.beans.propertydescriptor.EnumPropertyDescriptor;
-import de.hu.gralog.beans.propertydescriptor.GraphElementFilter.VertexGraphElementFilter;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
+import de.hu.gralog.beans.propertydescriptor.StructureElementFilter.VertexStructureElementFilter;
 import de.hu.gralog.jgrapht.util.JGraphTUtils;
+import de.hu.gralog.structure.StructureTypeInfo;
+import de.hu.gralog.structure.StructureTypeInfoFilter;
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 
 /**
  * This is the <b>BeanInfo</b>-class for the {@link AdvancedProperties}
  * algorithm.  
  * 
  * It shows you how to use
- * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor},
- * {@link de.hu.gralog.beans.propertydescriptor.ChooseDependableGraphElementPropertyDescriptor},
- * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphTypeInfoPropertyDescriptor} and
+ * {@link de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor},
+ * {@link de.hu.gralog.beans.propertydescriptor.ChooseDependableStructureElementPropertyDescriptor},
+ * {@link de.hu.gralog.beans.propertydescriptor.ChooseStructureTypeInfoPropertyDescriptor} and
  * {@link de.hu.gralog.beans.propertydescriptor.EnumPropertyDescriptor} as
  * descriptors for the properties of your algorithm.
  * 
@@ -38,7 +37,7 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 
 	/**
 	 * This is the BeanDescriptor for this class, whose <b>displayName</b> and
-	 * <b>shortDescription</b> are used by Gralog to give this algorithm
+	 * <b>shortDescription</b> are used by GrALoG to give this algorithm
 	 * a name and a description.
 	 * 
 	 */
@@ -47,7 +46,7 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 	/**
 	 * These are the {@link java.beans.PropertyDescriptor PropertyDescriptors} for the
 	 * properties of our Algorithm. Since our Algorithm takes four
-	 * parameters, i.e. <b>graph</b>, <b>vertexOfGraph</b>, <b>graphType</b> and <b>WeekDay</b>, we
+	 * parameters, i.e. <b>structure</b>, <b>vertexOfStructure</b>, <b>structureType</b> and <b>WeekDay</b>, we
 	 * need to define four of them.
 	 * 
 	 */
@@ -67,7 +66,7 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 		 */
 		BEAN_DESCRIPTOR.setShortDescription( "<html>" +
 				"This algorithm shows how to make use of the more advanced " +
-				"<b>PropertyDescriptors</b> that are avaible in Gralog. " + 
+				"<b>PropertyDescriptors</b> that are available in GrALoG. " + 
 				"</html>" );
 		
 		/**
@@ -77,100 +76,100 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 		
 		try {
 			/**
-			 * This defines the first property <b>graph</b> of the algorithm
+			 * This defines the first property <b>structure</b> of the algorithm
 			 * {@link AdvancedProperties}. 
-			 * Since we want to let the user choose a GralogGraph as a value
+			 * Since we want to let the user choose a GrALoG-Structure as a value
 			 * for this property we have to use a 
-			 * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor} as
-			 * a PropertyDescriptor for it. As mentioned in
+			 * {@link de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor} as
+			 * the PropertyDescriptor for this property. As mentioned in
 			 * the description for this property {@link AdvancedProperties}, 
-			 * we provide our own {@link GralogGraphTypeInfoFilter} to
+			 * we provide our own {@link StructureTypeInfoFilter} to
 			 * allow only {@link org.jgrapht.graph.SimpleDirectedGraph} that
-			 * have {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} as
-			 * vertices to be selected. See below ( {@link LabeledSimpleDirectedGraphTypeInfoFilter} )
-			 * for the definition of this GraphTypeInfoFilter.
+			 * have {@link de.hu.gralog.structure.types.elements.LabeledStructureVertex} as
+			 * vertices to be selected. See below ( {@link LabeledSimpleDirectedGraphStructureTypeInfoFilter} )
+			 * for the definition of this StructureTypeInfoFilter.
 			 * 
-			 * Note: The last parameter for the constructor tells Gralog
-			 * whether to make a copy of the selected graph before it is
+			 * Note: The last parameter for the constructor tells GrALoG
+			 * whether to make a copy of the selected structure before it is
 			 * passed to the algorithm. Not making a copy can
 			 * be useful for algorithm that either:
 			 * 
 			 * <ul>
-			 * 		<li>do not manipulate the given graph and do not
-			 * 		return the graph as part of an 
+			 * 		<li>do not manipulate the given structure and do not
+			 * 		return the structure as part of an 
 			 * 		{@link de.hu.gralog.algorithm.AlgorithmResult} - like this algorithm - and
-			 * 		thus want to avoid Gralog spending time on copying the graph.
+			 * 		thus want to avoid GrALoG spending time on copying the structure.
 			 * 		</li>
-			 * 		<li>want to manipulate the graph explicitly - and
-			 * 		again do not return the graph as part of a
+			 * 		<li>want to manipulate the structure explicitly - and
+			 * 		again do not return the structure as part of a
 			 * 		{@link de.hu.gralog.algorithm.result.AlgorithmResult} -
 			 * 		, e.g. to provide some automatic editing functionality to the user.</li>
 			 * </ul>
 			 * 
-			 * Nevertheless for algorithms that use the graph in an 
+			 * Nevertheless for algorithms that use the structure in an 
 			 * {@link de.hu.gralog.algorithm.result.AlgorithmResult}, it
 			 * is strongly recommend to set this option to true, as otherwise
-			 * the result shown to the user and the graph-document containing the
-			 * graph are mutually affected by each others changes.
+			 * the result shown to the user and the structure-document containing the
+			 * structure are mutually affected by each others changes.
 			 * 
 			 */
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", AdvancedProperties.class, new LabeledSimpleDirectedGraphTypeInfoFilter(), false );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "structure", AdvancedProperties.class, new LabeledSimpleDirectedGraphStructureTypeInfoFilter(), false );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html> " +
 						"This property shows you how to use <br>" +
-						"<b>ChooseGraphPropertyDescriptor</b> <br>" +
-						" and <b>GralogGraphTypeInfoFilter</b> <br>" +
+						"<b>ChooseStructurePropertyDescriptor</b> <br>" +
+						" and <b>StructureTypeInfoFilter</b> <br>" +
 						" in order to let you choose a <b>SimpleDirectedGraph</b> <br>" +
 						" with <b>labeled</b> vertices." +
 						"</html>" );
 
 			/**
-			 * This defines the second property <b>vertexOfGraph</b> for the algorithm
+			 * This defines the second property <b>vertexOfStructure</b> for the algorithm
 			 * {@link AdvancedProperties}.
 			 *  
 			 * This time we have to use 
-			 * {@link de.hu.gralog.beans.propertydescriptor.ChooseDependableGraphElementPropertyDescriptor}.
+			 * {@link de.hu.gralog.beans.propertydescriptor.ChooseDependableStructureElementPropertyDescriptor}.
 			 * 
-			 *  As you can see the third parameter of its constructor tells it
-			 *  to select elements from the graph that is
-			 *  a value of the property <b>graph</b> defined above and
-			 *  for its last parameter we use
-			 *  {@link de.hu.gralog.beans.propertydescriptor.GraphElementFilter.VertexGraphElementFilter}
+			 *  As you can see the third parameter of it's constructor tells it
+			 *  to select elements from the structure that is
+			 *  a value of the property <b>structure</b> defined above and
+			 *  for it's last parameter we use
+			 *  {@link de.hu.gralog.beans.propertydescriptor.StructureElementFilter.VertexStructureElementFilter}
 			 *  to restrict the user to choose
-			 *  among the vertices of this graph.
+			 *  among the vertices of this structure.
 			 *  
 			 */
-			PROPERTY_DESCRIPTORS[1] = new ChooseDependableGraphElementPropertyDescriptor( "vertexOfGraph", AdvancedProperties.class, (ChooseGraphPropertyDescriptor)PROPERTY_DESCRIPTORS[0], new VertexGraphElementFilter() );
+			PROPERTY_DESCRIPTORS[1] = new ChooseDependableStructureElementPropertyDescriptor( "vertexOfStructure", AdvancedProperties.class, (ChooseStructurePropertyDescriptor)PROPERTY_DESCRIPTORS[0], new VertexStructureElementFilter() );
 			PROPERTY_DESCRIPTORS[1].setShortDescription( "<html> " +
 						"This property shows you how to use <br>" +
-						"<b>ChooseDependableGraphElementPropertyDescriptor</b> " +
-						"and <b>VertexGraphElementFilter</b> <br>" +
+						"<b>ChooseDependableStructureElementPropertyDescriptor</b> " +
+						"and <b>VertexStructureElementFilter</b> <br>" +
 						"to let you choose a vertex from <br>" +
-						"the <b>GralogGraph</b> that is a value of <br>" +
-						"the property <b>graph</b>." +
+						"the <b>structure</b> that is a value of <br>" +
+						"the property <b>structure</b>." +
 						"</html>" );
 
 			/**
-			 * This defines the third property <b>graphType</b> of the algorithm
+			 * This defines the third property <b>structureType</b> of the algorithm
 			 * {@link AdvancedProperties}.
 			 * 
 			 * It shows how to use 
-			 * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphTypeInfoPropertyDescriptor}
-			 * to let the user choose a Gralog-Graph-Type. We again
-			 * use {@link LabeledSimpleDirectedGraphTypeInfoFilter} to
-			 * restrict the user to Graph-Types that
+			 * {@link de.hu.gralog.beans.propertydescriptor.ChooseStructureTypeInfoPropertyDescriptor}
+			 * to let the user choose a GrALoG-Structure-Type. We again
+			 * use {@link LabeledSimpleDirectedGraphStructureTypeInfoFilter} to
+			 * restrict the user to Structure-Types that
 			 * have a {@link org.jgrapht.graph.SimpleDirectedGraph} as 
-			 * underlying JGraphT-Graph and has 
-			 * {@link de.hu.gralog.types.elements.LabeledGraphVertex} as 
-			 * its vertices. 
+			 * underlying JGraphT-Graph and  
+			 * {@link de.hu.gralog.structure.types.elements.LabeledStructureVertex} as 
+			 * vertices. 
 			 */
-			PROPERTY_DESCRIPTORS[2] = new ChooseGraphTypeInfoPropertyDescriptor( "graphType", AdvancedProperties.class, new LabeledSimpleDirectedGraphTypeInfoFilter() );
+			PROPERTY_DESCRIPTORS[2] = new ChooseStructureTypeInfoPropertyDescriptor( "structureType", AdvancedProperties.class, new LabeledSimpleDirectedGraphStructureTypeInfoFilter() );
 			PROPERTY_DESCRIPTORS[2].setShortDescription( "<html> " +
 					"This property shows you how to use <br>" +
-					"<b>ChooseGraphTypeInfoPropertyDescriptor</b> <br>" +
-					"to let you choose a <b>Gralog-Graph-Type</b> <br>" +
-					"that has <b>LabeledGraphVertex</b> as <br>" +
-					"its vertices and a <b> SimpleDirectedGraph</b> <br>" +
-					"as its underlying JGraphT-Graph." +
+					"<b>ChooseStructureTypeInfoPropertyDescriptor</b> <br>" +
+					"to let you choose a <b>Gralog-Structure-Type</b> <br>" +
+					"that has <b>LabeledStructureVertex</b> as <br>" +
+					"it's vertices and a <b> SimpleDirectedGraph</b> <br>" +
+					"as it's underlying JGraphT-Graph." +
 					"</html>" );
 
 			/**
@@ -199,7 +198,7 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 	 * {@link java.beans.SimpleBeanInfo#getBeanDescriptor()} and
 	 * {@link java.beans.SimpleBeanInfo#getPropertyDescriptors()}
 	 * in order to make our <b>BEAN_DESCRIPTOR</b> and <b>PROPERTY_DESCRIPTORS</b>
-	 * avaible to Gralog. 
+	 * avaible to GrALoG. 
 	 * 
 	 */
 	
@@ -214,23 +213,23 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 	}
 
 	/**
-	 * This class serves as a {@link GralogGraphTypeInfoFilter}
-	 * for the properties <b>graph</b> and <b>graphType</b>
-	 * defined above. It checks filters all
-	 * {@link GralogGraphTypeInfo GralogGraphTypeInfos}
+	 * This class serves as a {@link StructureTypeInfoFilter}
+	 * for the properties <b>structure</b> and <b>structureType</b>
+	 * defined above. It filters all
+	 * {@link StructureTypeInfo StructureTypeInfos}
 	 * whose vertices do not extends
-	 * {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} and
+	 * {@link de.hu.gralog.structure.types.elements.LabeledStructureVertex} and
 	 * those who do not extend 
 	 * {@link org.jgrapht.graph.SimpleDirectedGraph} as their
 	 * underlying JGraphT-Graph. 
 	 * 
 	 * As mentioned in the description of the property
-	 * <b>graph</b> in the {@link AdvancedProperties}-Algorithm
+	 * <b>structure</b> in the {@link AdvancedProperties}-Algorithm
 	 * Class this can only be done by analysing the 
 	 * JGraphT-Graph that is the base of the {@link org.jgrapht.graph.ListenableGraph}
-	 * that underlies this {@link GralogGraphTypeInfo}.
+	 * that underlies this {@link StructureTypeInfo}.
 	 * 
-	 * To archive this {@link LabeledSimpleDirectedGraphTypeInfoFilter#filterTypeInfo(GralogGraphTypeInfo)}
+	 * To archive this {@link LabeledSimpleDirectedGraphStructureTypeInfoFilter#filterTypeInfo(StructureTypeInfo)}
 	 * uses the method {@link JGraphTUtils#getListenableBaseGraph(org.jgrapht.ListenableGraph)} that
 	 * retrieves the base of a {@link org.jgrapht.graph.ListenableGraph} that can not
 	 * be done using methods from JGraphT alone.
@@ -238,10 +237,10 @@ public class AdvancedPropertiesBeanInfo extends SimpleBeanInfo {
 	 * @author Sebastian
 	 *
 	 */
-	public static class LabeledSimpleDirectedGraphTypeInfoFilter implements GralogGraphTypeInfoFilter {
-		public boolean filterTypeInfo( GralogGraphTypeInfo typeInfo ) {
+	public static class LabeledSimpleDirectedGraphStructureTypeInfoFilter implements StructureTypeInfoFilter {
+		public boolean filterTypeInfo( StructureTypeInfo typeInfo ) {
 			
-			if ( ! ( typeInfo.getVertexFactory().createVertex() instanceof LabeledGraphVertex ) )
+			if ( ! ( typeInfo.getVertexFactory().createVertex() instanceof LabeledStructureVertex ) )
 				return true;
 			
 			ListenableGraph listenableGraph = typeInfo.getGraphFactory().createGraph();

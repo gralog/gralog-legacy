@@ -2,81 +2,81 @@ package de.hu.example.alg;
 
 import org.jgrapht.graph.ListenableDirectedGraph;
 
-import de.hu.example.alg.AdvancedPropertiesBeanInfo.LabeledSimpleDirectedGraphTypeInfoFilter;
 import de.hu.gralog.algorithm.Algorithm;
 import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
+import de.hu.gralog.structure.Structure;
+import de.hu.gralog.structure.StructureTypeInfo;
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 
 /**
  * This algorithm shows you how to use most of the 
  * predefined PropertyDescriptors given in 
  * {@link de.hu.gralog.beans.propertyDescriptor} to
- * define more eleborated properties for
+ * define more elaborated properties for
  * your algorithms, like properties that have
- * graphs, elements of graphs, graphTypes or 
+ * structures, elements of structures, structure-types or 
  * enumerations as values.
  * 
  * @author Sebastian
  *
  */
-public class AdvancedProperties<Vgraph extends LabeledGraphVertex, 
+public class AdvancedProperties<Vgraph extends LabeledStructureVertex, 
 								Egraph, 
 								GBgraph, 
 								Ggraph extends ListenableDirectedGraph<Vgraph,Egraph>,
-								Vtype extends LabeledGraphVertex,
+								Vtype extends LabeledStructureVertex,
 								Etype,
 								GBtype,
 								Gtype extends ListenableDirectedGraph<Vtype, Etype>> implements Algorithm {
 
 	/**
-	 * Our first property shows how to use {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor}
-	 * to let the user choose a GralogGraph that has 
-	 * {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} as vertices
-	 * and has a {@link org.jgrapht.graph.SimpleDirectedGraph} as its JGraphT-Graph.
+	 * Our first property shows how to use {@link de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor}
+	 * to let the user choose a GrALoG-Structure that has 
+	 * {@link de.hu.gralog.structure.types.elements.LabeledStructureVertex} as vertices
+	 * and has a {@link org.jgrapht.graph.SimpleDirectedGraph} as it's 
+	 * JGraphT-Graph.
 	 * 
 	 * <h2>Advanced ( in most cases you do not need to know about this )</h2>
 	 * 
-	 * Unfurtunaletly the second condition, i.e. that its underlying
+	 * Unfurtunaletly the second condition, i.e. that it's underlying
 	 * JGraphT-Graph is of type {@link org.jgrapht.graph.SimpleDirectedGraph} can not
 	 * be explicitly expressed via the type-definition of our property.
 	 * This is due to the fact that the JGraphT-Graph underlying a 
-	 * {@link de.hu.gralog.graph.GralogGraphSupport} has to be a 
+	 * {@link de.hu.gralog.structure.Structure} has to be a 
 	 * {@link org.jgrapht.graph.ListenableGraph} and until now
-	 * JGraphT only differentiates between {@link org.jgrapht.graph.ListenableDirectedGraph}
+	 * JGraphT only distinguishes between {@link org.jgrapht.graph.ListenableDirectedGraph}
 	 * and {@link org.jgrapht.graph.ListenableUndirectedGraph} - but
 	 * there is no such thing as a ListenableSimpleDirectedGraph - so
-	 * this condition has to be enforced by our GraphTypeInfoFilter 
+	 * this condition has to be enforced by our StructureTypeInfoFilter 
 	 * ( that is defined in the BeanInfo-class of this algrithm
-	 * {@link LabeledSimpleDirectedGraphTypeInfoFilter} ), that 
+	 * {@link de.hu.example.alg.AdvancedPropertiesBeanInfo.LabeledSimpleDirectedGraphStructureTypeInfoFilter} ), that 
 	 * we use to define our 
-	 * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor}
+	 * {@link de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor}
 	 * for this property.
 	 * 
 	 */
-	private GralogGraphSupport<Vgraph, Egraph, GBgraph, Ggraph> graph;
+	private Structure<Vgraph, Egraph, GBgraph, Ggraph> structure;
 	
 	/**
 	 * Our second property shows how to use 
-	 * {@link de.hu.gralog.beans.propertydescriptor.ChooseDependableGraphElementPropertyDescriptor} 
-	 * to let the user choose a vertex from the GralogGraph assigned to our
-	 * first property <b>graph</b>. 
+	 * {@link de.hu.gralog.beans.propertydescriptor.ChooseDependableStructureElementPropertyDescriptor} 
+	 * to let the user choose a vertex from the GrALoG-Structure assigned to our
+	 * first property <b>structure</b>. 
 	 * 
 	 */
-	private Vgraph vertexOfGraph;
+	private Vgraph vertexOfStructure;
 	
 	/**
 	 * Our third property shows how to use 
-	 * {@link de.hu.gralog.beans.propertydescriptor.ChooseGraphTypeInfoPropertyDescriptor}
-	 * to let the user choose a {@link de.hu.gralog.graph.GralogGraphTypeInfo}
-	 * that has {@link de.hu.gralog.graph.types.elements.LabeledGraphVertex} as vertices
-	 * and a {@link org.jgrapht.graph.DirectedGraph} as JGraphTGraph.
+	 * {@link de.hu.gralog.beans.propertydescriptor.ChooseStructureTypeInfoPropertyDescriptor}
+	 * to let the user choose a {@link de.hu.gralog.structure.StructureTypeInfo}
+	 * that has {@link de.hu.gralog.structure.types.elements.LabeledStructureVertex} as vertices
+	 * and a {@link org.jgrapht.graph.DirectedGraph} as JGraphT-Graph.
 	 * 
 	 */
-	private GralogGraphTypeInfo<Vtype, Etype, GBtype, Gtype> graphType;
+	private StructureTypeInfo<Vtype, Etype, GBtype, Gtype> structureType;
 	
 	/**
 	 * Our last property shows how to use
@@ -96,29 +96,29 @@ public class AdvancedProperties<Vgraph extends LabeledGraphVertex,
 	 * 
 	 */
 	
-	public GralogGraphSupport<Vgraph, Egraph, GBgraph, Ggraph> getGraph() {
-		return graph;
+	public Structure<Vgraph, Egraph, GBgraph, Ggraph> getStructure() {
+		return structure;
 	}
 
-	public void setGraph(GralogGraphSupport<Vgraph, Egraph, GBgraph, Ggraph> graph) {
-		this.graph = graph;
+	public void setStructure(Structure<Vgraph, Egraph, GBgraph, Ggraph> structure) {
+		this.structure = structure;
 	}
 
-	public GralogGraphTypeInfo<Vtype, Etype, GBtype, Gtype> getGraphType() {
-		return graphType;
+	public StructureTypeInfo<Vtype, Etype, GBtype, Gtype> getStructureType() {
+		return structureType;
 	}
 
-	public void setGraphType(
-			GralogGraphTypeInfo<Vtype, Etype, GBtype, Gtype> graphType) {
-		this.graphType = graphType;
+	public void setStructureType(
+			StructureTypeInfo<Vtype, Etype, GBtype, Gtype> structureType) {
+		this.structureType = structureType;
 	}
 
-	public Vgraph getVertexOfGraph() {
-		return vertexOfGraph;
+	public Vgraph getVertexOfStructure() {
+		return vertexOfStructure;
 	}
 
-	public void setVertexOfGraph(Vgraph vertexOfGraph) {
-		this.vertexOfGraph = vertexOfGraph;
+	public void setVertexOfStructure(Vgraph vertexOfStructure) {
+		this.vertexOfStructure = vertexOfStructure;
 	}
 
 	public WeekDay getWeekDay() {
@@ -137,12 +137,12 @@ public class AdvancedProperties<Vgraph extends LabeledGraphVertex,
 	public AlgorithmResult execute() throws InvalidPropertyValuesException,
 			UserException {
 		InvalidPropertyValuesException e = new InvalidPropertyValuesException();
-		if ( getGraph() == null )
-			e.addPropertyError( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
-		if ( getGraphType() == null )
-			e.addPropertyError( "graphType", InvalidPropertyValuesException.PROPERTY_REQUIRED );
-		if ( getVertexOfGraph() == null )
-			e.addPropertyError( "vertexOfGraph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
+		if ( getStructure() == null )
+			e.addPropertyError( "structure", InvalidPropertyValuesException.PROPERTY_REQUIRED );
+		if ( getStructureType() == null )
+			e.addPropertyError( "structureType", InvalidPropertyValuesException.PROPERTY_REQUIRED );
+		if ( getVertexOfStructure() == null )
+			e.addPropertyError( "vertexOfStructure", InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		if ( getWeekDay() != WeekDay.SATURDAY && getWeekDay() != WeekDay.SUNDAY )
 			e.addPropertyError( "weekDay", "Please choose a day on the weekend!" );
 		if ( e.hasErrors() )

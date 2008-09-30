@@ -14,7 +14,7 @@ import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithm.result.ElementTipsDisplayMode;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 /**
  * This algorithm shows you how to use: 
@@ -34,11 +34,11 @@ import de.hu.gralog.graph.GralogGraphSupport;
  * 		</li>
  * </ul>
  * 
- * in order to display a tree of contents to the user that highlight
- * different subgraphs of the graph and elementTips that provide
- * ToolTips for the vertices of these graphs. It also shows you
+ * in order to display a tree of contents to the user that highlights
+ * different subgraphs of a structure and element-tips that provide
+ * ToolTips for the vertices of these structures. It also shows you
  * how to use <a href="http://www.jgrapht.org">JGraphT</a> to
- * run algorithms on your graph.
+ * run algorithms on your structure.
  * 
  * @author Sebastian
  *
@@ -51,23 +51,24 @@ public class StronglyConnectedSets<V,E,GB, G extends ListenableDirectedGraph<V,E
 		implements Algorithm {
 
 	/**
-	 * This algorithm has only one property, namely the graph
+	 * This algorithm has only one property, namely the structure
 	 * for which we compute the strongly connected components.
 	 * 
 	 */
-	private GralogGraphSupport<V,E,GB,G> graph;
+	private Structure<V,E,GB,G> structure;
 	
-	public GralogGraphSupport<V, E, GB, G> getGraph() {
-		return graph;
+	public Structure<V, E, GB, G> getStructure() {
+		return structure;
 	}
 
-	public void setGraph(GralogGraphSupport<V, E, GB, G> graph) {
-		this.graph = graph;
+	public void setStructure(Structure<V, E, GB, G> structure) {
+		this.structure = structure;
 	}
 
 	/**
-	 * These act as identifiers for the {@link de.hu.gralog.algorithm.result.DisplaySubgraphMode}
-	 * and {@link de.hu.gralog.algorithm.result.ElementTipsDisplayMode} we add
+	 * These Strings act as identifiers 
+	 * for the {@link de.hu.gralog.algorithm.result.DisplaySubgraphMode}
+	 * and {@link de.hu.gralog.algorithm.result.ElementTipsDisplayMode} that we will add
 	 * to our {@link de.hu.gralog.algorithm.result.AlgorithmResult}. 
 	 * 
 	 */
@@ -82,15 +83,15 @@ public class StronglyConnectedSets<V,E,GB, G extends ListenableDirectedGraph<V,E
 			UserException {
 		// first we check the parameters
 		InvalidPropertyValuesException e = new InvalidPropertyValuesException();
-		if ( getGraph() == null )
-			e.addPropertyError( "graph", InvalidPropertyValuesException.PROPERTY_REQUIRED );
+		if ( getStructure() == null )
+			e.addPropertyError( "structure", InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		if ( e.hasErrors() )
 			throw e;
 		
 		// now we start to build our AlgorithmResult
-		AlgorithmResult result = new AlgorithmResult( graph );
-		result.setDescription( "The result contains a child of <b>graph</b> for every " +
-				"of its strongly connected components." );
+		AlgorithmResult result = new AlgorithmResult( structure );
+		result.setDescription( "The result contains a child-content of <b>structure</b> for each " +
+				"of structure's strongly connected components." );
 		
 		// we construct a displayMode and add it to our AlgorithmResult
 		DisplaySubgraphMode displayMode = new DisplaySubgraphMode();
@@ -104,34 +105,34 @@ public class StronglyConnectedSets<V,E,GB, G extends ListenableDirectedGraph<V,E
 		
 		/*
 		 *  now we can define the root-node of our AlgorithmResultContentTree and
-		 *  give it a name, which is later displayed in Gralog
+		 *  give it a name, which is later displayed in GrALoG
 		 */
 		AlgorithmResultContentTreeNode contentRoot = new AlgorithmResultContentTreeNode();
-		contentRoot.setName( "graph" );
+		contentRoot.setName( "structure" );
 		
 		// do not forget to add the root to our AlgorithmResult!
 		result.setContentTree( contentRoot );
 
 		/**
-		 * we are now ready to initialize the elementips for vertices of <b>graph</b>
+		 * we are now ready to initialize the elementips for vertices of <b>structure</b>
 		 */
 		int i = 1;
 		Hashtable<V, String> elementTips = new Hashtable<V,String>();
 
 		/**
 		 * This is an example how to use the JGraphT-Graph underlying
-		 * {@link GralogGraphSupport} as input for the JGraphT-library
+		 * {@link Structure} as input for the JGraphT-library.
 		 * 
-		 * Note: We can not pass {@link #getGraph()} directly to the constructor of
+		 * Note: We can not pass {@link #getStructure()} directly to the constructor of
 		 * {@link org.jgrapht.alg.StrongConnectivityInspector}, but
-		 * instead its underlying JGraphT-Graph ( {@link GralogGraphSupport#getGraph()}.
+		 * instead it's underlying JGraphT-Graph ( {@link Structure#getGraph()}.
 		 *  
 		 */
-		StrongConnectivityInspector<V,E> inspector = new StrongConnectivityInspector<V,E>( getGraph().getGraph() );
+		StrongConnectivityInspector<V,E> inspector = new StrongConnectivityInspector<V,E>( getStructure().getGraph() );
 
 		/**
 		 * Now we are ready to add children to our <b>contentRoot</b>, i.e.
-		 * a child for each component of the graph.
+		 * a child for each component of the structure.
 		 * 
 		 */
 		for ( Set<V> connectedSet : inspector.stronglyConnectedSets() ) {
@@ -142,15 +143,15 @@ public class StronglyConnectedSets<V,E,GB, G extends ListenableDirectedGraph<V,E
 			 * 
 			 */
 			AlgorithmResultContentTreeNode component = new AlgorithmResultContentTreeNode();
-			component.setName( "The " + i + "-th component." );
+			component.setName( "The component number: " + i );
 			component.addDisplaySubgraph( DM_COMPONENT, connectedSet, null );
 			
 			/**
-			 * Along the way, we construct our elementTips and
+			 * Along the way, we construct our element-Tips and
 			 * add it to each child of <b>contentRoot</b>
 			 */
 			for ( V vertex : connectedSet )
-				elementTips.put( vertex, "This vertex belongs to the " + i + "-th component." );
+				elementTips.put( vertex, "This vertex belongs to component number: " + i );
 			component.addElementTips( ET_COMPONENT , elementTips );
 			
 			/**

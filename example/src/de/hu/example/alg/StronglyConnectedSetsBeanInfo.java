@@ -8,9 +8,9 @@ import java.beans.SimpleBeanInfo;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.ListenableGraph;
 
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.structure.StructureTypeInfo;
+import de.hu.gralog.structure.StructureTypeInfoFilter;
 
 /**
  * This is the <b>BeanInfo</b>-class for the {@link StronglyConnectedSets}
@@ -33,9 +33,9 @@ public class StronglyConnectedSetsBeanInfo extends SimpleBeanInfo {
 				"the user a tree of contents. " +
 				"It also shows you how to use <b>DisplaySubgraphMode</b> and " +
 				"<b>ElementTipsDisplayMode</b> to highlight subgraphs and provide " +
-				"tooltips for the elements of the graph." +
+				"tooltips for the elements of your structure." +
 				"( to see the elementTips move the mouse over " +
-				" one of the vertices in the graph. ) " +
+				" one of the vertices in the structure. ) " +
 				"</html>" );
 		
 		/**
@@ -44,9 +44,9 @@ public class StronglyConnectedSetsBeanInfo extends SimpleBeanInfo {
 		 */
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", StronglyConnectedSets.class, new DirectedGraphTypeInfoFilter() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "structure", StronglyConnectedSets.class, new DirectedStructureTypeInfoFilter() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html> " +
-						"The directed graph for which we compute its strongly connected components." +
+						"The directed graph for which we compute the strongly connected components." +
 						"</html>" );
 		} catch (IntrospectionException e) {
 			e.printStackTrace();
@@ -65,17 +65,17 @@ public class StronglyConnectedSetsBeanInfo extends SimpleBeanInfo {
 	}
 
 	/**
-	 * This class serves as a {@link GralogGraphTypeInfoFilter}
-	 * for the property <b>graph</b>
+	 * This class serves as a {@link StructureTypeInfoFilter}
+	 * for the property <b>structure</b>
 	 * defined above. It filters all
-	 * {@link GralogGraphTypeInfo GralogGraphTypeInfos}
+	 * {@link StructureTypeInfo StructureTypeInfos}
 	 * that are not directed.
 	 *  
 	 * @author Sebastian
 	 *
 	 */
-	public static class DirectedGraphTypeInfoFilter implements GralogGraphTypeInfoFilter {
-		public boolean filterTypeInfo( GralogGraphTypeInfo typeInfo ) {
+	public static class DirectedStructureTypeInfoFilter implements StructureTypeInfoFilter {
+		public boolean filterTypeInfo( StructureTypeInfo typeInfo ) {
 			ListenableGraph listenableGraph = typeInfo.getGraphFactory().createGraph();
 
 			if ( ! ( listenableGraph instanceof DirectedGraph ) )

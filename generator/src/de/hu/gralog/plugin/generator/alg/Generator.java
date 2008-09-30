@@ -15,28 +15,28 @@ import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphFactory;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 import de.hu.gralog.jgrapht.util.JGraphTUtils;
+import de.hu.gralog.structure.Structure;
+import de.hu.gralog.structure.StructureFactory;
+import de.hu.gralog.structure.StructureTypeInfo;
+import de.hu.gralog.structure.StructureTypeInfoFilter;
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 
 
-public class Generator<V extends LabeledGraphVertex, E,GB,G extends ListenableGraph<V,E>> implements Algorithm {
+public class Generator<V extends LabeledStructureVertex, E,GB,G extends ListenableGraph<V,E>> implements Algorithm {
 
-	private GralogGraphTypeInfo graphType;
+	private StructureTypeInfo structureType;
 	private GraphGeneratorTypes generatorType = GraphGeneratorTypes.RANDOM;
 	private int numOfVertices = 0;
 	private int numOfEdges = 0;
 	private String vertexLabelPrefix;
 
-	public GralogGraphTypeInfo getGraphType() {
-		return graphType;
+	public StructureTypeInfo getStructureType() {
+		return structureType;
 	}
 
-	public void setGraphType(GralogGraphTypeInfo graphTypeInfo) {
-		this.graphType = graphTypeInfo;
+	public void setStructureType(StructureTypeInfo structureTypeInfo) {
+		this.structureType = structureTypeInfo;
 	}
 	
 	public GraphGeneratorTypes getGeneratorType() {
@@ -78,59 +78,59 @@ public class Generator<V extends LabeledGraphVertex, E,GB,G extends ListenableGr
             e.addPropertyError( "generatorType", InvalidPropertyValuesException.PROPERTY_REQUIRED );
         if ( ! (getNumOfVertices() >= 0) )
                 e.addPropertyError( "numOfVertices", InvalidPropertyValuesException.GREATER_EQUAL_ZERO );
-        if ( getGraphType() == null )
-            e.addPropertyError( "graphType", InvalidPropertyValuesException.PROPERTY_REQUIRED );
+        if ( getStructureType() == null )
+            e.addPropertyError( "structureType", InvalidPropertyValuesException.PROPERTY_REQUIRED );
         if ( e.hasErrors() )
                 throw e;
 
-        GralogGraphSupport<V,E,GB,G> graph = GralogGraphFactory.createGraphSupport( getGraphType() );
+        Structure<V,E,GB,G> structure = StructureFactory.createStructure( getStructureType() );
         
         GraphGenerator<V,E,V> generator;
         switch ( getGeneratorType() ) {
         case RANDOM:
         	generator = new RandomGraphGenerator<V,E>( getNumOfVertices(), getNumOfEdges() );
-        	GralogGraphSupport copyGraph = GralogGraphFactory.createGraphSupport( graph.getTypeInfo() );
-        	generator.generateGraph( JGraphTUtils.getListenableBaseGraph( copyGraph.getGraph() ), new NumberedLabeledGraphVertexFactory<V>( graph, getVertexLabelPrefix() ), null );
-        	Graphs.addGraph( graph.getGraph(), copyGraph.getGraph() );
+        	Structure copyStructure = StructureFactory.createStructure( structure.getTypeInfo() );
+        	generator.generateGraph( JGraphTUtils.getListenableBaseGraph( copyStructure.getGraph() ), new NumberedLabeledGraphVertexFactory<V>( structure, getVertexLabelPrefix() ), null );
+        	Graphs.addGraph( structure.getGraph(), copyStructure.getGraph() );
         	break;
         case EMPTY:
         	generator = new EmptyGraphGenerator<V,E>( getNumOfVertices() );
-        	generator.generateGraph( graph.getGraph(), new NumberedLabeledGraphVertexFactory<V>( graph, getVertexLabelPrefix() ), null );
+        	generator.generateGraph( structure.getGraph(), new NumberedLabeledGraphVertexFactory<V>( structure, getVertexLabelPrefix() ), null );
         	break;
         case LINEAR:
         	generator = new LinearGraphGenerator<V,E>( getNumOfVertices() );
-        	generator.generateGraph( graph.getGraph(), new NumberedLabeledGraphVertexFactory<V>( graph, getVertexLabelPrefix() ), null );
+        	generator.generateGraph( structure.getGraph(), new NumberedLabeledGraphVertexFactory<V>( structure, getVertexLabelPrefix() ), null );
         	break;
         case RING:
         	generator = new RingGraphGenerator<V,E>( getNumOfVertices() );
-        	generator.generateGraph( graph.getGraph(), new NumberedLabeledGraphVertexFactory<V>( graph, getVertexLabelPrefix() ), null );
+        	generator.generateGraph( structure.getGraph(), new NumberedLabeledGraphVertexFactory<V>( structure, getVertexLabelPrefix() ), null );
         	break;
         case WHEEL:
         	generator = new WheelGraphGenerator<V,E>( getNumOfVertices() );
-        	generator.generateGraph( graph.getGraph(), new NumberedLabeledGraphVertexFactory<V>( graph, getVertexLabelPrefix() ), null );
+        	generator.generateGraph( structure.getGraph(), new NumberedLabeledGraphVertexFactory<V>( structure, getVertexLabelPrefix() ), null );
         	break;
         default:
         }
 
         AlgorithmResult result = new AlgorithmResult(  );
-        result.setSingleContent( new AlgorithmResultContent( graph ) );
-        result.setOpenContentsAsGraphs( true );
+        result.setSingleContent( new AlgorithmResultContent( structure ) );
+        result.setOpenContentsAsStructures( true );
         return result;
 	}
 	
-	private static class NumberedLabeledGraphVertexFactory<V extends LabeledGraphVertex> implements VertexFactory<V> {
+	private static class NumberedLabeledGraphVertexFactory<V extends LabeledStructureVertex> implements VertexFactory<V> {
 
 		private int nextVertexNumber = 0;
-		private GralogGraphSupport<V, ?,?,?> graph;
+		private Structure<V, ?,?,?> structure;
 		private String vertexLabelPrefix;
 		
-		public NumberedLabeledGraphVertexFactory( GralogGraphSupport<V,?,?,?> graph, String vertexLabelPrefix ) {
-			this.graph = graph;
+		public NumberedLabeledGraphVertexFactory( Structure<V,?,?,?> structure, String vertexLabelPrefix ) {
+			this.structure = structure;
 			this.vertexLabelPrefix = vertexLabelPrefix;
 		}
 		
 		public V createVertex() {
-			V vertex = graph.createVertex();
+			V vertex = structure.createVertex();
 			vertex.setLabel( getNextVertexLabel() );
 			return vertex;
 		}
@@ -143,10 +143,10 @@ public class Generator<V extends LabeledGraphVertex, E,GB,G extends ListenableGr
 		
 	}
 	
-	public static class LabeledGraphVertexGraphTypeInfoFilter implements GralogGraphTypeInfoFilter {
+	public static class LabeledGraphVertexGraphTypeInfoFilter implements StructureTypeInfoFilter {
 
-		public boolean filterTypeInfo(GralogGraphTypeInfo graphTypeInfo) {
-			if ( graphTypeInfo.getVertexFactory().createVertex() instanceof LabeledGraphVertex )
+		public boolean filterTypeInfo(StructureTypeInfo structureTypeInfo) {
+			if ( structureTypeInfo.getVertexFactory().createVertex() instanceof LabeledStructureVertex )
 				return false;
 			return true;
 		}

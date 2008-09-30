@@ -1,26 +1,21 @@
 package de.hu.example.alg;
 
 import java.beans.BeanDescriptor;
-import java.beans.DefaultPersistenceDelegate;
-import java.beans.Encoder;
-import java.beans.Expression;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
-import java.beans.Statement;
 
-import de.hu.gralog.app.UserException;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.structure.StructureTypeInfo;
+import de.hu.gralog.structure.StructureTypeInfoFilter;
 
 /**
  * This is the <b>BeanInfo</b>-class for the {@link ShortestPathInteractive}
  * algorithm.  
  * 
  * The only porpose of this <b>BeanInfo</b>-class is to
- * define the {@link ChooseGraphPropertyDescriptor} for the 
- * property <b>graph</b> of {@link ShortestPathInteractive}.
+ * define the {@link ChooseStructurePropertyDescriptor} for the 
+ * property <b>structure</b> of {@link ShortestPathInteractive}.
  *  
  * @author Sebastian
  *
@@ -36,15 +31,15 @@ public class ShortestPathInteractiveBeanInfo extends SimpleBeanInfo {
 		BEAN_DESCRIPTOR.setShortDescription( "<html>" +
 				"This algorithm shows you how to use " +
 				"<b>AlgorithmResultInteractiveContent</b> " +
-				"to allow userinteraction after the " +
+				"to allow user-interaction after the " +
 				"result is displayed to the user." +
 				"It also shows you how to define a " +
-				"<b>java.beans.Customizer</b> for a Bean." +
+				"<b>java.beans.Customizer</b> for a bean." +
 				"</html>" );
 		
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", ShortestPathInteractive.class, new AllGraphTypeInfoFilter() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "structure", ShortestPathInteractive.class, new AllStructuresTypeInfoFilter() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html> " +
 						"</html>" );
 		} catch (IntrospectionException e) {
@@ -64,15 +59,15 @@ public class ShortestPathInteractiveBeanInfo extends SimpleBeanInfo {
 	}
 
 	/**
-	 * This class serves as a {@link GralogGraphTypeInfoFilter}
-	 * for the property <b>graph</b>
-	 * defined above. It accepts every graph.
+	 * This class serves as a {@link StructureTypeInfoFilter}
+	 * for the property <b>structure</b>
+	 * defined above. It accepts every structure.
 	 *  
 	 * @author Sebastian
 	 *
 	 */
-	public static class AllGraphTypeInfoFilter implements GralogGraphTypeInfoFilter {
-		public boolean filterTypeInfo( GralogGraphTypeInfo typeInfo ) {
+	public static class AllStructuresTypeInfoFilter implements StructureTypeInfoFilter {
+		public boolean filterTypeInfo( StructureTypeInfo typeInfo ) {
 			return false;
 		}
 	}
