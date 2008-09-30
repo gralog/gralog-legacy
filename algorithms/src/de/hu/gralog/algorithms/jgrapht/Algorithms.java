@@ -44,4 +44,19 @@ public class Algorithms {
 			canReach.add( (V)it.next() );
 		return canReach;
 	}
+
+	public static<V,E,G extends Graph<V,E>> Set<V> reach( G graph, Set<V> vertices, boolean reverseEdges, Filter<V> vertexFilter ) {
+		Set<V> canReach = new HashSet<V>();
+		Set<V> verticesTmp = new HashSet<V>( vertices );
+		for ( V v : vertices ) {
+			if ( verticesTmp.contains( v ) ) {
+				Set<V> canReachV = reach( graph, v, reverseEdges, vertexFilter );
+				canReach.addAll( canReachV );
+				verticesTmp.removeAll( canReachV );
+				if ( verticesTmp.isEmpty() )
+					break;
+			}
+		}
+		return canReach;
+	}
 }
