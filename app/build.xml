@@ -152,14 +152,15 @@
 		<delete dir="${dist}/tmp"/>
 		<mkdir dir="${dist}/tmp/gralog/plugins"/>
 		
-		<copy file="${basedir}/../gralog-dagwidth/dist/gralog-dag-width.jar" toDir="${dist}/tmp/gralog/plugins"/>
-		<copy file="${basedir}/../gralog-dfa/dist/gralog-dfa.jar" toDir="${dist}/tmp/gralog/plugins"/>
-		<copy file="${basedir}/../gralog-example/dist/gralog-examples.jar" toDir="${dist}/tmp/gralog/plugins"/>
-		<copy file="${basedir}/../gralog-finitegames/dist/gralog-finite-games.jar" toDir="${dist}/tmp/gralog/plugins"/>
-		<copy file="${basedir}/../gralog-generator/dist/gralog-generator.jar" toDir="${dist}/tmp/gralog/plugins"/>
+<!--		<copy file="${basedir}/../gralog-dagwidth/dist/gralog-dag-width.jar" toDir="${dist}/tmp/gralog/plugins"/> -->
 <!--		<copy file="${basedir}/../gralog-jgrapht-alg/dist/gralog-jgrapht-alg.jar" toDir="${dist}/tmp/gralog/plugins"/>-->
+		
+		<copy file="${basedir}/../gralog-automaton/dist/gralog-automaton.jar" toDir="${dist}/tmp/gralog/plugins"/>
+		<copy file="${basedir}/../gralog-example/dist/gralog-examples.jar" toDir="${dist}/tmp/gralog/plugins"/>
+		<copy file="${basedir}/../gralog-algorithms/dist/gralog-algorithms.jar" toDir="${dist}/tmp/gralog/plugins"/>
+		<copy file="${basedir}/../gralog-generator/dist/gralog-generator.jar" toDir="${dist}/tmp/gralog/plugins"/>
 		<copy file="${basedir}/../gralog-logic/dist/gralog-logic.jar" toDir="${dist}/tmp/gralog/plugins"/>
-		<copy file="${basedir}/../gralog-parity/dist/gralog-parity.jar" toDir="${dist}/tmp/gralog/plugins"/>
+		<copy file="${basedir}/../gralog-two-player-games/dist/gralog-two-player-games.jar" toDir="${dist}/tmp/gralog/plugins"/>
 		<copy file="${dist}/gralog.jar" toDir="${dist}/tmp/gralog"/>
 		
 		<zip basedir="${dist}/tmp/" zipfile="${dist}/gralog.zip"/>
