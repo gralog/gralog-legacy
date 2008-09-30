@@ -83,11 +83,11 @@ import de.hu.gralog.jgraph.GJGraphUtil;
 
 public class AlgorithmResultView extends View implements EditorDesktopViewListener, DocumentListener {
 	
-	private static final JLabel NO_RESULT = new JLabel( "no result" );
+	private static final JLabel NO_RESULT = new JLabel( "Document is not an Algorithm-Result." );
 	private HashMap<Document, JPanel> panels = new HashMap<Document, JPanel>();
 	
 	public AlgorithmResultView() {
-		super("AlgorithmResult", null, NO_RESULT );
+		super("Algorithm-Result", null, NO_RESULT );
 	}
 
 	public void currentDocumentSelectionChanged() {
@@ -157,6 +157,7 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 		JTextArea nameText = new JTextArea();
 		nameText.setText( content.getAlgorithmResultInfo().getAlgorithmName() );
 		nameText.setEditable( false );
+		nameText.setRows( 3 );
 		algorithmName.add( new JScrollPane( nameText ) );
 		settingsPanel.add( algorithmName, BorderLayout.CENTER );
 		
@@ -456,7 +457,7 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 			JPanel panel = new JPanel();
 			panel.setLayout( new BorderLayout() );
 			
-			JButton openGraphInNewDocument = new JButton( new AbstractAction( "Open As Graph", null ) {
+			JButton openGraphInNewDocument = new JButton( new AbstractAction( "Open As Structure", null ) {
 
 				public void actionPerformed(ActionEvent e) {
 					try {

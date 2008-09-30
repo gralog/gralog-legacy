@@ -20,6 +20,7 @@
 package de.hu.gralog.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
@@ -33,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -42,15 +45,21 @@ import java.util.jar.JarFile;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.MenuElement;
@@ -71,9 +80,10 @@ import net.infonode.docking.util.DeveloperUtil;
 import net.infonode.docking.util.DockingUtil;
 import net.infonode.docking.util.ViewMap;
 import de.hu.gralog.algorithm.Algorithm;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException;
+import de.hu.gralog.algorithm.InvalidPropertyValuesException.PropertyError;
 import de.hu.gralog.app.GralogCoreInitialize;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.action.ChangeEditorStateAction;
 import de.hu.gralog.gui.action.EditCopyAction;
 import de.hu.gralog.gui.action.EditCutAction;
@@ -101,20 +111,24 @@ import de.hu.gralog.gui.action.Zoom11Action;
 import de.hu.gralog.gui.action.ZoomFitInCanvasAction;
 import de.hu.gralog.gui.action.ZoomInAction;
 import de.hu.gralog.gui.action.ZoomOutAction;
+import de.hu.gralog.gui.components.HTMLEditorPane;
 import de.hu.gralog.gui.data.AlgorithmsTree;
 import de.hu.gralog.gui.data.JarLoader;
 import de.hu.gralog.gui.data.PluginManager;
+import de.hu.gralog.gui.data.PluginsTree;
 import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
+import de.hu.gralog.gui.data.PluginsTree.PluginsTreeNode;
 import de.hu.gralog.gui.document.DocumentContentFactory;
 import de.hu.gralog.gui.document.FileFormat;
 import de.hu.gralog.gui.views.AlgorithmResultView;
 import de.hu.gralog.gui.views.EditorDesktopView;
 import de.hu.gralog.gui.views.EditorDesktopViewListener;
 import de.hu.gralog.gui.views.ElementPropertyEditorView;
-import de.hu.gralog.gui.views.ExecuteAlgorithmsView;
 import de.hu.gralog.gui.views.GraphPropertyEditorView;
 import de.hu.gralog.gui.views.OverviewPanelView;
+import de.hu.gralog.gui.views.PluginsView;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.structure.StructureTypeInfo;
 import de.hu.gralog.util.WeakListenerList;
 
 public class MainPad extends JFrame {
@@ -191,7 +205,7 @@ public class MainPad extends JFrame {
 	
 	private static final EditorDesktopView DESKTOP = new EditorDesktopView();
 		
-	private static final View[] VIEWS = { DESKTOP, new ElementPropertyEditorView(), new GraphPropertyEditorView(), new OverviewPanelView(), new ExecuteAlgorithmsView(), new AlgorithmResultView() };
+	private static final View[] VIEWS = { DESKTOP, new ElementPropertyEditorView(), new GraphPropertyEditorView(), new OverviewPanelView(), new PluginsView(), new AlgorithmResultView() };
 	private static final ShowViewAction[] SHOW_VIEW_ACTIONS = new ShowViewAction[VIEWS.length];
 	static {
 		for (int i=0;i < VIEWS.length; i++ )
@@ -307,15 +321,15 @@ public class MainPad extends JFrame {
 			}
 		}
 		
-		FILE_NEW_ACTIONS = new FileNewAction[getGraphTypeInfos().size()];
+		FILE_NEW_ACTIONS = new FileNewAction[getStructureTypeInfos().size()];
 		int i = 0;
-		for ( GralogGraphTypeInfo graphType : getGraphTypeInfos() ) {
+		for ( StructureTypeInfo graphType : getStructureTypeInfos() ) {
 			FILE_NEW_ACTIONS[i++] = new FileNewAction( graphType );
 		}
 	}
 	
-	public ArrayList<GralogGraphTypeInfo> getGraphTypeInfos() {
-		return PLUGIN_MANAGER.getGraphTypes();
+	public ArrayList<StructureTypeInfo> getStructureTypeInfos() {
+		return PLUGIN_MANAGER.getStructureTypes();
 	}
 	
 	public JarLoader getJarLoader() {
@@ -457,12 +471,12 @@ public class MainPad extends JFrame {
 	protected JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu file = new JMenu( "File" );
-		JMenu fileNew = new JMenu( "New" );
+/*		JMenu fileNew = new JMenu( "New" );
 		for ( FileNewAction action : FILE_NEW_ACTIONS )
 			fileNew.add( action );
 		
 		file.add( fileNew );
-		
+*/		
 		file.add( FILE_OPEN_ACTION );
 	
 		file.addSeparator();
@@ -559,7 +573,11 @@ public class MainPad extends JFrame {
 	public static AlgorithmsTree getAlgorithmTree( ArrayList<AlgorithmInfo> algorithms ) {
 		return new AlgorithmsTree( algorithms );
 	}
-	
+
+	public PluginsTreeNode getPluginsTree(  ) {
+		return PluginsTree.buildTree( PLUGIN_MANAGER.getPlugins() );
+	}
+
 	protected Algorithm getAlgorithmByName( String classname ) {
 		Algorithm algorithm = null;
 		try {
@@ -582,10 +600,45 @@ public class MainPad extends JFrame {
 		return DESKTOP;
 	}
 
+	public static Component getUserExceptionComponent( UserException e ) {
+		if ( e.getCause() instanceof InvalidPropertyValuesException ) {
+			InvalidPropertyValuesException i = (InvalidPropertyValuesException)e.getCause();
+			JPanel panel = new JPanel( );
+			panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+			
+			for ( PropertyError pe : i.getErrors() ) {
+				JPanel errorPanel = new JPanel( new BorderLayout() );
+				errorPanel.add( new JLabel( pe.getProperty() ), BorderLayout.NORTH );
+				
+				JEditorPane messagePane = new HTMLEditorPane( pe.getMessage() );
+				errorPanel.add( new JScrollPane( messagePane ), BorderLayout.CENTER );
+				
+				panel.add( errorPanel );
+			}
+			return panel;
+		}
+		String text = "no description";
+		if (e.getCause() != null) {
+			StringWriter stackTrace = new StringWriter();
+			e.getCause().printStackTrace(new PrintWriter(stackTrace));
+			text = stackTrace.toString();
+		} else {
+			if (e.getDescription() != null)
+				text = e.getDescription();
+		}
+		JTextArea textArea = new JTextArea(text);
+		textArea.setRows(4);
+		textArea.setEditable(false);
+		textArea.setBackground(new JLabel().getBackground());
+		textArea.setForeground(new JLabel().getForeground());
+
+		return new JScrollPane(textArea);
+	}
+	
 	public void handleUserException( final UserException e ) {
 		SwingUtilities.invokeLater( new Runnable() {
 			public void run() {
-				JOptionPane.showMessageDialog( MainPad.getInstance(), e.getComponent(), e.getMessage(), JOptionPane.ERROR_MESSAGE );
+				JOptionPane.showMessageDialog( MainPad.getInstance(), getUserExceptionComponent( e ), e.getMessage(), JOptionPane.ERROR_MESSAGE );
 			}
 		});
 	}

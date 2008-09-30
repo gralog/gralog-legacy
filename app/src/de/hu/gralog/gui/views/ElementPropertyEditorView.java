@@ -22,12 +22,13 @@ package de.hu.gralog.gui.views;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,11 +43,11 @@ import de.hu.gralog.jgraph.GJGraph;
 
 public class ElementPropertyEditorView extends View implements EditorDesktopViewListener, DocumentListener {
 	
-	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "elements not editable" );
+	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "Elements are not editable." );
 	private HashMap<Document, HashMap<Component,JPanel>> panels = new HashMap<Document, HashMap<Component,JPanel>>();
 		
 	public ElementPropertyEditorView(  ) {
-		super( "Element Properties", null, NO_PROPERTIES_AVAIBLE );
+		super( "Element-Properties", null, NO_PROPERTIES_AVAIBLE );
 	}
 	
 	protected JPanel getPanel( Document document ) {
@@ -103,7 +104,7 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 		
 	}
 
-	private static class GraphElementEditorPanel extends JPanel implements ItemListener {
+	private static class GraphElementEditorPanel extends JPanel implements ActionListener {
 		
 		private final JPanel cards = new JPanel( new CardLayout() );
 		private static final String CARD_VERTEXES = "VERTEXES";
@@ -115,16 +116,19 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 			add( cards, BorderLayout.CENTER );
 			
 			if ( graph.getGraphT().isVertexEditable() && graph.getGraphT().isEdgeEditable() ) {
-				JCheckBox showVertexes = new JCheckBox();
-				showVertexes.setSelected( true );
-				showVertexes.addItemListener( this );
-				showVertexes.setBorder( BorderFactory.createEmptyBorder( 5, 0, 5,0 ) );
+				JLabel elementSelectionLabel = new JLabel( "Choose element-type: " );
 				
-				JPanel showVertexesPanel = new JPanel();
-				showVertexesPanel.add( showVertexes );
-				showVertexesPanel.add( new JLabel( "Show Vertex Properties" ) );
+				JComboBox elementSelection = new JComboBox( new String[] { "vertices", "edges" } );
+				elementSelection.setSelectedItem( "vertices" );
+				elementSelection.addActionListener( this );
 				
-				add( showVertexesPanel, BorderLayout.SOUTH );
+				JPanel elementSelectionPanel = new JPanel( );
+				elementSelectionPanel.setBorder(  BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
+				elementSelectionPanel.setLayout( new BoxLayout( elementSelectionPanel, BoxLayout.X_AXIS ) );
+				elementSelectionPanel.add( elementSelectionLabel );
+				elementSelectionPanel.add( elementSelection );
+				
+				add( elementSelectionPanel, BorderLayout.NORTH );
 			}
 			
 			if ( graph.getGraphT().isVertexEditable() ) {
@@ -136,14 +140,15 @@ public class ElementPropertyEditorView extends View implements EditorDesktopView
 			if ( graph.getGraphT().isEdgeEditable() ) {
 				PropertyEditorTable table = new PropertyEditorTable();
 				table.setModel( new GraphElementEditorTableModel( graph, false ) );
+				cards.setBorder( BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
 				cards.add( new JScrollPane( table ) , CARD_EDGES );
 			}
 		}
 
-		public void itemStateChanged(ItemEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			CardLayout cl = (CardLayout)(cards.getLayout());
 			
-			if ( ((JCheckBox)e.getSource()).isSelected() )
+			if ( ((JComboBox)e.getSource()).getSelectedItem()== null || ((JComboBox)e.getSource()).getSelectedItem().equals( "vertices" ) )
 				cl.show(cards, CARD_VERTEXES );
 			else	
 				cl.show(cards, CARD_EDGES );

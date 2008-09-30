@@ -40,12 +40,12 @@ import net.infonode.docking.util.DockingUtil;
 import net.infonode.util.Direction;
 import de.hu.gralog.algorithm.result.AlgorithmResultInfo;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentContentFactory;
 import de.hu.gralog.gui.document.DocumentListener;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.structure.StructureTypeInfo;
 import de.hu.gralog.util.WeakListenerList;
 
 public class EditorDesktopView extends View implements DocumentListener {
@@ -58,7 +58,7 @@ public class EditorDesktopView extends View implements DocumentListener {
 	private static final JPopupMenu POPUP_MENU = new JPopupMenu();
 		
 	public EditorDesktopView() {
-		super( "desktop", null, new RootWindow( new ForwardingViewSerializer() ) );
+		super( "Desktop", null, new RootWindow( new ForwardingViewSerializer() ) );
 		rootWindow = (RootWindow)getComponent();
 		
 		rootWindow.getRootWindowProperties().addSuperObject( MainPad.THEME.getRootWindowProperties() );
@@ -122,9 +122,9 @@ public class EditorDesktopView extends View implements DocumentListener {
                 System.out.println("");
 	}
 	
-	public void newDocument(GralogGraphTypeInfo graphType) {
+	public void newDocument(StructureTypeInfo structureType) {
 		try {
-			openDocument(new Document( DocumentContentFactory.getInstance().createDocumentContent( graphType )));
+			openDocument(new Document( DocumentContentFactory.getInstance().createDocumentContent( structureType )));
 		} catch(UserException e) {
 			MainPad.getInstance().handleUserException( e );
 			return;

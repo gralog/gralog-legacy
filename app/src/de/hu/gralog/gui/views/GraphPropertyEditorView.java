@@ -32,25 +32,27 @@ import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 import net.infonode.docking.View;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.components.HTMLEditorPane;
 import de.hu.gralog.gui.components.beans.BeanEditorTableModel;
 import de.hu.gralog.gui.components.beans.PropertyEditorTable;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.DocumentListener;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.structure.Structure;
 
 public class GraphPropertyEditorView extends View implements EditorDesktopViewListener, DocumentListener {
 	
-	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "graph not editable" );
+	private static final JLabel NO_PROPERTIES_AVAIBLE = new JLabel( "Structure is not editable." );
 	private HashMap<Document, HashMap<Component,JPanel>> panels = new HashMap<Document, HashMap<Component,JPanel>>();
 		
 	public GraphPropertyEditorView(  ) {
-		super( "Graph Properties", null, NO_PROPERTIES_AVAIBLE );
+		super( "Structure-Properties", null, NO_PROPERTIES_AVAIBLE );
 	}
 	
 	protected JPanel getPanel( Document document ) {
@@ -70,27 +72,25 @@ public class GraphPropertyEditorView extends View implements EditorDesktopViewLi
 	
 	protected JPanel createPanel( final GJGraph graph ) {
 		try {
-			JPanel panel = new JPanel();
-			panel.setLayout( new BorderLayout() );
+			JPanel panel = new JPanel( new BorderLayout() );
+			JTabbedPane tab = new JTabbedPane();
 
-			JPanel graphPanel = new JPanel();
-			graphPanel.setLayout( new BorderLayout() );
-
-			BeanDescriptor beanDescriptor = Introspector.getBeanInfo( graph.getGraphT().getGraphBean().getClass() ).getBeanDescriptor();
+			BeanDescriptor beanDescriptor = Introspector.getBeanInfo( graph.getGraphT().getStructureBean().getClass() ).getBeanDescriptor();
 
 			if ( beanDescriptor != null && beanDescriptor.getCustomizerClass() != null ) {
 				Customizer customizer = (Customizer)beanDescriptor.getCustomizerClass().newInstance();
 				customizer.setObject( graph.getGraphT() );
-				graphPanel.add( (Component)customizer, BorderLayout.CENTER );
+				tab.add( (Component)customizer, "PROPERTIES" );
 			} else {
 				PropertyEditorTable graphTable = new PropertyEditorTable();
 				graphTable.setModel( new GraphPropertyEditorTableModel( graph.getGraphT() ) );
 
-				graphPanel.add( new JScrollPane( graphTable ), BorderLayout.CENTER );
+				tab.add( new JScrollPane( graphTable ), "PROPERTIES" );
 			}
+			if ( beanDescriptor.getShortDescription() != null && beanDescriptor.getShortDescription().trim().length() != 0 )
+				tab.add( new JScrollPane( new HTMLEditorPane( beanDescriptor.getShortDescription() ) ), "DESCRIPTION" );
 
-
-			panel.add( graphPanel, BorderLayout.CENTER );
+			panel.add( tab, BorderLayout.CENTER );
 
 			return panel;
 		} catch( InstantiationException e ) {
@@ -105,7 +105,7 @@ public class GraphPropertyEditorView extends View implements EditorDesktopViewLi
 	
 	public void currentDocumentSelectionChanged() {
 		Document document = MainPad.getInstance().getDesktop().getCurrentDocument();
-		if ( document != null && document.getGraph() != null && document.getGraph().isElementsAndStructureEditable() && document.getGraph().getGraphT().isBeanEditable() ) {
+		if ( document != null && document.getGraph() != null && document.getGraph().isElementsAndStructureEditable() && document.getGraph().getGraphT().isStructureEditable() ) {
 			JPanel panel = getPanel( document );
 			
 			setComponent( panel );
@@ -133,9 +133,9 @@ public class GraphPropertyEditorView extends View implements EditorDesktopViewLi
 
 	private static class GraphPropertyEditorTableModel extends BeanEditorTableModel implements PropertyChangeListener {
 		
-		public GraphPropertyEditorTableModel( GralogGraphSupport graphSupport ) {
-			super( graphSupport.getGraphBean() );
-			graphSupport.getPropertyChangeSupport().addPropertyChangeListener( this );
+		public GraphPropertyEditorTableModel( Structure structure ) {
+			super( structure.getStructureBean() );
+			structure.getPropertyChangeSupport().addPropertyChangeListener( this );
 		}
 
 		public void propertyChange( PropertyChangeEvent e ) {

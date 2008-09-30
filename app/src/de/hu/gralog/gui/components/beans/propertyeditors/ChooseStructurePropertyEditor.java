@@ -32,36 +32,37 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import de.hu.gralog.beans.propertyeditor.PropertyEditorRendererExtension;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GralogGraphTypeInfoFilter;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.document.Document;
+import de.hu.gralog.gui.document.GJGraphDocumentContent;
+import de.hu.gralog.structure.Structure;
+import de.hu.gralog.structure.StructureTypeInfoFilter;
 
-public class ChooseGraphTypeInfoPropertyEditor extends PropertyEditorSupport implements PropertyEditorRendererExtension {
+public class ChooseStructurePropertyEditor extends PropertyEditorSupport implements PropertyEditorRendererExtension {
 
-	private final ArrayList<GralogGraphTypeInfo> graphTypeInfos;
-	private final GralogGraphTypeInfoFilter graphTypeInfoFilter;
-	private final ChooseGraphTypeInfoPropertyEditorComponent editor;
+	private ArrayList<Document> documents = new ArrayList<Document>();
+	private StructureTypeInfoFilter structureTypeInfoFilter = null;
+	private ChooseStructurePropertyEditorComponent editor;
 	
-	public ChooseGraphTypeInfoPropertyEditor( GralogGraphTypeInfoFilter graphTypeInfoFilter ) {
+	public ChooseStructurePropertyEditor( StructureTypeInfoFilter structureTypeInfoFilter ) {
 		super( );
-		this.graphTypeInfoFilter = graphTypeInfoFilter;
-		graphTypeInfos = getGraphTypeInfoList();
-		
-		editor = new ChooseGraphTypeInfoPropertyEditorComponent();
+		this.structureTypeInfoFilter = structureTypeInfoFilter;
+		editor = new ChooseStructurePropertyEditorComponent();
 	}
 	
-	protected ArrayList<GralogGraphTypeInfo> getGraphTypeInfoList() {
-		ArrayList<GralogGraphTypeInfo> graphTypeInfos = new ArrayList<GralogGraphTypeInfo>();
-		for ( GralogGraphTypeInfo graphTypeInfo : MainPad.getInstance().getGraphTypeInfos()) {
-			if ( graphTypeInfoFilter == null || graphTypeInfoFilter.filterTypeInfo( graphTypeInfo ) == false )
-				graphTypeInfos.add( graphTypeInfo );
+	protected void updateDocuments() {
+		documents.clear();
+		for ( Document document : MainPad.getInstance().getDesktop().getOpenDocuments() ) {
+			if ( document.getContent() instanceof GJGraphDocumentContent ) {
+				GJGraphDocumentContent content = (GJGraphDocumentContent)document.getContent();
+				if ( !structureTypeInfoFilter.filterTypeInfo( content.getGraph().getGraphT().getTypeInfo() ) )
+					documents.add( document );
+			}
 		}
-		return graphTypeInfos;
 	}
-	
+
 	public Component getCustomRenderer() {
-		editor.configure();
+		editor.updateDocuments();
 		return editor;
 	}
 	
@@ -72,23 +73,16 @@ public class ChooseGraphTypeInfoPropertyEditor extends PropertyEditorSupport imp
 
 	@Override
 	public Component getCustomEditor() {
-		editor.configure();
+		editor.updateDocuments();
 		return editor;
 	}
 
-	String[] getNames() {
-		String[] names = new String[graphTypeInfos.size()];
-		for ( int i = 0; i < names.length; i++ )
-			names[i] = graphTypeInfos.get( i ).getName();
-		return names;
-	}
-	
 	Object getValueForName( String name ) {
 		if ( name == null )
 			return null;
-		for ( GralogGraphTypeInfo graphTypeInfo : graphTypeInfos ) {
-			if ( graphTypeInfo.getName().equals( name ) )
-				return graphTypeInfo;
+		for ( Document document : documents ) {
+			if ( document.getName().equals( name ) )
+				return document.getGraph().getGraphT();
 		}
 		return null;
 	}
@@ -96,16 +90,21 @@ public class ChooseGraphTypeInfoPropertyEditor extends PropertyEditorSupport imp
 	String getNameForValue( Object value ) {
 		if ( value == null )
 			return null;
-		return ((GralogGraphTypeInfo)value).getName();
+		for ( Document document : documents ) {
+			if ( document.getGraph().getGraphT() == value )
+				return document.getName();
+		}
+		return null;
 	}
 	
-	protected class ChooseGraphTypeInfoPropertyEditorComponent extends JPanel implements ActionListener {
+	protected class ChooseStructurePropertyEditorComponent extends JPanel implements ActionListener {
 		private JComboBox chooseCombo;
 		private JButton button;
 
-		public ChooseGraphTypeInfoPropertyEditorComponent(  ) {
+		public ChooseStructurePropertyEditorComponent(  ) {
 			super( new BorderLayout() );
 			
+			ChooseStructurePropertyEditor.this.updateDocuments();
 			chooseCombo = new JComboBox(  );
 			comboBoxUpdate();
 			chooseCombo.addActionListener( this );
@@ -119,32 +118,47 @@ public class ChooseGraphTypeInfoPropertyEditor extends PropertyEditorSupport imp
 		}
 
 		private void comboBoxUpdate() {
-			chooseCombo.setModel( new DefaultComboBoxModel( getNames() ) );
+			String[] documentNames = new String[documents.size()];
+			for ( int i = 0; i < documentNames.length; i++ )
+				documentNames[i] = documents.get( i ).getName();
+			chooseCombo.setModel( new DefaultComboBoxModel( documentNames ) );
 			chooseCombo.setSelectedItem( getNameForValue( getValue() ) );
 		}
 		
-		public void configure() {
+		private void updateDocuments() {
+			ChooseStructurePropertyEditor.this.updateDocuments();
+			comboBoxUpdate();
+		}
+		
+		public void setValueFromEditor() {
 			chooseCombo.setSelectedItem( getNameForValue( getValue() ) );
 		}
 		
-		private GralogGraphTypeInfo getCurrentGraphTypeInfo() {
+		private Structure getCurrentStructure() {
 			if ( MainPad.getInstance().getDesktop().getCurrentDocument() == null )
 				return null;
-			GralogGraphSupport graphSupport = MainPad.getInstance().getDesktop().getCurrentDocument().getGraph().getGraphT();
-			return graphSupport.getTypeInfo();
+			Structure graph = MainPad.getInstance().getDesktop().getCurrentDocument().getGraph().getGraphT();
+			if ( graph != null && !structureTypeInfoFilter.filterTypeInfo( graph.getTypeInfo() ) )
+				return graph;
+			return null;
 		}
 		public void actionPerformed(ActionEvent e) {
 			if ( e.getActionCommand().equals( "SELECTED" ) ) {
 				String documentName = (String)chooseCombo.getSelectedItem();
 				setValue( getValueForName( documentName ) );
 			} else {
-				if ( getCurrentGraphTypeInfo() != null ) {
-					setValue( getCurrentGraphTypeInfo() );
+				if ( getCurrentStructure() != null ) {
+					setValue( getCurrentStructure() );
 					chooseCombo.setSelectedItem( getNameForValue( getValue() ) );
 				}
 			}
 			
 		}
+
+		public void currentDocumentSelectionChanged() {
+			updateDocuments();
+		}
+
 	}
 
 }

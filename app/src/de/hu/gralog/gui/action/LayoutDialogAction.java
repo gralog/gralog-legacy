@@ -22,7 +22,6 @@ package de.hu.gralog.gui.action;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.layout.LayoutDialog;
@@ -32,8 +31,8 @@ public class LayoutDialogAction extends AbstractAction {
 	private LayoutDialog dialog;
 	
 	public LayoutDialogAction( ) {
-		super( "Open GraphLayoutAlgorithmDialog", MainPad.createImageIcon( "designer_d_editgrid.png") );
-		super.putValue( SHORT_DESCRIPTION, "Open GraphLayoutAlgorithmDialog" );
+		super( "Open Structure-Layout-Algorithm-Dialog", MainPad.createImageIcon( "designer_d_editgrid.png") );
+		super.putValue( SHORT_DESCRIPTION, "Opens the Structure-Layout-Algorithm-Dialog" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

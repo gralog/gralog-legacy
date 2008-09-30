@@ -47,11 +47,11 @@ import org.jgrapht.Graph;
 
 import de.hu.gralog.beans.BeanUtil;
 import de.hu.gralog.beans.propertyeditor.PropertyEditorRendererExtension;
-import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.components.HTMLEditorPane;
 import de.hu.gralog.gui.document.Document;
 import de.hu.gralog.gui.document.GJGraphDocumentContent;
+import de.hu.gralog.structure.Structure;
 
 public class PropertyEditorTable extends JTable {
 	
@@ -64,6 +64,10 @@ public class PropertyEditorTable extends JTable {
 	protected static final ComponentPropertyEditorRenderer 	COMPONENT_PROPERTY_EDITOR_RENDERER = new ComponentPropertyEditorRenderer();
 
 	public PropertyEditorTable() {
+		this( null );
+	}
+	
+	public PropertyEditorTable( AbstractBeanEditorTableModel tableModel ) {
 		super(  );
 		setDefaultEditor( Byte.class, new MyNumberEditor() );
 		setDefaultEditor( Float.class, new MyNumberEditor() );
@@ -71,8 +75,10 @@ public class PropertyEditorTable extends JTable {
 		setDefaultEditor( Short.class, new MyNumberEditor() );
 		setDefaultEditor( Integer.class, new MyNumberEditor() );
 		setDefaultEditor( Double.class, new MyNumberEditor() );
-		setDefaultRenderer( GralogGraphSupport.class, new GraphCellRenderer() );
+		setDefaultRenderer( Structure.class, new GraphCellRenderer() );
 		super.setRowHeight( 27 );
+		if ( tableModel != null )
+			setModel( tableModel );
 	}
 	
 	public AbstractBeanEditorTableModel getPropertyEditorTableModel() {

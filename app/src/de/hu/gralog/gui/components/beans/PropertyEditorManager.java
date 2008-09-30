@@ -4,24 +4,24 @@ import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphElementPropertyDescriptor;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphTypeInfoPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructureElementPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructureTypeInfoPropertyDescriptor;
 import de.hu.gralog.gui.MainPad;
-import de.hu.gralog.gui.components.beans.propertyeditors.ChooseGraphPropertyEditor;
-import de.hu.gralog.gui.components.beans.propertyeditors.ChooseGraphTypeInfoPropertyEditor;
+import de.hu.gralog.gui.components.beans.propertyeditors.ChooseStructurePropertyEditor;
+import de.hu.gralog.gui.components.beans.propertyeditors.ChooseStructureTypeInfoPropertyEditor;
 
 public class PropertyEditorManager {
 
 	public static final PropertyEditor getPropertyEditor( PropertyDescriptor propertyDescriptor, Object bean ) {
 		if ( propertyDescriptor == null )
 			return null;
-		if ( propertyDescriptor instanceof ChooseGraphPropertyDescriptor )
-			return new ChooseGraphPropertyEditor( ((ChooseGraphPropertyDescriptor)propertyDescriptor).getGraphType() );
-		if ( propertyDescriptor instanceof ChooseGraphElementPropertyDescriptor )
+		if ( propertyDescriptor instanceof ChooseStructurePropertyDescriptor )
+			return new ChooseStructurePropertyEditor( ((ChooseStructurePropertyDescriptor)propertyDescriptor).getStructureType() );
+		if ( propertyDescriptor instanceof ChooseStructureElementPropertyDescriptor )
 			return propertyDescriptor.createPropertyEditor( MainPad.getInstance().getDesktop().getCurrentGraph().getGraphT() );
-		if ( propertyDescriptor instanceof ChooseGraphTypeInfoPropertyDescriptor )
-			return new ChooseGraphTypeInfoPropertyEditor( ((ChooseGraphTypeInfoPropertyDescriptor)propertyDescriptor).getGraphTypeInfoFilter() );
+		if ( propertyDescriptor instanceof ChooseStructureTypeInfoPropertyDescriptor )
+			return new ChooseStructureTypeInfoPropertyEditor( ((ChooseStructureTypeInfoPropertyDescriptor)propertyDescriptor).getStructureTypeInfoFilter() );
 
 		PropertyEditor propertyEditor = propertyDescriptor.createPropertyEditor( bean );
 		if ( propertyEditor != null )

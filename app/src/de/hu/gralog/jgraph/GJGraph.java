@@ -38,7 +38,6 @@ import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultCellViewFactory;
 import org.jgraph.graph.DefaultGraphCell;
-import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.DefaultPort;
 import org.jgraph.graph.EdgeView;
 import org.jgraph.graph.GraphConstants;
@@ -53,17 +52,17 @@ import de.hu.gralog.algorithm.result.ElementTips;
 import de.hu.gralog.algorithm.result.ElementTipsListener;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.beans.event.PropertyChangeListenable;
-import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 import de.hu.gralog.jgraph.cellview.VertexDisplayModeRenderer;
 import de.hu.gralog.jgrapht.ext.JGraphViewableGraphModelAdapter;
+import de.hu.gralog.structure.Structure;
 
 /**
  * 
  * This class overrides JGraph in order to:
- * - display {@link GralogGraph GralogGraph}
+ * - display a {@link Structure Gralog-Structure}
  * - listen to elementchanges of the underlying {@link GralogGraph GralogGraph}
  * - add the functionality in order to highlight subgraphs, and to listen to changes of such subgraphs
  * - add tooltips funtionality to vertices and edges
@@ -81,23 +80,23 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	private final DefaultEdgeRenderer defaultEdgeRenderer = new DefaultEdgeRenderer(  );
 	private final VertexDisplayModeRenderer defaultVertexRenderer = new DefaultVertexRenderer(  );
 	
-	private GralogGraphSupport graphSupport;
+	private Structure structure;
 	private Vector registeredSubgraphs = new Vector();
 	private Vector highlightObjects = new Vector();
 	protected ArrayList<ElementTips> registeredElementTips = new ArrayList<ElementTips>();
 	private boolean elementsAndStructureEditable = true;
 	
-	public GJGraph( GralogGraphSupport grapht ) {
-		this( grapht, null );
+	public GJGraph( Structure structure ) {
+		this( structure, null );
 	}
 	
-	public<V,E,GB, G extends ListenableGraph<V,E>> GJGraph( GralogGraphSupport<V,E,GB,G> graphSupport, Hashtable<V, Point> vertexPositions ) {
-		super( new JGraphViewableGraphModelAdapter<V,E,GB,G>( graphSupport, vertexPositions ) );
+	public<V,E,GB, G extends ListenableGraph<V,E>> GJGraph( Structure<V,E,GB,G> structure, Hashtable<V, Point> vertexPositions ) {
+		super( new JGraphViewableGraphModelAdapter<V,E,GB,G>( structure, vertexPositions ) );
 		
-		this.graphSupport = graphSupport;
+		this.structure = structure;
 
 		this.setGraphLayoutCache( new GGraphLayoutCache( getModel(), new GJGraphCellViewFactory() ) );
-		this.getSelectionModel().addGraphSelectionListener( graphSupport.getGraphSelectionSupport() );
+		this.getSelectionModel().addGraphSelectionListener( structure.getStructureSelectionSupport() );
 		this.setMarqueeHandler( new GMarqueeHandler() );
 
 		this.setSizeable( false );
@@ -134,16 +133,16 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	}
 
 
-	public GJGraph(GraphModel model, GraphLayoutCache view, GralogGraphSupport graphSupport ) {
+	public GJGraph(GraphModel model, GraphLayoutCache view, Structure structure ) {
 		super( model, view );
-		this.graphSupport = graphSupport;
+		this.structure = structure;
 	}
 
 	public JGraphViewableGraphModelAdapter getGModel() {
 		return (JGraphViewableGraphModelAdapter)super.getModel();
 	}
-	public GralogGraphSupport getGraphT() {
-		return graphSupport;
+	public Structure getGraphT() {
+		return structure;
 	}
 	
 	public GMarqueeHandler getEditableMarqueeHandler() {
@@ -166,7 +165,7 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	}
 	
 	public boolean addEdge( Object source, Object target ) {
-		Object back = graphSupport.getGraph().addEdge( ((DefaultGraphCell)source).getUserObject(), ((DefaultGraphCell)target).getUserObject() );
+		Object back = structure.getGraph().addEdge( ((DefaultGraphCell)source).getUserObject(), ((DefaultGraphCell)target).getUserObject() );
 		return back != null;
 	}
 	
@@ -174,7 +173,7 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 		snap( point );
 		fromScreen( point );
 		
-		Object vertex = graphSupport.createVertex();
+		Object vertex = structure.createVertex();
 		DefaultGraphCell vertexCell = getGModel().getCellFactory().createVertexCell( vertex );
 		vertexCell.add(new DefaultPort());
 		
@@ -287,14 +286,14 @@ public class GJGraph extends JGraph implements DisplaySubgraphListener, ElementT
 	}
 	
 	public DefaultEdgeRenderer getEdgeRenderer() {
-		if ( graphSupport.getEdgeRenderer() != null )
-			return graphSupport.getEdgeRenderer();
+		if ( structure.getEdgeRenderer() != null )
+			return structure.getEdgeRenderer();
 		return defaultEdgeRenderer;
 	}
 	
 	public VertexDisplayModeRenderer getVertexRenderer() {
-		if (graphSupport.getVertexRenderer() != null )
-			return graphSupport.getVertexRenderer();
+		if (structure.getVertexRenderer() != null )
+			return structure.getVertexRenderer();
 		return defaultVertexRenderer;
 	}
 	

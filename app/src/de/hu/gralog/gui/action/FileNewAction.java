@@ -23,22 +23,22 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.structure.StructureTypeInfo;
 
 public class FileNewAction extends AbstractAction {
 
-	private GralogGraphTypeInfo graphType;
+	private StructureTypeInfo structureType;
 	
-	public FileNewAction( GralogGraphTypeInfo graphType ) {
-		super( graphType.getName(), null );
-		this.graphType = graphType;
-		super.putValue( SHORT_DESCRIPTION, "Create a new " + graphType.getName() );
+	public FileNewAction( StructureTypeInfo structureType ) {
+		super( structureType.getName(), null );
+		this.structureType = structureType;
+		super.putValue( SHORT_DESCRIPTION, "Create a new " + structureType.getName() );
 	}
 
 
 	public void actionPerformed(ActionEvent arg0) {
-		MainPad.getInstance().getDesktop().newDocument( graphType );
+		MainPad.getInstance().getDesktop().newDocument( structureType );
 	}
 
 }

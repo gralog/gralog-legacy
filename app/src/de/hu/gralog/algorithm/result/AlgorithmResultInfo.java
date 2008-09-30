@@ -6,39 +6,44 @@
  */
 package de.hu.gralog.algorithm.result;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.undo.UndoManager;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
 import de.hu.gralog.gui.MainPad;
+import de.hu.gralog.gui.components.HTMLEditorPane;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.structure.Structure;
 
 
 public class AlgorithmResultInfo implements AlgorithmResultListener {
 	private String algorithmName = null;
 	private Hashtable<String, Object> algorithmSettings = new Hashtable<String,Object>();
 	private AlgorithmResult result = null;
-	private Hashtable<GralogGraphSupport, GJGraph> jgraphs = null;
+	private Hashtable<Structure, GJGraph> jgraphs = null;
 	private UndoManager undoManager = null;
 	private AlgorithmResultContent currentContent = null;
 	private transient ArrayList<AlgorithmInfoListener> listeners = new ArrayList<AlgorithmInfoListener>();
 	
-	public AlgorithmResultInfo( String algorithmName, Hashtable<String, Object> algorithmSettings, AlgorithmResult result, Hashtable<GralogGraphSupport, GJGraph>  jgraphs ) throws UserException {
+	public AlgorithmResultInfo( String algorithmName, Hashtable<String, Object> algorithmSettings, AlgorithmResult result, Hashtable<Structure, GJGraph>  jgraphs ) throws UserException {
 		this.algorithmName = algorithmName;
 		this.algorithmSettings = algorithmSettings;
 		this.result = result;
 		result.addListener( this );
 		this.jgraphs = jgraphs;
-		setCurrentContent( result.getFirstContent() );
-		init();
+		if ( result.hasContents() ) {
+			setCurrentContent( result.getFirstContent() );
+			init();
+		}
 	}
 	
-	public Hashtable<GralogGraphSupport, GJGraph> getGJGraphs() {
+	public Hashtable<Structure, GJGraph> getGJGraphs() {
 		return jgraphs;
 	}
 	
@@ -46,12 +51,23 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 		return result;
 	}
 	
+	public boolean hasContents() {
+		return result.hasContents();
+	}
+	
+	public Component getMessageComponent() {
+		if ( result.hasContents() )
+			return null;
+		JEditorPane description = new HTMLEditorPane( result.getDescription() );
+		return new JScrollPane( description );
+	}
+	
 	public void setCurrentContent( AlgorithmResultContent content ) throws UserException{
 		AlgorithmResultContent oldContent = this.currentContent;
 		this.currentContent = content;
 		
-		GralogGraphSupport oldGraph = result.getGraph( oldContent );
-		GralogGraphSupport newGraph = result.getGraph( this.currentContent );
+		Structure oldGraph = result.getStructure( oldContent );
+		Structure newGraph = result.getStructure( this.currentContent );
 		
 		if ( oldContent != null ) {
 			if ( oldContent.getDisplaySubgraphs( result.getDisplaySubgraphModes(), oldGraph ) != null )
@@ -89,7 +105,7 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 			graph.setElementsAndStructureEditable( false );
 	}
 	
-	public GJGraph getGraph( GralogGraphSupport graphT ) {
+	public GJGraph getGraph( Structure graphT ) {
 		GJGraph graph = jgraphs.get( graphT );
 		if ( graph == null ) {
 			graph = new GJGraph( graphT );
@@ -102,19 +118,19 @@ public class AlgorithmResultInfo implements AlgorithmResultListener {
 	}
 	
 	public GJGraph getGraph() throws UserException {
-		return getGraph( result.getGraph( currentContent ) );
+		return getGraph( result.getStructure( currentContent ) );
 	}
 	
-	public GralogGraphSupport getAlgorithmResultGraph() throws UserException {
-		return result.getGraph( null );
+	public Structure getAlgorithmResultGraph() throws UserException {
+		return result.getStructure( null );
 	}
 	
-	public Set<GralogGraphSupport> getAllGraphs() throws UserException {
+	public Set<Structure> getAllGraphs() throws UserException {
 		return getAllGraphs( result );
 	}
 	
-	public static Set<GralogGraphSupport> getAllGraphs( AlgorithmResult result ) throws UserException {
-		return result.getAllGraphs();
+	public static Set<Structure> getAllGraphs( AlgorithmResult result ) throws UserException {
+		return result.getAllStructures();
 	}
 	
 	public AlgorithmResultContent getSingleContent() {

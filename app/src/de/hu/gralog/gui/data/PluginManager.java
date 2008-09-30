@@ -12,9 +12,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
 import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.data.Plugin.AlgorithmInfo;
+import de.hu.gralog.structure.StructureTypeInfo;
 
 public class PluginManager {
 
@@ -53,12 +53,12 @@ public class PluginManager {
 		plugins.add( new Plugin( in ) );
 	}
 	
-	public ArrayList<GralogGraphTypeInfo> getGraphTypes() {
-		ArrayList<GralogGraphTypeInfo> graphTypes = new ArrayList<GralogGraphTypeInfo>();
+	public ArrayList<StructureTypeInfo> getStructureTypes() {
+		ArrayList<StructureTypeInfo> structureTypes = new ArrayList<StructureTypeInfo>();
 		
 		for ( Plugin plugin : plugins )
-			graphTypes.addAll( plugin.getGraphTypeClasses() );
-		return graphTypes;
+			structureTypes.addAll( plugin.getStructureTypeClasses() );
+		return structureTypes;
 	}
 	
 	public ArrayList<AlgorithmInfo> getAlgorithms() {
@@ -67,5 +67,9 @@ public class PluginManager {
 		for ( Plugin plugin : plugins )
 			algorithms.addAll( plugin.getAlgorithms() );
 		return algorithms;
+	}
+	
+	public ArrayList<Plugin> getPlugins() {
+		return plugins;
 	}
 }

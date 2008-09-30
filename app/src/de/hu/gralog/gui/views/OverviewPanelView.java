@@ -34,7 +34,7 @@ import de.hu.gralog.gui.document.DocumentListener;
 
 public class OverviewPanelView extends View implements EditorDesktopViewListener, DocumentListener {
 
-	private static final JLabel NO_OVERVIEW_AVAIBLE = new JLabel( "no overview avaible" );
+	private static final JLabel NO_OVERVIEW_AVAIBLE = new JLabel( "No overview available." );
 	private HashMap<Document, HashMap<Component,JPanel>> panels = new HashMap<Document, HashMap<Component,JPanel>>();
 	
 	public OverviewPanelView() {

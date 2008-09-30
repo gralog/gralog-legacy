@@ -28,7 +28,7 @@ import de.hu.gralog.jgraph.GJGraph;
 
 public class EditSelectAllAction extends AbstractAction {
 	
-	public static final String NODES = new String( "nodes" );
+	public static final String NODES = new String( "vertices" );
 	public static final String EDGES = new String( "edges" );
 	public static final String BOTH = new String( "both" );
 	
@@ -42,11 +42,11 @@ public class EditSelectAllAction extends AbstractAction {
 		super( mode, null );
 		this.mode = mode;
 		if ( mode == NODES )
-			super.putValue( SHORT_DESCRIPTION, "Select all vertices" );
+			super.putValue( SHORT_DESCRIPTION, "Select all vertices." );
 		if ( mode == EDGES )
-			super.putValue( SHORT_DESCRIPTION, "Select all edges" );
+			super.putValue( SHORT_DESCRIPTION, "Select all edges." );
 		if ( mode == BOTH )
-			super.putValue( SHORT_DESCRIPTION, "Select all elements" );
+			super.putValue( SHORT_DESCRIPTION, "Select all elements." );
 	}
 	
 	public void actionPerformed(ActionEvent e) {

@@ -19,57 +19,43 @@
 
 package de.hu.gralog.gui.components;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.StringReader;
 
 import javax.swing.JEditorPane;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
-
-import de.hu.gralog.app.UserException;
-import de.hu.gralog.gui.MainPad;
 
 
 public class HTMLEditorPane extends JEditorPane {
 
-	public HTMLEditorPane( String text ) {
-		this();
-		setText( text );
+	public HTMLEditorPane(  ) {
+		this( null );
 	}
 	
-	public HTMLEditorPane() {
+	public HTMLEditorPane( String text ) {
 		super();
 		setEditable( false );
-		HTMLEditorKit editorKit = new HTMLEditorKit();
-		
-		StyleSheet styles = editorKit.getStyleSheet();
-		InputStream is = getClass().getResourceAsStream( "/de/hu/games/resources/base.css");
-		if ( is != null ) {
-			Reader r;
-			try {
-				r = new BufferedReader(
-						new InputStreamReader(is, "ISO-8859-1"));
-				styles.loadRules(r, null);
-				r.close();
-			} catch (UnsupportedEncodingException e) {
-				MainPad.getInstance().handleUserException( new UserException( "falsches encoding der Datei base.css", e ) );
-			} catch (IOException e) {
-				MainPad.getInstance().handleUserException( new UserException( "Fehler beim Lesen von base.css", e ) );
-			}
-		}
-		
-        
-//        Enumeration rules = styles.getStyleNames();
-//        while (rules.hasMoreElements()) {
-//            String name = (String) rules.nextElement();
-//            Style rule = styles.getStyle(name);
-//            System.out.println(rule.toString());
-//        }
-        setEditorKit( editorKit );
+		setContentType( "text/html" );
 		addHyperlinkListener( new OpenBrowserHyperlinkListener() );
+		if ( text != null )
+			setText( text );
 	}
+	
+	public void setText( String text ) {
+		try {
+			super.read( new StringReader( text ), null );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+/*		super.setText( text );
+		try {
+			Rectangle rp = modelToView( 0 );
+			Rectangle r = getVisibleRect();
+			rp.height = r.height;
+			scrollRectToVisible( rp );
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+*/	}
+	
 }
