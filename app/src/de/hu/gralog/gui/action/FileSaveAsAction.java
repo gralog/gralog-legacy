@@ -29,7 +29,7 @@ public class FileSaveAsAction extends AbstractAction {
 
 	public FileSaveAsAction() {
 		super( "Save As...", null );
-		super.putValue( SHORT_DESCRIPTION, "Save File As ..." );
+		super.putValue( SHORT_DESCRIPTION, "Save document As ..." );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

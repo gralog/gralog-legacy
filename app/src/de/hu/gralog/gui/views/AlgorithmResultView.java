@@ -462,7 +462,7 @@ public class AlgorithmResultView extends View implements EditorDesktopViewListen
 				public void actionPerformed(ActionEvent e) {
 					try {
 						GJGraph graph = GJGraphUtil.getGJGraphCopy( info.getGraph() );
-						MainPad.getInstance().getDesktop().openDocument(  graph );
+						MainPad.getInstance().getDesktop().newDocument(  graph );
 					} catch( InputOutputException i ) {
 						MainPad.getInstance().handleUserException( new UserException( "unable to open as graph", i ) );
 					} catch (UserException u) {

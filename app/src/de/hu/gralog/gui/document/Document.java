@@ -37,6 +37,8 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 	
 	private final  WeakListenerList<DocumentListener> documentListeners = new WeakListenerList<DocumentListener>();
 	private static int newDocIdx = 1;
+
+	private boolean hasNotUndoAbleButUnSavedChanges = false;
 	
 	private int docIdx;
 	private File file;
@@ -46,9 +48,14 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 	private GUndoManager undoManager = new GUndoManager();
 		
 	public Document( DocumentContent content ) {
+		this( content, false );
+	}
+	
+	public Document( DocumentContent content, boolean hasNotUndoAbleButUnSavedChanges ) {
 		this.content = content;
 		registerListeners();
 		docIdx = newDocIdx++;
+		this.hasNotUndoAbleButUnSavedChanges = hasNotUndoAbleButUnSavedChanges;
 	}
 	
 	public Document( DocumentContent content, File file ) {
@@ -94,6 +101,13 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 			
 			if ( file == null )
 				throw new OperationAbortedException();
+			if ( file.exists() ) {
+				if ( !MainPad.getInstance().shouldOverrideFileDialog( file ) ) {
+					file = null;
+					return;
+				}
+			}
+			hasNotUndoAbleButUnSavedChanges = false;
 		}
 		
 		try {
@@ -115,6 +129,10 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 		File newFile = MainPad.getInstance().showFileDialog( content.getClass(), "Save " +  getName() + " As" );
 
 		if ( newFile != null ) {
+			if ( newFile.exists() ) {
+				if ( ! MainPad.getInstance().shouldOverrideFileDialog( newFile ) )
+					return;
+			}
 			try {
 				FileOutputStream out = new FileOutputStream( newFile );
 				content.write( DocumentContentFactory.getInstance().getFileFormat( newFile ), out );
@@ -135,7 +153,10 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 		File newFile = MainPad.getInstance().showFileDialog( content.getClass(), "Rename " + getName() + " to ");
 			
 		if ( newFile != null ) {
-			
+			if ( newFile.exists() ) {
+				if ( ! MainPad.getInstance().shouldOverrideFileDialog( newFile ) )
+					return;
+			}
 			try {
 				content.write( DocumentContentFactory.getInstance().getFileFormat( file ), new FileOutputStream( newFile ) );
 				
@@ -179,6 +200,8 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 	}
 
 	public boolean isModified() {
+		if ( hasNotUndoAbleButUnSavedChanges )
+			return true;
 		return undoManager.canUndo();
 	}
 	

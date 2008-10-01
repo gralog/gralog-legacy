@@ -29,7 +29,7 @@ public class FileRevertAction extends AbstractAction {
 
 	public FileRevertAction() {
 		super( "Revert", null );
-		super.putValue( SHORT_DESCRIPTION, "Revert File" );
+		super.putValue( SHORT_DESCRIPTION, "Revert document" );
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {

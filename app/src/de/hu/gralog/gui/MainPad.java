@@ -809,4 +809,8 @@ public class MainPad extends JFrame {
 	public boolean isRevertEnabled() {
 		return REVERT_ENABLED;
 	}
+
+	public boolean shouldOverrideFileDialog(File file) {
+		return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog( this, "Do you want to override this file?", "File: " + file.getName() + " already exists!", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, YES_NO_CANCEL_BUTTON_TEXT, YES_NO_CANCEL_BUTTON_TEXT[2] );
+	}
 }

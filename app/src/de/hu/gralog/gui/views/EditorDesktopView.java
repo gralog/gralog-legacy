@@ -103,8 +103,8 @@ public class EditorDesktopView extends View implements DocumentListener {
 		updateControls();
 	}
 	
-	public void openDocument( GJGraph graph ) {
-		openDocument( new Document( DocumentContentFactory.getInstance().createDocumentContent( graph ) ) );
+	public void newDocument( GJGraph graph ) {
+		openDocument( new Document( DocumentContentFactory.getInstance().createDocumentContent( graph ), true ) );
 	}
 	
 	public void openDocument( File file ) {
@@ -132,7 +132,7 @@ public class EditorDesktopView extends View implements DocumentListener {
 	}
 	
 	public void newDocument( AlgorithmResultInfo info ) {
-		openDocument(new Document( DocumentContentFactory.getInstance().createDocumentContent( info )));
+		openDocument(new Document( DocumentContentFactory.getInstance().createDocumentContent( info ), true ));
 	}
 	
 	public void openDocument( Document document ) {

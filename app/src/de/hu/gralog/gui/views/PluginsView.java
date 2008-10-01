@@ -348,7 +348,7 @@ public class PluginsView extends View {
 						GJGraph gjGraph = jgraphs.get( structure );
 						if ( gjGraph == null )
 							gjGraph = new GJGraph( structure );
-						MainPad.getInstance().getDesktop().openDocument( gjGraph );
+						MainPad.getInstance().getDesktop().newDocument( gjGraph );
 					}
 				} else {
 					AlgorithmResultInfo info = new AlgorithmResultInfo( algorithmName, algorithmSettings, result, jgraphs );

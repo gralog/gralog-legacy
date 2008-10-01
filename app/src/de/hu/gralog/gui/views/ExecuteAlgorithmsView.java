@@ -304,7 +304,7 @@ public class ExecuteAlgorithmsView extends View implements ActionListener, ListS
 						GJGraph gjGraph = jgraphs.get( graphSupport );
 						if ( gjGraph == null )
 							gjGraph = new GJGraph( graphSupport );
-						MainPad.getInstance().getDesktop().openDocument( gjGraph );
+						MainPad.getInstance().getDesktop().newDocument( gjGraph );
 					}
 				} else {
 					AlgorithmResultInfo info = new AlgorithmResultInfo( algorithmName, algorithmSettings, result, jgraphs );
