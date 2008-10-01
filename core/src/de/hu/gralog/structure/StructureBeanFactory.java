@@ -19,15 +19,15 @@
 package de.hu.gralog.structure;
 
 /**
- * This interface defines a Structure-Bean-Factory for GrALoG. Every GrALoG-Structure
+ * This interface defines a Structure-Bean-Factory for GrALoG. Every GrALoG-Structure-Type
  * that wants to define it's own Structure-Bean has to implement this Factory in
  * order to provide this Structure-Beans via 
- * {@link StructureTypeInfo#getStructureBeanFactory()} to this structure.
+ * {@link StructureTypeInfo#getStructureBeanFactory()} to the Structure-Type.
  * 
  * <h1>Plugin-Developers</h1>
  * 
  * Before you implement your own {@link StructureBeanFactory} you first have to
- * define your Structure-Bean. Like vertices and edges a StructureBean is basically a
+ * define your Structure-Bean. Like vertices and edges a Structure-Bean is basically a
  * JavaBean which can have all or none of the following extra functionalities
  * ( please refer to {@link de.hu.gralog.beans} for an introduction to JavaBeans ):
  * 

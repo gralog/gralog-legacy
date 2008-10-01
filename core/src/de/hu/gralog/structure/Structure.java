@@ -37,7 +37,7 @@ import de.hu.gralog.structure.support.StructurePropertyChangeSupport;
 import de.hu.gralog.structure.support.StructureSelectionSupport;
 
 /**
- * This class defines a GrALoG-Structure.
+ * This class represents a GrALoG-Structure.
  * <p>
  * A GrALoG-Structure is basically a mathematical graph-structure that
  * has arbitrary properties for it's vertices, edges and the structure itself.

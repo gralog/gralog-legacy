@@ -27,7 +27,7 @@ import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 import de.hu.gralog.jgrapht.util.JGraphTUtils;
 
 /**
- * Each subclass of this class defines a GrALoG-Structure. 
+ * Each subclass of this class defines a GrALoG-Structure-Type. 
  * This class basically
  * holds all the information that is necessary to construct a GrALoG-Structure 
  * ( in fact you can
@@ -37,13 +37,13 @@ import de.hu.gralog.jgrapht.util.JGraphTUtils;
  * 
  * <h1>Plugin-Developers</h1>
  * 
- * Every GrALoG-Structure is defined via a subclass of this class. Thus in
- * order to define your own GrALoG-Structure you have to extend this class and
+ * Every GrALoG-Structure-Type is defined via a subclass of this class. Thus in
+ * order to define your own GrALoG-Structure-Type you have to extend this class and
  * provide the information necessary to construct the desired
  * {@link Structure} by implementing the abstract methods of this
  * class. You can then use
  * {@link StructureFactory#createStructure(StructureTypeInfo)} to create
- * instances of your new GrALoG-Structure, or just provide this new Structure
+ * instances of your new GrALoG-Structure, or just provide this new Structure-Type
  * to GrALoG by mentioning it in your <b>plugin.config</b>.
  * 
  * See {@link de.hu.gralog.structure.types.LabeledSimpleDirectedGraphStructureTypeInfo} and
