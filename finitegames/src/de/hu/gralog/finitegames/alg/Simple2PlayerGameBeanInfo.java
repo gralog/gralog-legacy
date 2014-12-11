@@ -11,7 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
 import de.hu.gralog.finitegames.graph.GameGraphTypeInfo;
 
 public class Simple2PlayerGameBeanInfo extends SimpleBeanInfo {
@@ -37,7 +37,7 @@ public class Simple2PlayerGameBeanInfo extends SimpleBeanInfo {
 					"for player 0. Set to <b>false</b> otherwise.</html>"
 					);
 
-			PROPERTY_DESCRIPTORS[1] = new ChooseGraphPropertyDescriptor( "gameGraph", Simple2PlayerGame.class, new GameGraphTypeInfo() );
+			PROPERTY_DESCRIPTORS[1] = new ChooseStructurePropertyDescriptor( "gameGraph", Simple2PlayerGame.class, new GameGraphTypeInfo() );
 			PROPERTY_DESCRIPTORS[1].setShortDescription( "<html>This is the gamegraph G=(V,V0,E).</html>" );
 		} catch( IntrospectionException e ) {
 			e.printStackTrace();

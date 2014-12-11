@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true" kind="con"/>
-	<classpathentry path="lib/idw-gpl.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/BrowserLauncher2-10rc4.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/jdom.jar" exported="true" kind="lib"/>
-	<classpathentry sourcepath="/jgraph/src" path="lib/gralog-core.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/gralog-algorithms.jar" exported="true" kind="lib"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/idw-gpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BrowserLauncher2-10rc4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/algorithms"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

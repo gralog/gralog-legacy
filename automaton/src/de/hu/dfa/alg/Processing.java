@@ -69,7 +69,7 @@ public class Processing<V extends AutomatonVertex, E extends AutomatonEdge, GB e
 		ProcessingAlgorithm pa = new ProcessingAlgorithm( inputPhrase, getAutomaton() );
 		ArrayList<E> edgeList = pa.getProcessedEdges();
 		
-		//TODO: Ausgabe vernünftig machen:
+		//TODO: Ausgabe vernuenftig machen:
 		String acceptString = "The inputPhrase " + (pa.inputPhraseIsAccepted()?"IS":"is NOT") + " accepted by the given DFA.";
 		
 		AlgorithmResult result = new AlgorithmResult( getAutomaton() );

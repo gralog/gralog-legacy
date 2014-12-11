@@ -12,13 +12,11 @@ import org.jgrapht.graph.ListenableDirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 import de.hu.gralog.finitegames.graph.GameGraphVertexRenderer;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GraphBeanFactory;
-import de.hu.gralog.graph.GraphFactory;
 import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
+import de.hu.gralog.structure.*;
 
-public class ParityGameGraphTypeInfo<GB> extends GralogGraphTypeInfo<ParityGameVertex, DefaultEdge, GB, ListenableDirectedGraph<ParityGameVertex,DefaultEdge>> {
+public class ParityGameGraphTypeInfo<GB> extends StructureTypeInfo<ParityGameVertex, DefaultEdge, GB, ListenableDirectedGraph<ParityGameVertex,DefaultEdge>> {
 
 	@Override
 	public String getName() {
@@ -35,7 +33,7 @@ public class ParityGameGraphTypeInfo<GB> extends GralogGraphTypeInfo<ParityGameV
 	}
 
 	@Override
-	public GraphBeanFactory<GB> getGraphBeanFactory() {
+	public StructureBeanFactory<GB> getStructureBeanFactory() {
 		return null;
 	}
 
@@ -59,5 +57,9 @@ public class ParityGameGraphTypeInfo<GB> extends GralogGraphTypeInfo<ParityGameV
 	}
 
 
+	@Override
+	public String getDescription() {
+		return "Parity Game";
+	}
 	
 }

@@ -17,14 +17,13 @@ import de.hu.logic.modal.Formula;
 import de.hu.logic.parser.FormulaList;
 import de.hu.logic.parser.ModalLogicParser;
 import de.hu.logic.parser.ParseException;
-import de.hu.logic.structure.TransitionSystem;
-import de.hu.logic.structure.TransitionSystemEdge;
-import de.hu.logic.structure.TransitionSystemVertex;
-import de.hu.parity.structure.ParityGameArenaTypeInfo;
-import de.hu.parity.structure.ParityGameVertex;
+import de.hu.logic.structure.*;
+import de.hu.parity.graph.ParityGameGraphTypeInfo;
+import de.hu.parity.graph.ParityGameVertex;
 
 public class BuildParityGameArena<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
+	private static final long serialVersionUID = 1L;
 	private Structure<V,E,GB,G> transitionSystem;
 	private String formula;// = "\\muX.(X\\or(\\nuX.(X\\andP)))";
 	
@@ -75,7 +74,7 @@ public class BuildParityGameArena<V extends TransitionSystemVertex, E extends Tr
 			Formula f = list.substituteMain();
 			
 			AlgorithmResult result = new AlgorithmResult();
-			result.setSingleContent( new AlgorithmResultContent( StructureFactory.createStructure( new ParityGameArenaTypeInfo(), new ListenableDirectedGraph<ParityGameVertex, DefaultEdge>( new BuildParityGameArenaAlgorithm(transitionSystem, f).execute() ) ) ) );
+			result.setSingleContent( new AlgorithmResultContent( StructureFactory.createStructure( new ParityGameGraphTypeInfo(), new ListenableDirectedGraph<ParityGameVertex, DefaultEdge>( new BuildParityGameArenaAlgorithm(transitionSystem, f).execute() ) ) ) );
 						
 			return result;
 		} catch (UserException e) {

@@ -33,13 +33,13 @@ import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.finitegames.graph.GameGraphVertex;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 
 public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge,G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
 	private static final String DSM_WINNING_PLAYER1 = "winning positions player 0";
 	
-	private GralogGraphSupport<V, E, ?, G> gameGraph;
+	private Structure<V, E, ?, G> gameGraph;
 	private boolean showSteps;
 	
 	public boolean isShowSteps() {
@@ -50,11 +50,11 @@ public class Simple2PlayerGame<V extends GameGraphVertex,E extends DefaultEdge,G
 		this.showSteps = showSteps;
 	}
 
-	public GralogGraphSupport<V, E, ?, G> getGameGraph() {
+	public Structure<V, E, ?, G> getGameGraph() {
 		return gameGraph;
 	}
 
-	public void setGameGraph( GralogGraphSupport<V, E, ?, G> graph ) {
+	public void setGameGraph( Structure<V, E, ?, G> graph ) {
 		this.gameGraph = graph;
 	}
 

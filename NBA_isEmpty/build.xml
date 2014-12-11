@@ -18,7 +18,9 @@
 
 	<property name="source"    value="${basedir}/src"/>
 	<property name="lib" value="${basedir}/lib"/>
-	<property name="core.jar" value="gralog-core.jar"/>
+	<property name="core.jar"  value="${basedir}/../core/dist/gralog-core.jar"/>
+	<property name="automaton.jar"  value="${basedir}/../automaton/dist/gralog-automaton.jar"/>
+	<property name="dagwidth.jar"  value="${basedir}/../dagwidth/dist/gralog-dag-width.jar"/>
 	<property name="manifest" value="${basedir}/META-INF/MANIFEST.MF"/>
 	<property name="doc" value="${basedir}/doc"/>	
 
@@ -35,7 +37,6 @@
 	<property name="dist.tmp" value="${dist}/tmp"/>
 	<property name="project.jar" value="${project.abbr}.jar"/>
 	<property name="project.zip" value="${project.abbr}.zip"/>
-	<property name="apidoc" value="${basedir}/doc/api"/>
 
 <!--  ==================== All ==================== -->
 
@@ -45,10 +46,9 @@
 <!--  ==================== Clean ==================== -->
 
 	<target name="clean" description="Delete all generated files and directories">
-    	<delete dir="${classes}/"/>
-        <delete file="${dist}/${project.jar}"/>
-        <delete file="${dist}/${project.zip}"/>
-		<delete dir="${apidoc}"/>
+		<delete dir="${classes}"/>
+		<delete dir="${dist}"/>
+		<delete dir="${doc}"/>
 	</target>
 
 <!--  ==================== Init ==================== -->
@@ -56,7 +56,7 @@
 	<target name="init" description="Initialize the build Java ${java.specification.version} Build">
 		<tstamp/>
 		<mkdir dir="${classes}"/>
-		<mkdir dir="${apidoc}"/>
+		<mkdir dir="${doc}"/>
 		<mkdir dir="${dist}"/>
 	</target>
 
@@ -66,11 +66,15 @@
 
 		<!-- Compile sources -->
 		<javac srcdir="${source}"
+			encoding="UTF-8"
 			debug="${compile.debug}"
 			deprecation="${compile.deprecation}"
 			optimize="${compile.optimize}"
 			destdir="${classes}">
 			<classpath>
+				<pathelement location="${core.jar}"/>
+				<pathelement location="${automaton.jar}"/>
+				<pathelement location="${dagwidth.jar}"/>
 				<pathelement path="${classes}"/>
 				<fileset dir="${lib}">
 			        <include name="**/*.jar"/>
@@ -91,7 +95,7 @@
 	<target name="apidoc" depends="init" description="Generate the api specification (javadoc)">
         <javadoc 
 	    		sourcepath="${source}" 
-	    		destdir="${apidoc}" 
+	    		destdir="${doc}" 
         		overview="${source}/overview.html" 
     			packagenames="${package.root}.*" 
         		doctitle="${project.name}-Api-Specification" 
@@ -107,6 +111,9 @@
         		version="true">
         	
 			<classpath>
+				<pathelement location="${core.jar}"/>
+				<pathelement location="${automaton.jar}"/>
+				<pathelement location="${dagwidth.jar}"/>
 				<pathelement path="${classes}"/>
 				<fileset dir="${lib}">
 			        <include name="**/*.jar"/>

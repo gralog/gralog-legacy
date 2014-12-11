@@ -26,9 +26,9 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithms.jgrapht.Algorithms;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.event.SelectionListener;
-import de.hu.gralog.graph.types.elements.DefaultListenableVertex;
+import de.hu.gralog.structure.*;
+import de.hu.gralog.structure.event.*;
+import de.hu.gralog.structure.types.elements.*;
 
 public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge, G extends ListenableDirectedGraph<VI,EI>> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
 	
@@ -36,7 +36,7 @@ public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVerte
 	private VI robber = null;
 	private Set<VI> cops = new HashSet<VI>();
 	private Set<VI> prevCops = new HashSet<VI>();
-	GralogGraphSupport<VI,EI,?,G> graph = null;
+	Structure<VI,EI,?,G> graph = null;
 	ArrayList<GamePosition> positions = new ArrayList<GamePosition>();
 	
 	static {
@@ -48,11 +48,11 @@ public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVerte
 		}
 	}
 	
-	public CopStrategyAlgorithmResultContent( GralogGraphSupport<VI,EI,?,G> graph, ComputeCopsStrategyAlgorithm.CopStrategy<VI,EI> strategy ) {
+	public CopStrategyAlgorithmResultContent( Structure<VI,EI,?,G> graph, ComputeCopsStrategyAlgorithm.CopStrategy<VI,EI> strategy ) {
 		super( graph );
 		this.graph = graph;
 		this.strategy = strategy;
-		graph.getGraphSelectionSupport().addSelectionListener( this );
+		graph.getStructureSelectionSupport().addSelectionListener(this);
 	}
 
 	protected void computeSubgraphs() {
@@ -72,7 +72,7 @@ public class CopStrategyAlgorithmResultContent<VI extends DefaultListenableVerte
 	
 	
 	@Override
-	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport ) throws UserException {
+	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, Structure graphSupport ) throws UserException {
 		if ( subgraphs == null )
 			computeSubgraphs();
 		return super.getDisplaySubgraphs(modes, graphSupport );

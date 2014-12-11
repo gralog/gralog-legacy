@@ -40,7 +40,7 @@ public class Test {
 					"zweite Zeile<br>" +
 					"dritte Zeile<br>" +
 					"vierte Zeile<br>" +
-					"fünfte Zeile<br>" +
+					"fuenfte Zeile<br>" +
 					"sechste Zeils<br" +
 					"</html>" );
 			return this;
@@ -65,7 +65,7 @@ public class Test {
 			"zweite Zeile<br>" +
 			"dritte Zeile<br>" +
 			"vierte Zeile<br>" +
-			"fünfte Zeile<br>" +
+			"fuenfte Zeile<br>" +
 			"sechste Zeils<br" +
 			"</html>";
 		}

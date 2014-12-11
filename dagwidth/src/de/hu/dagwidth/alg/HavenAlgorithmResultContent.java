@@ -21,14 +21,14 @@ import de.hu.gralog.algorithm.result.AlgorithmResultInteractiveContent;
 import de.hu.gralog.algorithm.result.DisplaySubgraph;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.event.SelectionListener;
-import de.hu.gralog.graph.types.elements.DefaultListenableVertex;
+import de.hu.gralog.structure.*;
+import de.hu.gralog.structure.event.SelectionListener;
+import de.hu.gralog.structure.types.elements.DefaultListenableVertex;
 
 public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI extends DefaultEdge, GI extends ListenableGraph<VI,EI>> extends AlgorithmResultInteractiveContent implements SelectionListener<VI,EI> {
 	
 	Hashtable<Set<VI>,Set<VI>> haven;
-	GralogGraphSupport<VI,EI,?,GI> graph = null;
+	Structure<VI,EI,?,GI> graph = null;
 	Set<VI> copPosition = new HashSet<VI>();
 	Set<VI> currHaven = new HashSet<VI>();
 	
@@ -40,11 +40,11 @@ public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI e
 		}
 	}
 	
-	public HavenAlgorithmResultContent( GralogGraphSupport<VI,EI,?,GI> graph, Hashtable<Set<VI>,Set<VI>> haven ) {
+	public HavenAlgorithmResultContent( Structure<VI,EI,?,GI> graph, Hashtable<Set<VI>,Set<VI>> haven ) {
 		super( graph );
 		this.graph = graph;
 		this.haven = haven;
-		graph.getGraphSelectionSupport().addSelectionListener( this );
+		graph.getStructureSelectionSupport().addSelectionListener( this );
 	}
 
 	protected void computeSubgraphs() {
@@ -60,7 +60,7 @@ public class HavenAlgorithmResultContent<VI extends DefaultListenableVertex,EI e
 	
 	
 	@Override
-	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, GralogGraphSupport graphSupport ) throws UserException {
+	protected Hashtable<String, DisplaySubgraph> getDisplaySubgraphs(Hashtable<String, DisplaySubgraphMode> modes, Structure graphSupport ) throws UserException {
 		if ( subgraphs == null )
 			computeSubgraphs();
 		return super.getDisplaySubgraphs( modes, graphSupport );

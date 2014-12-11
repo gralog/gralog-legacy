@@ -34,12 +34,13 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.algorithms.jgrapht.Algorithms;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.finitegames.alg.Simple2PlayerGameAlgorithm;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
+import de.hu.gralog.structure.Structure;
+import de.hu.gralog.structure.types.elements.*;
 
-public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
+public class ComputeCopsStrategyAlgorithm<V extends LabeledStructureVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private GralogGraphSupport<V,E, ?, G> graph;
+	private static final long serialVersionUID = 1L;
+	private Structure<V,E, ?, G> graph;
 	private int dagWidth = 0;
 	private boolean robberMonotone = false;
 	private boolean copMonotone = false;
@@ -62,12 +63,12 @@ public class ComputeCopsStrategyAlgorithm<V extends LabeledGraphVertex,E extends
 		this.dagWidth = dagWidth;
 	}
 
-	public GralogGraphSupport<V,E, ?, G> getGraph() {
+	public Structure<V,E, ?, G> getGraph() {
 		return graph;
 	}
 
 	public void setGraph(
-			GralogGraphSupport<V,E, ?, G> graph) {
+			Structure<V,E, ?, G> graph) {
 		this.graph = graph;
 	}
 

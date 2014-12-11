@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true" kind="con"/>
-	<classpathentry path="lib/java-cup-11a.jar" exported="true" kind="lib"/>
-	<classpathentry sourcepath="/gralog-core/src" path="lib/gralog-core.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/parity.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/finitegames.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/jgraph.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/jgrapht-jdk1.5.jar" exported="true" kind="lib"/>
-	<classpathentry path="lib/java-cup-11a-runtime.jar" kind="lib"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/java-cup-11a.jar"/>
+	<classpathentry kind="lib" path="lib/java-cup-11a-runtime.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/finitegames"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/parity"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

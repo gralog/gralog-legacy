@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true" kind="con"/>
-	<classpathentry path="/jgraph" exported="true" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/jgrapht-0.7" exported="true" combineaccessrules="false" kind="src"/>
-	<classpathentry path="lib/jgraph.jar" kind="lib"/>
-	<classpathentry path="lib/jgrapht-jdk1.5.jar" kind="lib"/>
-	<classpathentry path="build" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Engelmann/Desktop/Gralog/core/lib/jgraph.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Engelmann/Desktop/Gralog/core/lib/jgrapht-jdk1.5.jar"/>
+	<classpathentry kind="output" path="build"/>
 </classpath>

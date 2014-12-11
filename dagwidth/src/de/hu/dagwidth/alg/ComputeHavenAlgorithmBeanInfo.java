@@ -11,8 +11,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.types.LabeledSimpleDirectedGraphTypeInfo;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.structure.types.*;
 
 public class ComputeHavenAlgorithmBeanInfo extends SimpleBeanInfo {
 
@@ -28,7 +28,7 @@ public class ComputeHavenAlgorithmBeanInfo extends SimpleBeanInfo {
 				"DAG-Width and Parity Games</a> for a definition of DAGs and havens.</html>" );
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", ComputeHavenAlgorithm.class, new LabeledSimpleDirectedGraphTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "graph", ComputeHavenAlgorithm.class, new LabeledSimpleDirectedGraphStructureTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html>The graph for which a haven should be computed.</html>" );
 			
 			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "dagWidth", ComputeHavenAlgorithm.class );

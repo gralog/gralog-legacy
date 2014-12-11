@@ -35,7 +35,7 @@
 	<property name="dist.tmp" value="${dist}/tmp"/>
 	<property name="project.jar" value="${project.abbr}.jar"/>
 	<property name="project.zip" value="${project.abbr}.zip"/>
-	<property name="apidoc" value="${basedir}/doc/api"/>
+	<property name="apidoc" value="${doc}/api"/>
 
 <!--  ==================== All ==================== -->
 
@@ -45,9 +45,8 @@
 <!--  ==================== Clean ==================== -->
 
 	<target name="clean" description="Delete all generated files and directories">
-    	<delete dir="${classes}/"/>
-        <delete file="${dist}/${project.jar}"/>
-        <delete file="${dist}/${project.zip}"/>
+		<delete dir="${classes}"/>
+		<delete dir="${dist}"/>
 		<delete dir="${apidoc}"/>
 	</target>
 
@@ -66,6 +65,7 @@
 
 		<!-- Compile sources -->
 		<javac srcdir="${source}"
+			encoding="UTF-8"
 			debug="${compile.debug}"
 			deprecation="${compile.deprecation}"
 			optimize="${compile.optimize}"
@@ -89,35 +89,35 @@
 <!--  ==================== Apidoc ==================== -->
 
 	<target name="apidoc" depends="init" description="Generate the api specification (javadoc)">
-        <javadoc 
-	    		sourcepath="${source}" 
-	    		destdir="${apidoc}" 
-        		overview="${source}/overview.html" 
-    			packagenames="${package.root}.*" 
-        		doctitle="${project.name}-Api-Specification" 
-	    		source="1.5" 
-        		nodeprecated="false" 
-        		nodeprecatedlist="false" 
-        		noindex="false" 
-        		nonavbar="false" 
-        		notree="false" 
-        		splitindex="true" 
-	    		author="true" 
-        		use="true" 
-        		version="true">
-        	
+		<javadoc 
+			sourcepath="${source}" 
+			destdir="${apidoc}" 
+			overview="${source}/overview.html" 
+			packagenames="${package.root}.*" 
+			doctitle="${project.name}-Api-Specification" 
+			source="1.5" 
+			nodeprecated="false" 
+			nodeprecatedlist="false" 
+			noindex="false" 
+			nonavbar="false" 
+			notree="false" 
+			splitindex="true" 
+			author="true" 
+			use="true" 
+			version="true">
+
 			<classpath>
 				<pathelement path="${classes}"/>
 				<fileset dir="${lib}">
-			        <include name="**/*.jar"/>
+					<include name="**/*.jar"/>
 					<exclude name="${core.jar}"/>
-   	 	        </fileset>
+				</fileset>
 			</classpath>
 
-            <link href="../jgraph/api/"/>
-            <link href="../jgrapht/api/"/>
-            <link href="http://java.sun.com/javase/6/docs/api/"/>
-        </javadoc>
+			<link href="../jgraph/api/"/>
+			<link href="../jgrapht/api/"/>
+			<link href="http://java.sun.com/javase/6/docs/api/"/>
+		</javadoc>
 	</target>
 
 <!--  ==================== Doc ==================== -->

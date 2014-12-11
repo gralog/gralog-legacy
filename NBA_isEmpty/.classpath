@@ -2,7 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/gralog-core.jar"/>
-	<classpathentry kind="lib" path="lib/dfa.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/automaton"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dagwidth"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

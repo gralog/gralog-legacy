@@ -16,7 +16,7 @@ import de.hu.logic.structure.Proposition;
 import de.hu.logic.structure.TransitionSystem;
 import de.hu.logic.structure.TransitionSystemEdge;
 import de.hu.logic.structure.TransitionSystemVertex;
-import de.hu.parity.structure.ParityGameVertex;
+import de.hu.parity.graph.ParityGameVertex;
 
 public class BuildParityGameArenaAlgorithm<V extends TransitionSystemVertex, E extends TransitionSystemEdge, GB extends TransitionSystem<V,E,G>, G extends ListenableDirectedGraph<V,E>> {
 	

@@ -16,9 +16,9 @@
 <!-- ===================== Project Environment =========================== -->
 
 	<property name="source"    value="${basedir}/src"/>
-	<property name="lib" value="${basedir}/lib"/>
-	<property name="core.jar" value="gralog-core.jar"/>
-	<property name="manifest" value="${basedir}/META-INF/MANIFEST.MF"/>
+	<property name="lib"       value="${basedir}/lib"/>
+	<property name="core.jar"  value="${basedir}/../core/dist/gralog-core.jar"/>
+	<property name="manifest"  value="${basedir}/META-INF/MANIFEST.MF"/>
 
 
 <!--  ==================== Compilation Options ==================== -->
@@ -32,7 +32,7 @@
 	<property name="classes" value="${basedir}/bin"/>
 	<property name="dist" value="${basedir}/dist"/>
 	<property name="project.jar" value="gralog.jar"/>
-	<property name="doc" value="${basedir}/doc/api"/>
+	<property name="doc" value="${basedir}/doc"/>
 
 <!--  ==================== All ==================== -->
 
@@ -42,8 +42,8 @@
 <!--  ==================== Clean ==================== -->
 
 	<target name="clean" description="Delete all generated files and directories">
-    	<delete dir="${classes}/"/>
-        <delete file="${dist}/${project.jar}"/>
+		<delete dir="${classes}"/>
+		<delete dir="${dist}"/>
 		<delete dir="${doc}"/>
 	</target>
 
@@ -62,11 +62,13 @@
 
 		<!-- Compile sources -->
 		<javac srcdir="${source}"
+			encoding="UTF-8"
 			debug="${compile.debug}"
 			deprecation="${compile.deprecation}"
 			optimize="${compile.optimize}"
 			destdir="${classes}">
 			<classpath>
+				<pathelement location="${core.jar}"/>
 				<pathelement path="${classes}"/>
 				<fileset dir="${lib}">
 			        <include name="**/*.jar"/>
@@ -102,7 +104,8 @@
         		use="true" 
         		version="true">
         	
-			<classpath>
+			<classpath>				
+				<pathelement location="${core.jar}"/>
 				<pathelement path="${classes}"/>
 				<fileset dir="${lib}">
 			        <include name="**/*.jar"/>

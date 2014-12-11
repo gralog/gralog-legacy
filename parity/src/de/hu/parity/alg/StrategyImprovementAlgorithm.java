@@ -47,7 +47,7 @@ import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.algorithms.jgrapht.Algorithms;
 import de.hu.gralog.algorithms.jgrapht.Filter;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphSupport;
+import de.hu.gralog.structure.Structure;
 import de.hu.gralog.jgrapht.traverse.LongestPathIterator;
 import de.hu.parity.graph.ParityGameVertex;
 
@@ -64,13 +64,13 @@ public class StrategyImprovementAlgorithm<V extends ParityGameVertex,E extends D
 	private static int ODD_INFINITY_PRIORITY = 100001;
 	private static int EVEN_INFINITY_PRIORITY = 10000;
 	
-	private GralogGraphSupport<V,E,?,G> graph;
+	private Structure<V,E,?,G> graph;
 
-	public GralogGraphSupport<V,E,?,G> getGraph() {
+	public Structure<V,E,?,G> getGraph() {
 		return graph;
 	}
 	
-	public void setGraph( GralogGraphSupport<V,E,?,G> graph ) {
+	public void setGraph( Structure<V,E,?,G> graph ) {
 		this.graph = graph;
 	}
 	

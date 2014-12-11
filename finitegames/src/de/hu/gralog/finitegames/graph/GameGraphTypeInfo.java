@@ -6,14 +6,13 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GraphBeanFactory;
-import de.hu.gralog.graph.GraphFactory;
 import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
+import de.hu.gralog.structure.*;
+
 
 public class GameGraphTypeInfo<GB> 
-	extends GralogGraphTypeInfo<GameGraphVertex,DefaultEdge,GB,ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> {
+	extends StructureTypeInfo<GameGraphVertex,DefaultEdge,GB,ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> {
 
 	public String getName() {
 		return "GameGraph";
@@ -27,7 +26,11 @@ public class GameGraphTypeInfo<GB>
 		};
 	}
 
-	public GraphBeanFactory<GB> getGraphBeanFactory() {
+	public String getDescription() {
+		return "Game Graph";
+    }
+	
+	public StructureBeanFactory<GB> getStructureBeanFactory() {
 		return null;
 	}
 

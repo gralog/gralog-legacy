@@ -11,8 +11,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.types.LabeledSimpleDirectedGraphTypeInfo;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.structure.types.*;
 
 public class DAGConstructionBeanInfo extends SimpleBeanInfo {
 
@@ -25,7 +25,7 @@ public class DAGConstructionBeanInfo extends SimpleBeanInfo {
 				"<html>This algorithm computes a DAG-Decomposition of <b>graph</b>. See <a href=\"http://www2.informatik.hu-berlin.de/lds/publications/stacs06.pdf\">DAG-Width and Parity Games</a> for a definition of DAG-Decomposition.</html>" );
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", DAGConstruction.class, new LabeledSimpleDirectedGraphTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "graph", DAGConstruction.class, new LabeledSimpleDirectedGraphStructureTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html>The graph for which a DAG-Decomposition should be computed.</html>" );
 			
 			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "dagWidth", DAGConstruction.class );

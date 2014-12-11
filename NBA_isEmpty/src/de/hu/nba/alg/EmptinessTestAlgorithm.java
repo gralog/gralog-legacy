@@ -7,16 +7,15 @@ import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.plugin.dfa.graph.AutomatonGraphBean;
-import de.hu.gralog.plugin.dfa.graph.AutomatonVertex;
-import de.hu.gralog.plugin.dfa.graph.LabeledGraphEdge;
+import de.hu.gralog.structure.*;
+import de.hu.gralog.structure.types.elements.*;
+import de.hu.dfa.structure.*;
 
-public class EmptinessTestAlgorithm<V extends AutomatonVertex, E extends LabeledGraphEdge, GB extends AutomatonGraphBean<V>, G extends ListenableDirectedGraph<V,E>> {
+public class EmptinessTestAlgorithm<V extends AutomatonVertex, E extends LabeledStructureEdge, GB extends AutomatonBean<V>, G extends ListenableDirectedGraph<V,E>> {
 	
-	private GralogGraphSupport<V,E,GB,G> graphSupport;
+	private Structure<V,E,GB,G> graphSupport;
 	
-	public EmptinessTestAlgorithm(GralogGraphSupport<V,E,GB,G> graphSupport ) {
+	public EmptinessTestAlgorithm(Structure<V,E,GB,G> graphSupport ) {
 		this.graphSupport = graphSupport;
 	}
 	
@@ -40,8 +39,10 @@ public class EmptinessTestAlgorithm<V extends AutomatonVertex, E extends Labeled
 			// every set s, with only one element (without a loop) or which is out of reach
 			// of the startVertex is ignored:
 			if (
-					((s.size() == 1) && !(graphSupport.getGraph().containsEdge(vertexOfSet, vertexOfSet)))
-					|| (DijkstraShortestPath.findPathBetween(graphSupport.getGraph(), graphSupport.getGraphBean().getStartVertex(), vertexOfSet) == null)
+					(    (s.size() == 1) 
+					  && !(graphSupport.getGraph().containsEdge(vertexOfSet, vertexOfSet))
+					)
+					|| (DijkstraShortestPath.findPathBetween(graphSupport.getGraph(), graphSupport.getStructureBean().getStartVertex(), vertexOfSet) == null)
 				) {
 				continue;
 			} else {

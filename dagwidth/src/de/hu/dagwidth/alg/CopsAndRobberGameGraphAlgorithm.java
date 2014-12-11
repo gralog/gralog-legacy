@@ -25,6 +25,8 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
+import de.hu.gralog.structure.*;
+import de.hu.gralog.structure.types.elements.*;
 import de.hu.dagwidth.alg.CopsAndRobberAlgorithm.CopsAndRobberVertex;
 import de.hu.gralog.algorithm.Algorithm;
 import de.hu.gralog.algorithm.InvalidPropertyValuesException;
@@ -33,22 +35,19 @@ import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.finitegames.graph.GameGraphTypeInfo;
 import de.hu.gralog.finitegames.graph.GameGraphVertex;
-import de.hu.gralog.graph.GralogGraphFactory;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
 
-public class CopsAndRobberGameGraphAlgorithm<V extends LabeledGraphVertex, E extends DefaultEdge> implements Algorithm {
+public class CopsAndRobberGameGraphAlgorithm<V extends LabeledStructureVertex, E extends DefaultEdge> implements Algorithm {
 
-	private GralogGraphSupport<V,E,?, ListenableDirectedGraph<V,E>> graph;
+	private Structure<V,E,?, ListenableDirectedGraph<V,E>> graph;
 	private int dagWidth;
 	private boolean robberMonotone;
 	private boolean copMonotone;
 
-	public GralogGraphSupport<V,E,?, ListenableDirectedGraph<V,E>> getGraph() {
+	public Structure<V,E,?, ListenableDirectedGraph<V,E>> getGraph() {
 		return graph;
 	}
 
-	public void setGraph(GralogGraphSupport<V,E,?, ListenableDirectedGraph<V,E>> graph) {
+	public void setGraph(Structure<V,E,?, ListenableDirectedGraph<V,E>> graph) {
 		this.graph = graph;
 	} 
 	
@@ -90,8 +89,8 @@ public class CopsAndRobberGameGraphAlgorithm<V extends LabeledGraphVertex, E ext
 		return result;
 	}
 	
-	public GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> getGameGraphFromCAR( DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> cargraph ) throws UserException {
-		GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> graph = (GralogGraphSupport<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>>)GralogGraphFactory.createGraphSupport( new GameGraphTypeInfo() );
+	public Structure<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> getGameGraphFromCAR( DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> cargraph ) throws UserException {
+		Structure<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>> graph = (Structure<GameGraphVertex, DefaultEdge,?, ListenableDirectedGraph<GameGraphVertex, DefaultEdge>>)StructureFactory.createStructure( new GameGraphTypeInfo() );
 		Hashtable<CopsAndRobberVertex, GameGraphVertex> vertexes = new Hashtable<CopsAndRobberVertex, GameGraphVertex>();
 		for ( CopsAndRobberVertex vertex : cargraph.vertexSet() ) {
 			GameGraphVertex v = new GameGraphVertex( vertex.getLabel(), vertex.isPlayer0() );

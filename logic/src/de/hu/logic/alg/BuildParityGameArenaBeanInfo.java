@@ -7,6 +7,7 @@ import java.beans.SimpleBeanInfo;
 
 import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
 import de.hu.logic.structure.TransitionSystemTypeInfo;
+import de.hu.logic.alg.BuildParityGameArena;
 
 public class BuildParityGameArenaBeanInfo extends SimpleBeanInfo {
 

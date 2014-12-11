@@ -19,9 +19,10 @@
 
 package de.hu.gralog.finitegames.graph;
 
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 
-public class GameGraphVertex extends LabeledGraphVertex {
+
+public class GameGraphVertex extends LabeledStructureVertex {
 
 	private boolean player0 = true;
 	

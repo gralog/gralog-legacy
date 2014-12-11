@@ -33,9 +33,9 @@ import org.jgrapht.graph.DefaultEdge;
 import de.hu.gralog.algorithms.jgrapht.Algorithms;
 import de.hu.gralog.algorithms.jgrapht.Filter;
 import de.hu.gralog.finitegames.graph.GameGraphVertex;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 
-public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends DefaultEdge> {
+public class CopsAndRobberAlgorithm<V extends LabeledStructureVertex, E extends DefaultEdge> {
 
 	private DirectedGraph<V,E> graph;
 	private int width;
@@ -53,11 +53,11 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 		this.width = width;
 	}
 	
-	public static <V extends LabeledGraphVertex,E extends DefaultEdge> DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> getCopsAndRobberGameGraph( DirectedGraph<V,E> graph, int width, boolean copMonotone, boolean robberMonotone ) {
+	public static <V extends LabeledStructureVertex,E extends DefaultEdge> DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge> getCopsAndRobberGameGraph( DirectedGraph<V,E> graph, int width, boolean copMonotone, boolean robberMonotone ) {
 		return new CopsAndRobberAlgorithm<V,E>( graph, width, copMonotone, robberMonotone ).getCopsAndRobberGameGraph();
 	}
 
-	public static <V extends LabeledGraphVertex,E extends DefaultEdge> Iterator<DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>> getCopsAndRobberGameGraphs( DirectedGraph<V,E> graph, int width, boolean copMonotone, boolean robberMonotone ) {
+	public static <V extends LabeledStructureVertex,E extends DefaultEdge> Iterator<DirectedGraph<CopsAndRobberVertex<V>, DefaultEdge>> getCopsAndRobberGameGraphs( DirectedGraph<V,E> graph, int width, boolean copMonotone, boolean robberMonotone ) {
 		return new CopsAndRobberAlgorithm<V,E>( graph, width, copMonotone, robberMonotone ).iterator();
 	}
 	
@@ -147,7 +147,8 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 		}
 	}
 	
-	public static class CopsAndRobberVertex<V extends LabeledGraphVertex> extends GameGraphVertex {
+	public static class CopsAndRobberVertex<V extends LabeledStructureVertex> extends GameGraphVertex {
+		private static final long serialVersionUID = 1L;
 		private Set<V> X;
 		private Set<V> X2;
 		private V robber;
@@ -278,7 +279,7 @@ public class CopsAndRobberAlgorithm<V extends LabeledGraphVertex, E extends Defa
 		}
 	}
 
-	public static class CopsAndRobberVertexFactory<V extends LabeledGraphVertex> {
+	public static class CopsAndRobberVertexFactory<V extends LabeledStructureVertex> {
 		
 		Hashtable<Object, Hashtable<Object, Hashtable<Set<V>, Hashtable<V, CopsAndRobberVertex<V>>>>> components = 
 			new Hashtable<Object, Hashtable<Object, Hashtable<Set<V>, Hashtable<V, CopsAndRobberVertex<V>>>>>();

@@ -11,8 +11,9 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
-import de.hu.gralog.graph.types.LabeledSimpleDirectedGraphTypeInfo;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
+import de.hu.gralog.structure.types.*;
+import de.hu.gralog.structure.types.elements.*;
 
 public class ComputeCopsStrategyAlgorithmBeanInfo extends SimpleBeanInfo {
 
@@ -28,7 +29,7 @@ public class ComputeCopsStrategyAlgorithmBeanInfo extends SimpleBeanInfo {
 				"DAG-Width and Parity Games</a> for a definition of DAGs and gamegraphs.</html>" );
 		
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", ComputeCopsStrategyAlgorithm.class, new LabeledSimpleDirectedGraphTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "graph", ComputeCopsStrategyAlgorithm.class, new LabeledSimpleDirectedGraphStructureTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html>The graph for which a cops and robber gamegraph should be computed.</html>" );
 			
 			PROPERTY_DESCRIPTORS[1] = new PropertyDescriptor( "dagWidth", ComputeCopsStrategyAlgorithm.class );

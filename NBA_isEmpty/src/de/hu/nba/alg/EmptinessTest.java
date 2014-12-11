@@ -7,29 +7,28 @@ import de.hu.gralog.algorithm.InvalidPropertyValuesException;
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.app.UserException;
-import de.hu.gralog.graph.GralogGraphFactory;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.plugin.dfa.graph.AutomatonGraphBean;
-import de.hu.gralog.plugin.dfa.graph.AutomatonGraphTypeInfo;
-import de.hu.gralog.plugin.dfa.graph.AutomatonVertex;
-import de.hu.gralog.plugin.dfa.graph.LabeledGraphEdge;
+import de.hu.gralog.structure.types.elements.LabeledStructureEdge;
+import de.hu.gralog.structure.*;
+import de.hu.dfa.structure.*;
 
-public class EmptinessTest<V extends AutomatonVertex, E extends LabeledGraphEdge, GB extends AutomatonGraphBean<V>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private GralogGraphSupport<V,E,GB,G> automaton;
+public class EmptinessTest<V extends AutomatonVertex, E extends LabeledStructureEdge, GB extends AutomatonBean<V>, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	public GralogGraphSupport<V,E,GB,G> getAutomaton() {
+	private static final long serialVersionUID = 1L;
+	private Structure<V,E,GB,G> automaton;
+
+	public Structure<V,E,GB,G> getAutomaton() {
 		return automaton;
 	}
 
-	public void setGraph(GralogGraphSupport<V,E,GB,G> automaton) {
+	public void setGraph(Structure<V,E,GB,G> automaton) {
 		this.automaton = automaton;
 	}
 
 	public AlgorithmResult execute() throws InvalidPropertyValuesException, UserException {
 		InvalidPropertyValuesException pe = new InvalidPropertyValuesException();
 			
-		if ( automaton.getGraphBean().getStartVertex() == null )
+		if ( automaton.getStructureBean().getStartVertex() == null )
 			pe.addPropertyError( "startVertex",  InvalidPropertyValuesException.PROPERTY_REQUIRED );
 		
 		if ( getAutomaton() == null )
@@ -48,11 +47,11 @@ public class EmptinessTest<V extends AutomatonVertex, E extends LabeledGraphEdge
 		
 		result.setDescription(resultString);
 		
-		GralogGraphSupport<AutomatonVertex,LabeledGraphEdge,AutomatonGraphBean,ListenableDirectedGraph<AutomatonVertex,LabeledGraphEdge>> resultGraph = GralogGraphFactory.createGraphSupport( new AutomatonGraphTypeInfo() );
+		Structure<AutomatonVertex,AutomatonEdge,AutomatonBean,ListenableDirectedGraph<AutomatonVertex,AutomatonEdge>> resultGraph = StructureFactory.createStructure( new AutomatonTypeInfo() );
 		resultGraph.getGraph().addVertex(new AutomatonVertex(resultString));
 
 		AlgorithmResultContent content = new AlgorithmResultContent();
-		content.setGraphSupport(resultGraph);
+		content.setStructure(resultGraph);
 
 		result.setSingleContent( content );
 

@@ -40,14 +40,14 @@ import de.hu.gralog.algorithms.jgrapht.Algorithms;
 import de.hu.gralog.algorithms.jgrapht.Filter;
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.finitegames.alg.Simple2PlayerGameAlgorithm;
-import de.hu.gralog.graph.GralogGraphFactory;
-import de.hu.gralog.graph.GralogGraphSupport;
-import de.hu.gralog.graph.types.LabeledSimpleDirectedGraphTypeInfo;
-import de.hu.gralog.graph.types.elements.LabeledGraphVertex;
+import de.hu.gralog.structure.*;
+import de.hu.gralog.structure.types.*;
+import de.hu.gralog.structure.types.elements.*;
 
-public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
+public class DAGConstruction<V extends LabeledStructureVertex,E extends DefaultEdge, G extends ListenableDirectedGraph<V,E>> implements Algorithm {
 
-	private GralogGraphSupport<V, E,?,G> graph;
+	private static final long serialVersionUID = 1L;
+	private Structure<V, E,?,G> graph;
 	private int dagWidth = 0;
 	private int maxDAGsCount = 1;
 	
@@ -67,11 +67,11 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge,
 		this.dagWidth = dagWidth;
 	}
 
-	public GralogGraphSupport<V, E,?,G> getGraph() {
+	public Structure<V, E,?,G> getGraph() {
 		return graph;
 	}
 
-	public void setGraph(GralogGraphSupport<V, E,?,G> graph) {
+	public void setGraph(Structure<V, E,?,G> graph) {
 		this.graph = graph;
 	}
 
@@ -120,17 +120,17 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge,
 		return result;
 	}
 	
-	public GralogGraphSupport<LabeledGraphVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledGraphVertex,DefaultEdge>> getDirectedGraphFromDAG( DirectedGraph<DAGVertex, DefaultEdge> dag ) throws UserException {
-		GralogGraphSupport<LabeledGraphVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledGraphVertex, DefaultEdge>> graph = (GralogGraphSupport<LabeledGraphVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledGraphVertex,DefaultEdge>>)GralogGraphFactory.createGraphSupport( new LabeledSimpleDirectedGraphTypeInfo() );
-		Hashtable<DAGVertex, LabeledGraphVertex> vertexes = new Hashtable<DAGVertex, LabeledGraphVertex>();
+	public Structure<LabeledStructureVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledStructureVertex,DefaultEdge>> getDirectedGraphFromDAG( DirectedGraph<DAGVertex, DefaultEdge> dag ) throws UserException {
+		Structure<LabeledStructureVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledStructureVertex, DefaultEdge>> graph = (Structure<LabeledStructureVertex, DefaultEdge,?,ListenableDirectedGraph<LabeledStructureVertex,DefaultEdge>>)StructureFactory.createStructure( new LabeledSimpleDirectedGraphStructureTypeInfo() );
+		Hashtable<DAGVertex, LabeledStructureVertex> vertexes = new Hashtable<DAGVertex, LabeledStructureVertex>();
 		for ( DAGVertex vertex : dag.vertexSet() ) {
-			LabeledGraphVertex v = new LabeledGraphVertex( vertex.getLabel() );
+			LabeledStructureVertex v = new LabeledStructureVertex( vertex.getLabel() );
 			vertexes.put( vertex, v );
 			graph.getGraph().addVertex( v );
 		}
 		for ( DefaultEdge edge : dag.edgeSet() ) {
-			LabeledGraphVertex from = vertexes.get( dag.getEdgeSource( edge ) );
-			LabeledGraphVertex to = vertexes.get( dag.getEdgeTarget( edge ) );
+			LabeledStructureVertex from = vertexes.get( dag.getEdgeSource( edge ) );
+			LabeledStructureVertex to = vertexes.get( dag.getEdgeTarget( edge ) );
 			graph.getGraph().addEdge( from, to );
 		}
 		return graph;
@@ -266,7 +266,7 @@ public class DAGConstruction<V extends LabeledGraphVertex,E extends DefaultEdge,
 	}
 	
 
-	public static class DAGVertex extends LabeledGraphVertex {
+	public static class DAGVertex extends LabeledStructureVertex {
 		
 		Set X;
 		CopsAndRobberVertex v;

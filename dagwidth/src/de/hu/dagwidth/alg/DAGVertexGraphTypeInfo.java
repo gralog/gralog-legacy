@@ -11,14 +11,12 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import de.hu.dagwidth.alg.DAGConstruction.DAGVertex;
-import de.hu.gralog.beans.support.GralogGraphBean;
-import de.hu.gralog.graph.GralogGraphTypeInfo;
-import de.hu.gralog.graph.GraphBeanFactory;
-import de.hu.gralog.graph.GraphFactory;
+import de.hu.gralog.beans.support.*;
+import de.hu.gralog.structure.*;
 import de.hu.gralog.jgraph.cellview.DefaultEdgeRenderer;
 import de.hu.gralog.jgraph.cellview.DefaultVertexRenderer;
 
-public class DAGVertexGraphTypeInfo<GB extends GralogGraphBean> extends GralogGraphTypeInfo<DAGVertex, DefaultEdge, GB, ListenableDirectedGraph<DAGVertex, DefaultEdge>> {
+public class DAGVertexGraphTypeInfo<GB extends StructureBean> extends StructureTypeInfo<DAGVertex, DefaultEdge, GB, ListenableDirectedGraph<DAGVertex, DefaultEdge>> {
 
 	@Override
 	public String getName() {
@@ -35,7 +33,7 @@ public class DAGVertexGraphTypeInfo<GB extends GralogGraphBean> extends GralogGr
 	}
 
 	@Override
-	public GraphBeanFactory<GB> getGraphBeanFactory() {
+	public StructureBeanFactory<GB> getStructureBeanFactory() {
 		return null;
 	}
 
@@ -56,6 +54,11 @@ public class DAGVertexGraphTypeInfo<GB extends GralogGraphBean> extends GralogGr
 	@Override
 	public DefaultEdgeRenderer getEdgeRenderer() {
 		return null;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Directed Acyclic Graph";
 	}
 
 	

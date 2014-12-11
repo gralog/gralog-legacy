@@ -11,7 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-import de.hu.gralog.beans.propertydescriptor.ChooseGraphPropertyDescriptor;
+import de.hu.gralog.beans.propertydescriptor.ChooseStructurePropertyDescriptor;
 import de.hu.parity.graph.ParityGameGraphTypeInfo;
 
 public class StrategyImprovementAlgorithmBeanInfo extends SimpleBeanInfo {
@@ -29,7 +29,7 @@ public class StrategyImprovementAlgorithmBeanInfo extends SimpleBeanInfo {
 				"leading to an optimal strategy for both players." +
 				"</html>" );
 		try {
-			PROPERTY_DESCRIPTORS[0] = new ChooseGraphPropertyDescriptor( "graph", StrategyImprovementAlgorithm.class, new ParityGameGraphTypeInfo() );
+			PROPERTY_DESCRIPTORS[0] = new ChooseStructurePropertyDescriptor( "graph", StrategyImprovementAlgorithm.class, new ParityGameGraphTypeInfo() );
 			PROPERTY_DESCRIPTORS[0].setShortDescription( "<html></html>" );
 		} catch( IntrospectionException e ) {
 			e.printStackTrace();
