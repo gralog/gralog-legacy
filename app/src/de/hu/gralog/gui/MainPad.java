@@ -645,8 +645,6 @@ public class MainPad extends JFrame {
 	
 	public static ImageIcon createImageIcon( String image ) {
 		URL url = Object.class.getResource( "/de/hu/gralog/resources/images/newimages/" + image );
-		if ( url == null )
-			url = Object.class.getResource( "/de/hu/gralog/resources/images/images/" + image );
 		return new ImageIcon( url );
 	}
 	

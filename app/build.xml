@@ -52,8 +52,10 @@
 	<target name="init" description="Initialize the build Java ${java.specification.version} Build">
 		<tstamp/>
 		<mkdir dir="${classes}"/>
+		<mkdir dir="${classes}/de/hu/gralog/resources/images/newimages"/>
 		<mkdir dir="${doc}"/>
 		<mkdir dir="${dist}"/>
+		<mkdir dir="${lib}"/>
 	</target>
 
 <!--  ==================== Compile ==================== -->
@@ -81,7 +83,10 @@
 				<include name="plugin.config"/>
 			</fileset>
 		</copy>
-				
+
+		<copy todir="${classes}/de/hu/gralog/resources/images/newimages">
+			<fileset dir="${source}/de/hu/gralog/resources/images/newimages"/>
+		</copy>
 	</target>
 
 <!--  ==================== Apidoc ==================== -->

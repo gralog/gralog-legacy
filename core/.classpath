@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Engelmann/Desktop/Gralog/core/lib/jgraph.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Engelmann/Desktop/Gralog/core/lib/jgrapht-jdk1.5.jar"/>
-	<classpathentry kind="output" path="build"/>
+	<classpathentry exported="true" kind="lib" path="lib/jgraph.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

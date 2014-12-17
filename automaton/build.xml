@@ -56,6 +56,7 @@
 		<mkdir dir="${classes}"/>
 		<mkdir dir="${doc}"/>
 		<mkdir dir="${dist}"/>
+		<mkdir dir="${lib}"/>
 	</target>
 
 <!--  ==================== Compile ==================== -->
