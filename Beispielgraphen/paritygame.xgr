@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_65" class="java.beans.XMLDecoder"> 
+ <object class="de.hu.gralog.jgraph.GJGraph"> 
+  <object class="de.hu.gralog.structure.StructureFactory" method="createStructure"> 
+   <object class="de.hu.parity.structure.ParityGameArenaTypeInfo"/> 
+   <null/> 
+   <null/> 
+   <void method="addVertex"> 
+    <object id="ParityGameVertex0" class="de.hu.parity.structure.ParityGameVertex"> 
+     <void property="label"> 
+      <string>1</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="ParityGameVertex1" class="de.hu.parity.structure.ParityGameVertex"> 
+     <void property="label"> 
+      <string>2</string> 
+     </void> 
+     <void property="player0"> 
+      <boolean>false</boolean> 
+     </void> 
+     <void property="priority"> 
+      <int>1</int> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="ParityGameVertex2" class="de.hu.parity.structure.ParityGameVertex"> 
+     <void property="label"> 
+      <string>3</string> 
+     </void> 
+     <void property="priority"> 
+      <int>2</int> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="ParityGameVertex3" class="de.hu.parity.structure.ParityGameVertex"> 
+     <void property="label"> 
+      <string>4</string> 
+     </void> 
+     <void property="player0"> 
+      <boolean>false</boolean> 
+     </void> 
+     <void property="priority"> 
+      <int>1</int> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="ParityGameVertex4" class="de.hu.parity.structure.ParityGameVertex"> 
+     <void property="label"> 
+      <string>5</string> 
+     </void> 
+     <void property="player0"> 
+      <boolean>false</boolean> 
+     </void> 
+     <void property="priority"> 
+      <int>2</int> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="ParityGameVertex0"/> 
+    <object idref="ParityGameVertex1"/> 
+    <object class="org.jgrapht.graph.DefaultEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="ParityGameVertex1"/> 
+    <object idref="ParityGameVertex2"/> 
+    <object class="org.jgrapht.graph.DefaultEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="ParityGameVertex2"/> 
+    <object idref="ParityGameVertex3"/> 
+    <object class="org.jgrapht.graph.DefaultEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="ParityGameVertex3"/> 
+    <object idref="ParityGameVertex4"/> 
+    <object class="org.jgrapht.graph.DefaultEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="ParityGameVertex4"/> 
+    <object idref="ParityGameVertex0"/> 
+    <object class="org.jgrapht.graph.DefaultEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="ParityGameVertex4"/> 
+    <object idref="ParityGameVertex1"/> 
+    <object class="org.jgrapht.graph.DefaultEdge"/> 
+   </void> 
+  </object> 
+  <object class="java.util.Hashtable"> 
+   <void method="put"> 
+    <object idref="ParityGameVertex2"/> 
+    <object class="java.awt.Point"> 
+     <int>1080</int> 
+     <int>320</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="ParityGameVertex4"/> 
+    <object class="java.awt.Point"> 
+     <int>400</int> 
+     <int>600</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="ParityGameVertex0"/> 
+    <object class="java.awt.Point"> 
+     <int>240</int> 
+     <int>240</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="ParityGameVertex1"/> 
+    <object class="java.awt.Point"> 
+     <int>680</int> 
+     <int>280</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="ParityGameVertex3"/> 
+    <object class="java.awt.Point"> 
+     <int>920</int> 
+     <int>680</int> 
+    </object> 
+   </void> 
+  </object> 
+ </object> 
+</java> 

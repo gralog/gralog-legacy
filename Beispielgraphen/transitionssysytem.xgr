@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_65" class="java.beans.XMLDecoder"> 
+ <object class="de.hu.gralog.jgraph.GJGraph"> 
+  <object class="de.hu.gralog.structure.StructureFactory" method="createStructure"> 
+   <object class="de.hu.logic.structure.TransitionSystemTypeInfo"/> 
+   <null/> 
+   <object class="de.hu.logic.structure.TransitionSystem"> 
+    <void property="propositions"> 
+     <array class="de.hu.logic.structure.Proposition" length="1"> 
+      <void index="0"> 
+       <object class="de.hu.logic.structure.Proposition"> 
+        <void property="name"> 
+         <string>P</string> 
+        </void> 
+        <void property="vertexArray"> 
+         <array class="de.hu.logic.structure.TransitionSystemVertex" length="1"> 
+          <void index="0"> 
+           <object id="TransitionSystemVertex0" class="de.hu.logic.structure.TransitionSystemVertex"> 
+            <void property="label"> 
+             <string>1</string> 
+            </void> 
+           </object> 
+          </void> 
+         </array> 
+        </void> 
+       </object> 
+      </void> 
+     </array> 
+    </void> 
+   </object> 
+   <void method="addVertex"> 
+    <object idref="TransitionSystemVertex0"/> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="TransitionSystemVertex1" class="de.hu.logic.structure.TransitionSystemVertex"> 
+     <void property="label"> 
+      <string>2</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="TransitionSystemVertex2" class="de.hu.logic.structure.TransitionSystemVertex"> 
+     <void property="label"> 
+      <string>3</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="TransitionSystemVertex0"/> 
+    <object idref="TransitionSystemVertex1"/> 
+    <object class="de.hu.logic.structure.TransitionSystemEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="TransitionSystemVertex1"/> 
+    <object idref="TransitionSystemVertex2"/> 
+    <object class="de.hu.logic.structure.TransitionSystemEdge"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="TransitionSystemVertex2"/> 
+    <object idref="TransitionSystemVertex0"/> 
+    <object class="de.hu.logic.structure.TransitionSystemEdge"/> 
+   </void> 
+  </object> 
+  <object class="java.util.Hashtable"> 
+   <void method="put"> 
+    <object idref="TransitionSystemVertex1"/> 
+    <object class="java.awt.Point"> 
+     <int>480</int> 
+     <int>200</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="TransitionSystemVertex0"/> 
+    <object class="java.awt.Point"> 
+     <int>0</int> 
+     <int>200</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="TransitionSystemVertex2"/> 
+    <object class="java.awt.Point"> 
+     <int>360</int> 
+     <int>480</int> 
+    </object> 
+   </void> 
+  </object> 
+ </object> 
+</java> 
