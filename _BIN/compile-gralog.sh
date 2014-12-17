@@ -18,9 +18,10 @@ for d in \
 ; do
 	if [ -f ../$d/build.xml ]; then
 	
-		pushd ../$d
-		${ANT} jar
-		popd
+		echo -n $d
+		pushd ../$d > /dev/null
+		${ANT} jar > /dev/null && echo "" || echo " FAILED"
+		popd > /dev/null
 	
 	fi
 done

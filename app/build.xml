@@ -64,6 +64,7 @@
 
 		<!-- Compile sources -->
 		<javac srcdir="${source}"
+			includeantruntime="false"
 			encoding="UTF-8"
 			debug="${compile.debug}"
 			deprecation="${compile.deprecation}"
