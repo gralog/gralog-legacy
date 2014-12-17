@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_65" class="java.beans.XMLDecoder"> 
+ <object class="de.hu.gralog.jgraph.GJGraph"> 
+  <object class="de.hu.gralog.structure.StructureFactory" method="createStructure"> 
+   <object class="de.hu.dfa.structure.AutomatonTypeInfo"/> 
+   <null/> 
+   <object class="de.hu.dfa.structure.AutomatonBean"> 
+    <void property="startVertex"> 
+     <object id="AutomatonVertex0" class="de.hu.dfa.structure.AutomatonVertex"> 
+      <void property="acceptingState"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="label"> 
+       <string>1</string> 
+      </void> 
+     </object> 
+    </void> 
+   </object> 
+   <void method="addVertex"> 
+    <object idref="AutomatonVertex0"/> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="AutomatonVertex1" class="de.hu.dfa.structure.AutomatonVertex"> 
+     <void property="label"> 
+      <string>2</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="AutomatonVertex2" class="de.hu.dfa.structure.AutomatonVertex"> 
+     <void property="label"> 
+      <string>3</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="AutomatonVertex3" class="de.hu.dfa.structure.AutomatonVertex"> 
+     <void property="label"> 
+      <string>4</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="AutomatonVertex4" class="de.hu.dfa.structure.AutomatonVertex"> 
+     <void property="acceptingState"> 
+      <boolean>true</boolean> 
+     </void> 
+     <void property="label"> 
+      <string>5</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="AutomatonVertex5" class="de.hu.dfa.structure.AutomatonVertex"> 
+     <void property="label"> 
+      <string>6</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addVertex"> 
+    <object id="AutomatonVertex6" class="de.hu.dfa.structure.AutomatonVertex"/> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex0"/> 
+    <object idref="AutomatonVertex1"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>a</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex1"/> 
+    <object idref="AutomatonVertex4"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>b</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex4"/> 
+    <object idref="AutomatonVertex0"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>a</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex1"/> 
+    <object idref="AutomatonVertex2"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>c</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex2"/> 
+    <object idref="AutomatonVertex3"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>c</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex3"/> 
+    <object idref="AutomatonVertex4"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>a</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex5"/> 
+    <object idref="AutomatonVertex0"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>b</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex3"/> 
+    <object idref="AutomatonVertex5"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"> 
+     <void property="label"> 
+      <string>c</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="addEdge"> 
+    <object idref="AutomatonVertex6"/> 
+    <object idref="AutomatonVertex0"/> 
+    <object class="de.hu.dfa.structure.AutomatonEdge"/> 
+   </void> 
+  </object> 
+  <object class="java.util.Hashtable"> 
+   <void method="put"> 
+    <object idref="AutomatonVertex6"/> 
+    <object class="java.awt.Point"> 
+     <int>53</int> 
+     <int>318</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="AutomatonVertex3"/> 
+    <object class="java.awt.Point"> 
+     <int>106</int> 
+     <int>0</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="AutomatonVertex4"/> 
+    <object class="java.awt.Point"> 
+     <int>0</int> 
+     <int>53</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="AutomatonVertex1"/> 
+    <object class="java.awt.Point"> 
+     <int>212</int> 
+     <int>159</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="AutomatonVertex5"/> 
+    <object class="java.awt.Point"> 
+     <int>0</int> 
+     <int>159</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="AutomatonVertex2"/> 
+    <object class="java.awt.Point"> 
+     <int>212</int> 
+     <int>53</int> 
+    </object> 
+   </void> 
+   <void method="put"> 
+    <object idref="AutomatonVertex0"/> 
+    <object class="java.awt.Point"> 
+     <int>212</int> 
+     <int>318</int> 
+    </object> 
+   </void> 
+  </object> 
+ </object> 
+</java> 
