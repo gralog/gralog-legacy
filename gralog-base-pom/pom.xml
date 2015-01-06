@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.tu-berlin.las</groupId>
+	<artifactId>gralog-base-pom</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>POM containting all Gralog-wide project settings</name>
+
+	<!-- This POM contains only basic settings, e.g. character encoding. All 
+		Gralog Maven Projects should have this POM as a parent. -->
+
+	<!-- All source code is encoded in UTF-8. This makes the build platform-independent -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+
+		<!-- setup basic folder structure, since it is not conform to maven standards -->
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		
+		<pluginManagement>
+			<plugins>
+
+		<!-- Sets the source and target compiler settings to Java 1.5. For later 
+			use of JavaFX this needs to be increased to Java 1.8. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.2</version>
+					<configuration>
+						<source>1.5</source>
+						<target>1.5</target>
+					</configuration>
+				</plugin>
+				
+		<!-- Specify the version of the report plugin for use of 'mvn site' to generate a overview website. -->
+				<plugin>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>2.7</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

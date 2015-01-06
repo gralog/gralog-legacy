@@ -1,50 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.tu-berlin.las</groupId>
 	<artifactId>gralog-app</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>Gralog GUI</name>
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source />
-					<target />
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<repositories>
-		<repository>
-			<id>repo</id>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>ignore</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<url>file://${project.basedir}/repo</url>
-		</repository>
-	</repositories>
+	
+	<!-- inherit basic settings, e.g. compiler and encoding, and the dependency to gralog-core from a base pom -->
+	<parent>
+		<groupId>de.tu-berlin.las</groupId>
+		<artifactId>gralog-core-dep</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	
+	<!-- add all dependencies of gralog app -->
 	<dependencies>
-		<dependency>
-			<groupId>de.tu-berlin.las</groupId>
-			<artifactId>gralog-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>net.infonode</groupId>
 			<artifactId>dockingwindows</artifactId>
@@ -61,4 +29,19 @@
 			<version>10.4.0</version>
 		</dependency>
 	</dependencies>
+	
+	<!-- setting up a local maven repository under /repo to store jar-dependencies that cannot be found in maven central -->
+	<repositories>
+		<repository>
+			<id>repo</id>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>ignore</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<url>file://${project.basedir}/repo</url>
+		</repository>
+	</repositories>
 </project>

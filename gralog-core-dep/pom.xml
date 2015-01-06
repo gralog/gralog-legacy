@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+  <artifactId>gralog-core-dep</artifactId>
+  <packaging>pom</packaging>
+  <name>Adds the Dependency to Gralog Core</name>
+  <!-- This POM contains adds a dependency to gralog core to the basic settings. Should be the parent pom for all plugins -->
+  
+  <!-- inherit basic settings, e.g. compiler and encoding from a base pom -->
+  <parent>
+  	<artifactId>gralog-base-pom</artifactId>
+  	<version>0.0.1-SNAPSHOT</version>
+  	<groupId>de.tu-berlin.las</groupId>
+  </parent>
+  
+  <!-- add the dependency to gralog-core -->  
+  <dependencies>
+  	<dependency>
+  		<groupId>de.tu-berlin.las</groupId>
+  		<artifactId>gralog-core</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+</project>
