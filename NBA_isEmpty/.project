@@ -3,6 +3,9 @@
 	<name>NBA_isEmpty</name>
 	<comment></comment>
 	<projects>
+		<project>automaton</project>
+		<project>dagwidth</project>
+		<project>gralog-core-dep</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -3,8 +3,7 @@
 	<name>app</name>
 	<comment></comment>
 	<projects>
-		<project>jgraph</project>
-		<project>jgrapht</project>
+		<project>gralog-core-dep</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

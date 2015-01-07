@@ -3,6 +3,9 @@
 	<name>dagwidth</name>
 	<comment></comment>
 	<projects>
+		<project>algorithms</project>
+		<project>finitegames</project>
+		<project>gralog-core-dep</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

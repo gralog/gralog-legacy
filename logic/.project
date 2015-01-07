@@ -3,6 +3,9 @@
 	<name>logic</name>
 	<comment></comment>
 	<projects>
+		<project>finitegames</project>
+		<project>gralog-core-dep</project>
+		<project>parity</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

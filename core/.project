@@ -3,6 +3,7 @@
 	<name>core</name>
 	<comment></comment>
 	<projects>
+		<project>gralog-base-pom</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

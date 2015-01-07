@@ -3,6 +3,7 @@
 	<name>automaton</name>
 	<comment></comment>
 	<projects>
+		<project>gralog-core-dep</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

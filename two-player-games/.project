@@ -3,6 +3,8 @@
 	<name>two-player-games</name>
 	<comment></comment>
 	<projects>
+		<project>algorithms</project>
+		<project>gralog-core-dep</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -3,6 +3,8 @@
 	<name>gralog-core-dep</name>
 	<comment></comment>
 	<projects>
+		<project>core</project>
+		<project>gralog-base-pom</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
