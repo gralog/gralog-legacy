@@ -3,8 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>gralog-app</artifactId>
 	<name>Gralog GUI</name>
-	
-	<!-- inherit basic settings, e.g. compiler and encoding, and the dependency to gralog-core from a base pom -->
+
+	<!-- inherit basic settings, e.g. compiler and encoding, and the dependency 
+		to gralog-core from a base pom -->
 	<parent>
 		<groupId>de.tu-berlin.las</groupId>
 		<artifactId>gralog-core-dep</artifactId>
