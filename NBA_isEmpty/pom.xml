@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>gralog-NBA_isEmpty</artifactId>
+  <name>Gralog NBA is Empty</name>
+
+	<!-- inherit basic settings, e.g. compiler and encoding, and the dependency 
+		to gralog-core from a base pom -->
+	<parent>
+		<groupId>de.tu-berlin.las</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+		<artifactId>gralog-core-dep</artifactId>
+	</parent>
+
+	<!-- add dependencies -->
+	<dependencies>
+		<dependency>
+			<groupId>de.tu-berlin.las</groupId>
+			<artifactId>gralog-automaton</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tu-berlin.las</groupId>
+			<artifactId>gralog-dagwidth</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
