@@ -11,7 +11,7 @@
 		<artifactId>gralog-core-dep</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	
+
 	<!-- add all dependencies of gralog app -->
 	<dependencies>
 		<dependency>
@@ -30,8 +30,9 @@
 			<version>10.4.0</version>
 		</dependency>
 	</dependencies>
-	
-	<!-- setting up a local maven repository under /repo to store jar-dependencies that cannot be found in maven central -->
+
+	<!-- setting up a local maven repository under /repo to store jar-dependencies 
+		that cannot be found in maven central -->
 	<repositories>
 		<repository>
 			<id>repo</id>
@@ -45,4 +46,33 @@
 			<url>file://${project.basedir}/repo</url>
 		</repository>
 	</repositories>
+
+	<build>
+		<plugins>
+			<!-- make a jar including dependencies -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>de.hu.gralog.Gralog</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
