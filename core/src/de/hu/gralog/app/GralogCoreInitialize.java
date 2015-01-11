@@ -21,12 +21,15 @@ package de.hu.gralog.app;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.hu.gralog.algorithm.result.AlgorithmResult;
 import de.hu.gralog.algorithm.result.AlgorithmResultContent;
 import de.hu.gralog.algorithm.result.AlgorithmResultContentTreeNode;
+import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.algorithm.result.DisplaySubgraphMode;
 import de.hu.gralog.algorithm.result.ElementTipsDisplayMode;
-import de.hu.gralog.algorithm.result.DisplaySubgraph.DisplayMode;
 import de.hu.gralog.algorithm.result.pd.AlgorithmResultContentPersistenceDelegate;
 import de.hu.gralog.algorithm.result.pd.AlgorithmResultContentTreeNodePersistenceDelegate;
 import de.hu.gralog.algorithm.result.pd.AlgorithmResultPersistenceDelegate;
@@ -45,17 +48,27 @@ import de.hu.gralog.structure.pd.StructurePersistenceDelegate;
  */
 public class GralogCoreInitialize {
 
+	final static Logger logger = LoggerFactory
+			.getLogger(GralogCoreInitialize.class);
+
 	public static void initialize() throws UserException {
+		logger.debug("entering initialize");
 		try {
-			Introspector.getBeanInfo(Structure.class)
-					.getBeanDescriptor().setValue("persistenceDelegate",
+			Introspector
+					.getBeanInfo(Structure.class)
+					.getBeanDescriptor()
+					.setValue("persistenceDelegate",
 							new StructurePersistenceDelegate());
 
-			Introspector.getBeanInfo(AlgorithmResult.class).getBeanDescriptor()
+			Introspector
+					.getBeanInfo(AlgorithmResult.class)
+					.getBeanDescriptor()
 					.setValue("persistenceDelegate",
 							new AlgorithmResultPersistenceDelegate());
-			Introspector.getBeanInfo(AlgorithmResultContent.class)
-					.getBeanDescriptor().setValue("persistenceDelegate",
+			Introspector
+					.getBeanInfo(AlgorithmResultContent.class)
+					.getBeanDescriptor()
+					.setValue("persistenceDelegate",
 							new AlgorithmResultContentPersistenceDelegate());
 			Introspector
 					.getBeanInfo(AlgorithmResultContentTreeNode.class)
@@ -63,16 +76,24 @@ public class GralogCoreInitialize {
 					.setValue(
 							"persistenceDelegate",
 							new AlgorithmResultContentTreeNodePersistenceDelegate());
-			Introspector.getBeanInfo(DisplayMode.class).getBeanDescriptor()
+			Introspector
+					.getBeanInfo(DisplayMode.class)
+					.getBeanDescriptor()
 					.setValue("persistenceDelegate",
 							new DisplayModePersistenceDelegate());
-			Introspector.getBeanInfo(DisplaySubgraphMode.class)
-					.getBeanDescriptor().setValue("persistenceDelegate",
+			Introspector
+					.getBeanInfo(DisplaySubgraphMode.class)
+					.getBeanDescriptor()
+					.setValue("persistenceDelegate",
 							new DisplaySubgraphModePersistenceDelegate());
-			Introspector.getBeanInfo(ElementTipsDisplayMode.class)
-					.getBeanDescriptor().setValue("persistenceDelegate",
+			Introspector
+					.getBeanInfo(ElementTipsDisplayMode.class)
+					.getBeanDescriptor()
+					.setValue("persistenceDelegate",
 							new ElementTipsDisplayModePersistenceDelegate());
-		} catch (IntrospectionException e) {
+			logger.debug("exiting initialize");
+		}
+		catch (IntrospectionException e) {
 			throw new UserException("fatal error initializing gralog-core", e);
 		}
 	}
