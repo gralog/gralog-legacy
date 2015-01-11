@@ -3,7 +3,7 @@
 	<appender name="debugFile" class="ch.qos.logback.core.FileAppender"
 		level="DEBUG">
 		<file>debug.log</file>
-		<append>true</append>
+		<append>false</append>
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>

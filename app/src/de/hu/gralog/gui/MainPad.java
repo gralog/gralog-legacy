@@ -5,15 +5,15 @@
  *
  * This file is part of Games.
  *
- * Games is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License 
+ * Games is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  *
- * Games is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * Games is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Games; 
- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA 
+ * You should have received a copy of the GNU General Public License along with Games;
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
  *
  */
 
@@ -230,8 +230,9 @@ public class MainPad extends JFrame {
 			new AlgorithmResultView() };
 	private static final ShowViewAction[] SHOW_VIEW_ACTIONS = new ShowViewAction[VIEWS.length];
 	static {
-		for (int i = 0; i < VIEWS.length; i++)
+		for (int i = 0; i < VIEWS.length; i++) {
 			SHOW_VIEW_ACTIONS[i] = new ShowViewAction(VIEWS[i]);
+		}
 	}
 
 	private static RootWindow rootWindow;
@@ -239,11 +240,11 @@ public class MainPad extends JFrame {
 	private ButtonGroup buttonGroupToolBar = new ButtonGroup();
 	private EditorState editorState = EditorState.SELECT;
 
-	private WeakListenerList<EditorStateListener> editorStateListeners = new WeakListenerList<EditorStateListener>();
+	private final WeakListenerList<EditorStateListener> editorStateListeners = new WeakListenerList<EditorStateListener>();
 
 	static {
 		logger.debug("entering static initialization");
-		MainPadViewMap views = new MainPadViewMap(VIEWS);
+		final MainPadViewMap views = new MainPadViewMap(VIEWS);
 		rootWindow = DockingUtil.createRootWindow(views, false);
 		rootWindow.getRootWindowProperties().addSuperObject(
 				THEME.getRootWindowProperties());
@@ -256,10 +257,11 @@ public class MainPad extends JFrame {
 		rootWindow.addListener(new MainPadViewListener());
 		// MainPadViewListener mainPadViewListener = new MainPadViewListener();
 		for (int i = 0; i < views.getViewCount(); i++) {
-			View view = views.getView(i);
+			final View view = views.getView(i);
 			// view.addListener( mainPadViewListener );
-			if (view instanceof EditorDesktopViewListener)
+			if (view instanceof EditorDesktopViewListener) {
 				DESKTOP.addEditorDesktopViewListener((EditorDesktopViewListener) view);
+			}
 		}
 
 		getInstance().getContentPane().add(rootWindow);
@@ -275,7 +277,7 @@ public class MainPad extends JFrame {
 				try {
 					getInstance().loadWindowLayout();
 				}
-				catch (Throwable t) {
+				catch (final Throwable t) {
 					getInstance()
 							.handleUserException(
 									new UserException(
@@ -286,9 +288,9 @@ public class MainPad extends JFrame {
 		logger.debug("exiting static initialization");
 	}
 
-	public Cursor createCursor(String fileName, Point hotSpot) {
-		ImageIcon icon = createImageIcon(fileName);
-		Cursor cursor = MainPad.getInstance().getToolkit()
+	public Cursor createCursor(final String fileName, final Point hotSpot) {
+		final ImageIcon icon = createImageIcon(fileName);
+		final Cursor cursor = MainPad.getInstance().getToolkit()
 				.createCustomCursor(icon.getImage(), hotSpot, "Cursor");
 		return cursor;
 	}
@@ -300,14 +302,14 @@ public class MainPad extends JFrame {
 		try {
 			GralogCoreInitialize.initialize();
 		}
-		catch (UserException e) {
+		catch (final UserException e) {
 			e.printStackTrace();
 		}
 		Locale.setDefault(new Locale("en", "UK"));
 		super.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		super.addWindowListener(new MainPadWindowListener());
 		super.setLayout(new BorderLayout());
-		GraphicsEnvironment ge = GraphicsEnvironment
+		final GraphicsEnvironment ge = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
 		super.setPreferredSize(ge.getDefaultScreenDevice()
 				.getDefaultConfiguration().getBounds().getSize());
@@ -319,66 +321,106 @@ public class MainPad extends JFrame {
 				.setVisible(true);
 	}
 
-	public void readJarFile(JarFile file) {
+	public void readJarFile(final JarFile file) {
 		jarLoader.readJarFile(file);
 	}
 
 	public void loadSettings() {
 		logger.debug("entering loadSettings");
-		String currentDirectory = PREFERENCES
-				.get(PREFS_CURRENT_DIRECTORY, null);
+		final String currentDirectory = this.getCurrentDirectory();
 		if (currentDirectory == null) {
 			logger.debug("current directory is null");
 		}
 		else {
 			logger.debug("current directory: {}", currentDirectory);
 		}
-		if (currentDirectory != null) {
-			File file = new File(currentDirectory);
-			if (file.exists() && file.isDirectory() && file.canRead())
-				FILE_CHOOSER.setCurrentDirectory(file);
-		}
+		this.setCurrentDirIfValid(currentDirectory);
+		this.loadGralogCore();
+		final String pluginDirectories = this.setupPluginDirectories();
+		this.loadPluginsOnPath(pluginDirectories);
 
-		try {
-			InputStream in = this.getClass().getResourceAsStream(
-					"/plugin.config");
-			if (in == null)
-				handleUserException(new UserException(
-						"unable to load core plugin"));
-			else
-				PLUGIN_MANAGER.loadPlugin(in);
-		}
-		catch (UserException e) {
-			handleUserException(e);
-		}
-
-		String defaultDir = System.getProperty("user.home", "");
-		if (defaultDir.length() != 0)
-			defaultDir = defaultDir + "/gralog/plugins";
-		defaultDir = new File(".").getPath() + "/plugins";
-		String pluginDirectories = defaultDir;// PREFERENCES.get(
-												// PREFS_PLUGIN_DIRECTORIES,
-												// defaultDir );
-		if (pluginDirectories != null) {
-			StringTokenizer st = new StringTokenizer(pluginDirectories, ";");
-			while (st.hasMoreTokens()) {
-				try {
-					File dir = new File(st.nextToken());
-					if (dir.exists() && dir.canRead())
-						PLUGIN_MANAGER.loadPlugins(dir);
-				}
-				catch (UserException e) {
-					handleUserException(e);
-				}
-			}
-		}
-
-		FILE_NEW_ACTIONS = new FileNewAction[getStructureTypeInfos().size()];
+		this.FILE_NEW_ACTIONS = new FileNewAction[this.getStructureTypeInfos()
+				.size()];
 		int i = 0;
-		for (StructureTypeInfo graphType : getStructureTypeInfos()) {
-			FILE_NEW_ACTIONS[i++] = new FileNewAction(graphType);
+		for (final StructureTypeInfo graphType : this.getStructureTypeInfos()) {
+			this.FILE_NEW_ACTIONS[i++] = new FileNewAction(graphType);
 		}
 		logger.debug("exiting loadSettings");
+	}
+
+	private void loadPluginsOnPath(final String pluginDirectories) {
+		logger.debug("entering loadPluginsOnPath() with path: {}",
+				pluginDirectories);
+		final StringTokenizer st = new StringTokenizer(pluginDirectories, ";");
+		while (st.hasMoreTokens()) {
+			try {
+				final File dir = new File(st.nextToken());
+				if (dir.exists() && dir.canRead()) {
+					logger.info("loading plugins from path: {}", dir);
+					PLUGIN_MANAGER.loadPlugins(dir);
+				}
+				else {
+					logger.info(
+							"Plugin Directory {} does not exist or is not readable, cannot locate plugins there.",
+							dir);
+				}
+			}
+			catch (final UserException e) {
+				logger.error("could not load plugin: {}", e);
+				this.handleUserException(e);
+			}
+		}
+		logger.debug("exiting loadPluginsOnPath()");
+	}
+
+	private String setupPluginDirectories() {
+		logger.debug("entering setupPluginDirectories()");
+		final StringBuilder pluginDirectories = new StringBuilder();
+		pluginDirectories.append(System.getProperty("user.home", ""));
+		logger.trace("default Dir from user.home property: {}",
+				pluginDirectories);
+		if (pluginDirectories.length() != 0) {
+			pluginDirectories.append(File.separatorChar).append("gralog")
+					.append(File.separatorChar).append("plugins");
+			logger.trace("default dir after appending gralog plugins: {}",
+					pluginDirectories);
+		}
+		pluginDirectories.append(pluginDirectories.length() == 0 ? "" : ';');
+		pluginDirectories.append('.').append(File.separatorChar)
+				.append("plugins");
+		logger.debug("exiting setupPluginDirectories() and returning: {}",
+				pluginDirectories);
+		return pluginDirectories.toString();
+	}
+
+	private void loadGralogCore() {
+		try {
+			final InputStream in = this.getClass().getResourceAsStream(
+					"/plugin.config");
+			if (in == null) {
+				this.handleUserException(new UserException(
+						"unable to load core plugin"));
+			}
+			else {
+				PLUGIN_MANAGER.loadPlugin(in);
+			}
+		}
+		catch (final UserException e) {
+			this.handleUserException(e);
+		}
+	}
+
+	private void setCurrentDirIfValid(final String currentDirectory) {
+		if (currentDirectory != null) {
+			final File file = new File(currentDirectory);
+			if (file.exists() && file.isDirectory() && file.canRead()) {
+				FILE_CHOOSER.setCurrentDirectory(file);
+			}
+		}
+	}
+
+	private String getCurrentDirectory() {
+		return PREFERENCES.get(PREFS_CURRENT_DIRECTORY, null);
 	}
 
 	public ArrayList<StructureTypeInfo> getStructureTypeInfos() {
@@ -393,18 +435,18 @@ public class MainPad extends JFrame {
 		boolean loaded = false;
 
 		try {
-			byte[] windowLayoutValue = PREFERENCES.getByteArray(
+			final byte[] windowLayoutValue = PREFERENCES.getByteArray(
 					PREFS_WINDOW_LAYOUT, null);
 
 			if (windowLayoutValue != null) {
-				ObjectInputStream in = new ObjectInputStream(
+				final ObjectInputStream in = new ObjectInputStream(
 						new ByteArrayInputStream(windowLayoutValue));
 				rootWindow.read(in);
 				loaded = true;
 			}
 		}
-		catch (IOException e) {
-			handleUserException(new UserException(
+		catch (final IOException e) {
+			this.handleUserException(new UserException(
 					"error reading windowlayoutconfig", e));
 		}
 
@@ -421,31 +463,35 @@ public class MainPad extends JFrame {
 			return;
 		}
 
-		getDesktop().restoreFocusAfterStart();
+		this.getDesktop().restoreFocusAfterStart();
 	}
 
-	public File showFileDialog(Class documentContentType, String title) {
+	public File showFileDialog(final Class documentContentType,
+			final String title) {
 		FILE_CHOOSER.resetChoosableFileFilters();
 		if (documentContentType != null) {
-			for (FileFormat format : DocumentContentFactory.getInstance()
-					.getFileFormats(documentContentType))
+			for (final FileFormat format : DocumentContentFactory.getInstance()
+					.getFileFormats(documentContentType)) {
 				FILE_CHOOSER.addChoosableFileFilter(format.getFileFilter());
+			}
 		}
 		else {
-			for (FileFormat format : DocumentContentFactory.getInstance()
-					.getFileFormats())
+			for (final FileFormat format : DocumentContentFactory.getInstance()
+					.getFileFormats()) {
 				FILE_CHOOSER.addChoosableFileFilter(format.getFileFilter());
+			}
 		}
 
-		int retValue = FILE_CHOOSER.showDialog(this, title);
-		if (retValue == MainPad.FILE_CHOOSER.APPROVE_OPTION) {
+		final int retValue = FILE_CHOOSER.showDialog(this, title);
+		if (retValue == JFileChooser.APPROVE_OPTION) {
 			File file = FILE_CHOOSER.getSelectedFile();
-			FileFilter filter = FILE_CHOOSER.getFileFilter();
-			FileFormat format = DocumentContentFactory.getInstance()
+			final FileFilter filter = FILE_CHOOSER.getFileFilter();
+			final FileFormat format = DocumentContentFactory.getInstance()
 					.getFileFormat(filter);
-			if (!file.exists() && format != null && !format.acceptsFile(file))
+			if (!file.exists() && format != null && !format.acceptsFile(file)) {
 				file = new File(file.getAbsolutePath() + "."
 						+ format.getExtension());
+			}
 
 			return file;
 		}
@@ -454,63 +500,70 @@ public class MainPad extends JFrame {
 
 	protected void saveWindowLayout() {
 		try {
-			ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
-			ObjectOutputStream out = new ObjectOutputStream(outByteArray);
+			final ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
+			final ObjectOutputStream out = new ObjectOutputStream(outByteArray);
 			rootWindow.write(out);
 			out.close();
 
 			PREFERENCES.putByteArray(PREFS_WINDOW_LAYOUT,
 					outByteArray.toByteArray());
 		}
-		catch (IOException e) {
-			handleUserException(new UserException(
+		catch (final IOException e) {
+			this.handleUserException(new UserException(
 					"unable to save windowlayloutconfig", e));
 		}
 	}
 
 	public void saveSettings() {
-		saveWindowLayout();
+		this.saveWindowLayout();
 		PREFERENCES.put(PREFS_CURRENT_DIRECTORY, FILE_CHOOSER
 				.getCurrentDirectory().getAbsolutePath());
 	}
 
-	protected void setButtonTextOrIconToNull(JComponent comp, boolean icon) {
+	protected void setButtonTextOrIconToNull(final JComponent comp,
+			final boolean icon) {
 		if (comp instanceof JMenu) {
-			JMenu menu = (JMenu) comp;
-			for (MenuElement item : menu.getSubElements())
-				setButtonTextOrIconToNull((JComponent) item, icon);
+			final JMenu menu = (JMenu) comp;
+			for (final MenuElement item : menu.getSubElements()) {
+				this.setButtonTextOrIconToNull((JComponent) item, icon);
+			}
 			return;
 		}
 		if ((comp instanceof AbstractButton)) {
-			if (icon)
+			if (icon) {
 				((AbstractButton) comp).setIcon(null);
-			else
+			}
+			else {
 				((AbstractButton) comp).setText(null);
+			}
 			return;
 		}
-		for (int i = 0; i < comp.getComponentCount(); i++)
-			setButtonTextOrIconToNull((JComponent) comp.getComponent(i), icon);
+		for (int i = 0; i < comp.getComponentCount(); i++) {
+			this.setButtonTextOrIconToNull((JComponent) comp.getComponent(i),
+					icon);
+		}
 	}
 
 	protected JToolBar createToolBar() {
-		JToolBar toolBar = new JToolBar();
+		final JToolBar toolBar = new JToolBar();
 
 		toolBar.add(FILE_OPEN_ACTION);
 		toolBar.add(FILE_SAVE_ACTION);
 
-		buttonGroupToolBar = new ButtonGroup();
-		buttonGroupToolBar.add(new JToggleButton(ES_SELECT_ACTION));
-		buttonGroupToolBar.add(new JToggleButton(ES_PAN_ACTION));
-		buttonGroupToolBar.add(new JToggleButton(ES_CREATE_VERTEX_ACTION));
-		buttonGroupToolBar.add(new JToggleButton(ES_CREATE_EDGE_ACTION));
-		buttonGroupToolBar.add(new JToggleButton(ES_MARQUE_ZOOM_ACTION));
-		buttonGroupToolBar.add(new JToggleButton(ES_INTERACTIVE_ZOOM_ACTION));
-		setEditorState(EditorState.SELECT);
+		this.buttonGroupToolBar = new ButtonGroup();
+		this.buttonGroupToolBar.add(new JToggleButton(ES_SELECT_ACTION));
+		this.buttonGroupToolBar.add(new JToggleButton(ES_PAN_ACTION));
+		this.buttonGroupToolBar.add(new JToggleButton(ES_CREATE_VERTEX_ACTION));
+		this.buttonGroupToolBar.add(new JToggleButton(ES_CREATE_EDGE_ACTION));
+		this.buttonGroupToolBar.add(new JToggleButton(ES_MARQUE_ZOOM_ACTION));
+		this.buttonGroupToolBar.add(new JToggleButton(
+				ES_INTERACTIVE_ZOOM_ACTION));
+		this.setEditorState(EditorState.SELECT);
 		toolBar.addSeparator();
 
-		Enumeration buttons = buttonGroupToolBar.getElements();
+		final Enumeration buttons = this.buttonGroupToolBar.getElements();
 		while (buttons.hasMoreElements()) {
-			JToggleButton button = (JToggleButton) buttons.nextElement();
+			final JToggleButton button = (JToggleButton) buttons.nextElement();
 			toolBar.add(button);
 		}
 		toolBar.addSeparator();
@@ -528,13 +581,13 @@ public class MainPad extends JFrame {
 		toolBar.add(new JButton(REDO_ACTION));
 		REDO_ACTION.setEnabled(false);
 
-		setButtonTextOrIconToNull(toolBar, false);
+		this.setButtonTextOrIconToNull(toolBar, false);
 		return toolBar;
 	}
 
 	protected JMenuBar createMenuBar() {
-		JMenuBar menuBar = new JMenuBar();
-		JMenu file = new JMenu("File");
+		final JMenuBar menuBar = new JMenuBar();
+		final JMenu file = new JMenu("File");
 		/*
 		 * JMenu fileNew = new JMenu( "New" ); for ( FileNewAction action :
 		 * FILE_NEW_ACTIONS ) fileNew.add( action );
@@ -559,7 +612,7 @@ public class MainPad extends JFrame {
 
 		menuBar.add(file);
 
-		JMenu edit = new JMenu("Edit");
+		final JMenu edit = new JMenu("Edit");
 
 		edit.add(UNDO_ACTION);
 		edit.add(REDO_ACTION);
@@ -569,7 +622,7 @@ public class MainPad extends JFrame {
 		edit.add(EDIT_PASTE_ACTION);
 		edit.add(EDIT_DELETE_ACTION);
 		edit.addSeparator();
-		JMenu select = new JMenu("Select All");
+		final JMenu select = new JMenu("Select All");
 		select.add(EDIT_SELECT_ALL_NODES_ACTION);
 		select.add(EDIT_SELECT_ALL_EDGES_ACTION);
 		select.add(EDIT_SELECT_ALL_ACTION);
@@ -577,7 +630,7 @@ public class MainPad extends JFrame {
 
 		menuBar.add(edit);
 
-		JMenu tools = new JMenu("Tools");
+		final JMenu tools = new JMenu("Tools");
 		tools.add(ES_SELECT_ACTION);
 		tools.add(ES_PAN_ACTION);
 		tools.add(ES_CREATE_VERTEX_ACTION);
@@ -588,22 +641,23 @@ public class MainPad extends JFrame {
 		tools.add(LAYOUT_DIALOG_ACTION);
 		menuBar.add(tools);
 
-		JMenu view = new JMenu("View");
-		JMenu zoom = new JMenu("Zoom");
+		final JMenu view = new JMenu("View");
+		final JMenu zoom = new JMenu("Zoom");
 		zoom.add(ZOOM_FIT_IN_CANVAS_ACTION);
 		zoom.add(ZOOM_11_ACTION);
 		zoom.add(ZOOM_IN_ACTION);
 		zoom.add(ZOOM_OUT_ACTION);
 		view.add(zoom);
 
-		JMenu views = new JMenu("Open View");
-		for (ShowViewAction action : SHOW_VIEW_ACTIONS)
+		final JMenu views = new JMenu("Open View");
+		for (final ShowViewAction action : SHOW_VIEW_ACTIONS) {
 			views.add(action);
+		}
 		view.add(views);
 
 		menuBar.add(view);
 
-		JMenu info = new JMenu("Info");
+		final JMenu info = new JMenu("Info");
 		info.add(SHOW_ABOUT_ACTION);
 		// info.add( SHOW_WINDOW_LAYOUT_ACTION );
 
@@ -614,20 +668,21 @@ public class MainPad extends JFrame {
 	}
 
 	public EditorState getEditorState() {
-		return editorState;
+		return this.editorState;
 	}
 
-	public void setEditorState(EditorState editorState) {
-		Enumeration buttons = buttonGroupToolBar.getElements();
+	public void setEditorState(final EditorState editorState) {
+		final Enumeration buttons = this.buttonGroupToolBar.getElements();
 		while (buttons.hasMoreElements()) {
-			JToggleButton button = (JToggleButton) buttons.nextElement();
-			if (((ChangeEditorStateAction) button.getAction()).getEditorState() == editorState)
+			final JToggleButton button = (JToggleButton) buttons.nextElement();
+			if (((ChangeEditorStateAction) button.getAction()).getEditorState() == editorState) {
 				button.setSelected(true);
+			}
 		}
 
-		EditorState from = this.editorState;
+		final EditorState from = this.editorState;
 		this.editorState = editorState;
-		fireEditorStateChanged(from, editorState);
+		this.fireEditorStateChanged(from, editorState);
 	}
 
 	public ArrayList<AlgorithmInfo> getAlgorithms() {
@@ -635,7 +690,7 @@ public class MainPad extends JFrame {
 	}
 
 	public static AlgorithmsTree getAlgorithmTree(
-			ArrayList<AlgorithmInfo> algorithms) {
+			final ArrayList<AlgorithmInfo> algorithms) {
 		return new AlgorithmsTree(algorithms);
 	}
 
@@ -643,23 +698,23 @@ public class MainPad extends JFrame {
 		return PluginsTree.buildTree(PLUGIN_MANAGER.getPlugins());
 	}
 
-	protected Algorithm getAlgorithmByName(String classname) {
+	protected Algorithm getAlgorithmByName(final String classname) {
 		Algorithm algorithm = null;
 		try {
-			algorithm = (Algorithm) getJarLoader().loadClass(classname)
+			algorithm = (Algorithm) this.getJarLoader().loadClass(classname)
 					.newInstance();
 		}
-		catch (InstantiationException e) {
-			handleUserException(new UserException("algorithm: " + classname
-					+ " could not be initiated", e));
+		catch (final InstantiationException e) {
+			this.handleUserException(new UserException("algorithm: "
+					+ classname + " could not be initiated", e));
 		}
-		catch (IllegalAccessException e) {
-			handleUserException(new UserException("algorithm: " + classname
-					+ " could not be accessed", e));
+		catch (final IllegalAccessException e) {
+			this.handleUserException(new UserException("algorithm: "
+					+ classname + " could not be accessed", e));
 		}
-		catch (ClassNotFoundException e) {
-			handleUserException(new UserException("algorithm: " + classname
-					+ " could not be found", e));
+		catch (final ClassNotFoundException e) {
+			this.handleUserException(new UserException("algorithm: "
+					+ classname + " could not be found", e));
 		}
 		return algorithm;
 	}
@@ -672,19 +727,20 @@ public class MainPad extends JFrame {
 		return DESKTOP;
 	}
 
-	public static Component getUserExceptionComponent(UserException e) {
+	public static Component getUserExceptionComponent(final UserException e) {
 		if (e.getCause() instanceof InvalidPropertyValuesException) {
-			InvalidPropertyValuesException i = (InvalidPropertyValuesException) e
+			final InvalidPropertyValuesException i = (InvalidPropertyValuesException) e
 					.getCause();
-			JPanel panel = new JPanel();
+			final JPanel panel = new JPanel();
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-			for (PropertyError pe : i.getErrors()) {
-				JPanel errorPanel = new JPanel(new BorderLayout());
+			for (final PropertyError pe : i.getErrors()) {
+				final JPanel errorPanel = new JPanel(new BorderLayout());
 				errorPanel
 						.add(new JLabel(pe.getProperty()), BorderLayout.NORTH);
 
-				JEditorPane messagePane = new HTMLEditorPane(pe.getMessage());
+				final JEditorPane messagePane = new HTMLEditorPane(
+						pe.getMessage());
 				errorPanel.add(new JScrollPane(messagePane),
 						BorderLayout.CENTER);
 
@@ -694,15 +750,16 @@ public class MainPad extends JFrame {
 		}
 		String text = "no description";
 		if (e.getCause() != null) {
-			StringWriter stackTrace = new StringWriter();
+			final StringWriter stackTrace = new StringWriter();
 			e.getCause().printStackTrace(new PrintWriter(stackTrace));
 			text = stackTrace.toString();
 		}
 		else {
-			if (e.getDescription() != null)
+			if (e.getDescription() != null) {
 				text = e.getDescription();
+			}
 		}
-		JTextArea textArea = new JTextArea(text);
+		final JTextArea textArea = new JTextArea(text);
 		textArea.setRows(4);
 		textArea.setEditable(false);
 		textArea.setBackground(new JLabel().getBackground());
@@ -712,6 +769,7 @@ public class MainPad extends JFrame {
 	}
 
 	public void handleUserException(final UserException e) {
+		logger.error("handling user exception: {}", e);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				JOptionPane.showMessageDialog(MainPad.getInstance(),
@@ -721,25 +779,26 @@ public class MainPad extends JFrame {
 		});
 	}
 
-	public static ImageIcon createImageIcon(String image) {
-		URL url = Object.class
+	public static ImageIcon createImageIcon(final String image) {
+		final URL url = Object.class
 				.getResource("/de/hu/gralog/resources/images/newimages/"
 						+ image);
 		return new ImageIcon(url);
 	}
 
 	private class MainPadWindowListener extends WindowAdapter {
-		public void windowClosing(WindowEvent arg0) {
+		@Override
+		public void windowClosing(final WindowEvent arg0) {
 			boolean abort = false;
 			try {
 				DESKTOP.prepareSerializing();
 			}
-			catch (OperationAbortedException e) {
+			catch (final OperationAbortedException e) {
 				abort = true;
 			}
 			if (!abort) {
-				saveSettings();
-				dispose();
+				MainPad.this.saveSettings();
+				MainPad.this.dispose();
 			}
 		}
 
@@ -770,25 +829,26 @@ public class MainPad extends JFrame {
 				"stock_zoom-page-width_cursor.png", new Point(0, 0),
 				"Interactive Zoom");
 
-		private String displayName;
-		private String cursorName;
-		private Point hotSpot;
+		private final String displayName;
+		private final String cursorName;
+		private final Point hotSpot;
 		private Point secondHotSpot;
 		private String secondCursorName;
 		private Cursor cursor;
 		private Cursor secondCursor;
-		private ImageIcon icon;
+		private final ImageIcon icon;
 
-		public EditorState(ImageIcon icon, String cursorName, Point hotSpot,
-				String displayName) {
+		public EditorState(final ImageIcon icon, final String cursorName,
+				final Point hotSpot, final String displayName) {
 			this.displayName = displayName;
 			this.icon = icon;
 			this.cursorName = cursorName;
 			this.hotSpot = hotSpot;
 		}
 
-		public EditorState(ImageIcon icon, String cursorName, Point hotSpot,
-				String secondCursorName, Point secondHotSpot, String displayName) {
+		public EditorState(final ImageIcon icon, final String cursorName,
+				final Point hotSpot, final String secondCursorName,
+				final Point secondHotSpot, final String displayName) {
 			this.displayName = displayName;
 			this.icon = icon;
 			this.cursorName = cursorName;
@@ -798,25 +858,27 @@ public class MainPad extends JFrame {
 		}
 
 		public Cursor getCursor() {
-			if (cursor == null)
-				cursor = MainPad.getInstance()
-						.createCursor(cursorName, hotSpot);
-			return cursor;
+			if (this.cursor == null) {
+				this.cursor = MainPad.getInstance().createCursor(
+						this.cursorName, this.hotSpot);
+			}
+			return this.cursor;
 		}
 
 		public Cursor getSecondCursor() {
-			if (secondCursor == null && secondCursorName != null)
-				secondCursor = MainPad.getInstance().createCursor(
-						secondCursorName, secondHotSpot);
-			return secondCursor;
+			if (this.secondCursor == null && this.secondCursorName != null) {
+				this.secondCursor = MainPad.getInstance().createCursor(
+						this.secondCursorName, this.secondHotSpot);
+			}
+			return this.secondCursor;
 		}
 
 		public ImageIcon getIcon() {
-			return icon;
+			return this.icon;
 		}
 
 		public String getDisplayName() {
-			return displayName;
+			return this.displayName;
 		}
 	}
 
@@ -824,81 +886,94 @@ public class MainPad extends JFrame {
 		public void editorStateChanged(EditorState from, EditorState to);
 	}
 
-	protected void fireEditorStateChanged(EditorState from, EditorState to) {
-		for (EditorStateListener l : editorStateListeners.getListeners())
+	protected void fireEditorStateChanged(final EditorState from,
+			final EditorState to) {
+		for (final EditorStateListener l : this.editorStateListeners
+				.getListeners()) {
 			l.editorStateChanged(from, to);
+		}
 	}
 
-	public void addEditorStateListener(EditorStateListener l) {
-		editorStateListeners.addListener(l);
+	public void addEditorStateListener(final EditorStateListener l) {
+		this.editorStateListeners.addListener(l);
 	}
 
-	public void removeEditorStateListener(EditorStateListener l) {
-		editorStateListeners.removeListener(l);
+	public void removeEditorStateListener(final EditorStateListener l) {
+		this.editorStateListeners.removeListener(l);
 	}
 
-	public void showView(View view) {
+	public void showView(final View view) {
 		view.restore();
 	}
 
 	private static class MainPadViewListener extends DockingWindowAdapter {
 
-		private boolean containsView(DockingWindow window, View view) {
-			if (window == view)
+		private boolean containsView(final DockingWindow window, final View view) {
+			if (window == view) {
 				return true;
+			}
 			for (int i = 0; i < window.getChildWindowCount(); i++) {
-				if (containsView(window.getChildWindow(i), view))
+				if (this.containsView(window.getChildWindow(i), view)) {
 					return true;
+				}
 			}
 			return false;
 		}
 
 		@Override
-		public void windowClosed(DockingWindow window) {
+		public void windowClosed(final DockingWindow window) {
 
-			for (ShowViewAction action : SHOW_VIEW_ACTIONS) {
-				if (containsView(window, action.getView()))
+			for (final ShowViewAction action : SHOW_VIEW_ACTIONS) {
+				if (this.containsView(window, action.getView())) {
 					action.setEnabled(true);
+				}
 			}
 		}
 
 		@Override
-		public void windowRestored(DockingWindow window) {
-			for (ShowViewAction action : SHOW_VIEW_ACTIONS) {
-				if (containsView(window, action.getView()))
+		public void windowRestored(final DockingWindow window) {
+			for (final ShowViewAction action : SHOW_VIEW_ACTIONS) {
+				if (this.containsView(window, action.getView())) {
 					action.setEnabled(false);
+				}
 			}
 		}
 
 		@Override
-		public void windowAdded(DockingWindow arg0, DockingWindow arg1) {
-			windowRestored(arg1);
+		public void windowAdded(final DockingWindow arg0,
+				final DockingWindow arg1) {
+			this.windowRestored(arg1);
 		}
 	}
 
 	private static class MainPadViewMap extends ViewMap {
 
-		public MainPadViewMap(View[] views) {
+		public MainPadViewMap(final View[] views) {
 			super(views);
 		}
 
-		public View readView(ObjectInputStream in) throws IOException {
-			View view = super.readView(in);
-			if (view instanceof EditorDesktopView)
+		@Override
+		public View readView(final ObjectInputStream in) throws IOException {
+			final View view = super.readView(in);
+			if (view instanceof EditorDesktopView) {
 				((EditorDesktopView) view).readView(in);
+			}
 			return view;
 		}
 
-		public void writeView(View view, ObjectOutputStream out)
+		@Override
+		public void writeView(final View view, final ObjectOutputStream out)
 				throws IOException {
 			super.writeView(view, out);
-			if (view instanceof EditorDesktopView)
+			if (view instanceof EditorDesktopView) {
 				((EditorDesktopView) view).writeView(out);
+			}
 		}
 
 	}
 
-	public void documentGraphReplaced(GJGraph oldGraph, GJGraph newGraph) {
+	public void documentGraphReplaced(final GJGraph oldGraph,
+			final GJGraph newGraph) {
 		// do nothing
 	}
 
@@ -906,7 +981,7 @@ public class MainPad extends JFrame {
 		return REVERT_ENABLED;
 	}
 
-	public boolean shouldOverrideFileDialog(File file) {
+	public boolean shouldOverrideFileDialog(final File file) {
 		return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(this,
 				"Do you want to override this file?", "File: " + file.getName()
 						+ " already exists!", JOptionPane.YES_NO_CANCEL_OPTION,
