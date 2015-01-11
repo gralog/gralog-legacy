@@ -137,6 +137,8 @@ import de.hu.gralog.util.WeakListenerList;
 
 public class MainPad extends JFrame {
 
+	private static final long serialVersionUID = 2783313317237162513L;
+
 	final static Logger logger = LoggerFactory.getLogger(MainPad.class);
 
 	public static final Object[] YES_NO_CANCEL_BUTTON_TEXT = { "Yes", "No",
