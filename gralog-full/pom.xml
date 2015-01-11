@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.tu-berlin.las</groupId>
+	<artifactId>gralog-full</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Gralog Full</name>
+	<modules>
+		<module>../NBA_isEmpty</module>
+		<module>../algorithms</module>
+		<module>../app</module>
+		<module>../automaton</module>
+		<module>../core</module>
+		<module>../dagwidth</module>
+		<module>../example</module>
+		<module>../finitegames</module>
+		<module>../generator</module>
+		<module>../gralog-base-pom</module>
+		<module>../gralog-core-dep</module>
+		<module>../logic</module>
+		<module>../parity</module>
+		<module>../two-player-games</module>
+	</modules>
+</project>

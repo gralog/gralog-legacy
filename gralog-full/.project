@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>gralog-full</name>
+	<comment></comment>
+	<projects>
+		<project>algorithms</project>
+		<project>app</project>
+		<project>automaton</project>
+		<project>core</project>
+		<project>dagwidth</project>
+		<project>example</project>
+		<project>finitegames</project>
+		<project>generator</project>
+		<project>gralog-base-pom</project>
+		<project>gralog-core-dep</project>
+		<project>logic</project>
+		<project>NBA_isEmpty</project>
+		<project>parity</project>
+		<project>two-player-games</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.m2e.core.maven2Nature</nature>
+	</natures>
+</projectDescription>
