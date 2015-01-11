@@ -30,7 +30,7 @@ public class PluginManager {
 	}
 
 	public void loadPlugins(final File directory) throws UserException {
-		logger.debug("entering loadPlugin() with file: {} " + directory);
+		logger.debug("entering loadPlugins() with file: {}", directory);
 		if (!directory.exists()) {
 			throw new UserException("unable to load plugins from directory "
 					+ directory, "directory does not exists");
@@ -65,7 +65,7 @@ public class PluginManager {
 				MainPad.getInstance().handleUserException(e);
 			}
 		}
-		logger.debug("exiting loadPlugin()");
+		logger.debug("exiting loadPlugins()");
 	}
 
 	public void loadPlugin(final InputStream in) throws UserException {
