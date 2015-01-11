@@ -19,11 +19,16 @@
 
 package de.hu.gralog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.hu.gralog.gui.MainPad;
 
 public class Gralog {
-	
+	final static Logger logger = LoggerFactory.getLogger(Gralog.class);
+
 	public static void main(String[] args) {
+		logger.info("launching Gralog");
 		MainPad.getInstance();
 	}
 }

@@ -2,3 +2,6 @@
 /dist/
 /doc/
 /target/
+/logfile.log
+/debug.log
+/info.log
