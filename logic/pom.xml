@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>de.tu-berlin.las</groupId>
 		<version>0.0.1-SNAPSHOT</version>
-		<artifactId>gralog-core-dep</artifactId>
+		<artifactId>gralog-plugin-parent</artifactId>
 	</parent>
 
 	<!-- add dependencies -->

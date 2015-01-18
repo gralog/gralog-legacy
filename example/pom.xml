@@ -8,7 +8,7 @@
 		to gralog-core from a base pom -->
 	<parent>
 		<groupId>de.tu-berlin.las</groupId>
-		<artifactId>gralog-core-dep</artifactId>
+		<artifactId>gralog-plugin-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 

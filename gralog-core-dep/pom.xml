@@ -1,24 +1,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-  <artifactId>gralog-core-dep</artifactId>
-  <packaging>pom</packaging>
-  <name>Adds the Dependency to Gralog Core</name>
-  <!-- This POM contains adds a dependency to gralog core to the basic settings. Should be the parent pom for all plugins -->
-  
-  <!-- inherit basic settings, e.g. compiler and encoding from a base pom -->
-  <parent>
-  	<artifactId>gralog-base-pom</artifactId>
-  	<version>0.0.1-SNAPSHOT</version>
-  	<groupId>de.tu-berlin.las</groupId>
-  </parent>
-  
-  <!-- add the dependency to gralog-core -->  
-  <dependencies>
-  	<dependency>
-  		<groupId>de.tu-berlin.las</groupId>
-  		<artifactId>gralog-core</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  </dependencies>
+	<artifactId>gralog-plugin-parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Gralog Plugin Parent</name>
+	<description>Adds the dependency to Gralog Core and copies the finally assembled jar to gralog-full.</description>
+	<!-- This POM contains adds a dependency to gralog core to the basic settings. 
+		Should be the parent pom for all plugins -->
+
+	<!-- inherit basic settings, e.g. compiler and encoding from a base pom -->
+	<parent>
+		<artifactId>gralog-base-pom</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<groupId>de.tu-berlin.las</groupId>
+	</parent>
+
+	<!-- add the dependency to gralog-core -->
+	<dependencies>
+		<dependency>
+			<groupId>de.tu-berlin.las</groupId>
+			<artifactId>gralog-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-artifact</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>${project.packaging}</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>../gralog-full/dist/plugins</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
