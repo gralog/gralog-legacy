@@ -17,7 +17,7 @@
 		<module>../finitegames</module>
 		<module>../generator</module>
 		<module>../gralog-base-pom</module>
-		<module>../gralog-core-dep</module>
+		<module>../gralog-plugin-parent</module>
 		<module>../logic</module>
 		<module>../parity</module>
 		<module>../two-player-games</module>

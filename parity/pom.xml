@@ -10,6 +10,7 @@
 		<groupId>de.tu-berlin.las</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 		<artifactId>gralog-plugin-parent</artifactId>
+		<relativePath>../gralog-plugin-parent/pom.xml</relativePath>
 	</parent>
 
 	<!-- add dependency to gralog algorithms and finite games -->

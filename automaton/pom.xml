@@ -10,6 +10,7 @@
 		<groupId>de.tu-berlin.las</groupId>
 		<artifactId>gralog-plugin-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../gralog-plugin-parent/pom.xml</relativePath>
 	</parent>
 
 </project>

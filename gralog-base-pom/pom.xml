@@ -6,6 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Gralog Base POM</name>
+	<description>POM containting all Gralog-wide project settings</description>
 
 	<!-- This POM contains only basic settings, e.g. character encoding. All 
 		Gralog Maven Projects should have this POM as a parent. -->
@@ -65,5 +66,4 @@
 			<version>1.1.2</version>
 		</dependency>
 	</dependencies>
-	<description>POM containting all Gralog-wide project settings</description>
 </project>

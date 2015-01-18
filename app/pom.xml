@@ -10,6 +10,7 @@
 		<groupId>de.tu-berlin.las</groupId>
 		<artifactId>gralog-base-pom</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../gralog-base-pom/pom.xml</relativePath>
 	</parent>
 
 	<!-- add all dependencies of gralog app -->
