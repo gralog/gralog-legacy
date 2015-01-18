@@ -13,6 +13,7 @@
 		<artifactId>gralog-base-pom</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<groupId>de.tu-berlin.las</groupId>
+		<relativePath>${project.baseDir}/../gralog-base-pom/pom.xml</relativePath>
 	</parent>
 
 	<!-- add the dependency to gralog-core -->
