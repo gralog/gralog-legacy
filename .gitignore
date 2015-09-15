@@ -1,4 +1,35 @@
 .metadata/
 .recommenders/
 .settings/
- 
+
+
+**/bin/
+**/dist/
+algorithms/doc
+app/doc
+automaton/doc
+core/doc/api
+dagwidth/doc
+example/doc
+finitegames/doc
+generator/doc
+logic/doc
+NBA_isEmpty/doc
+parity/doc
+two-player-games/doc
+
+
+**/plugins/
+**/gralog.jar
+**/gralog-algorithms.jar
+**/gralog-core.jar
+
+
+# apple mac
+**/.DS_Store
+
+
+# linux / kde
+**/.directory
+.directory
+

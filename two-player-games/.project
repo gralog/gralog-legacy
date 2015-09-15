@@ -14,4 +14,16 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>gralog-algorithms.jar</name>
+			<type>2</type>
+			<location>/home/viktor/Gralog/algorithms/dist/gralog-algorithms.jar</location>
+		</link>
+		<link>
+			<name>gralog-core.jar</name>
+			<type>2</type>
+			<location>/home/viktor/Gralog/core/dist/gralog-core.jar</location>
+		</link>
+	</linkedResources>
 </projectDescription>

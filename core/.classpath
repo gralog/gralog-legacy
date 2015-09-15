@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/jgraph.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
+	<classpathentry kind="src" output="bin" path="src"/>
+	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+	<classpathentry exported="true" kind="lib" path="/home/viktor/Gralog/core/lib/jgraph.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/viktor/Gralog/core/lib/jgrapht-jdk1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

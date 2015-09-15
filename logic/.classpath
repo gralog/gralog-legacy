@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/java-cup-11a.jar"/>
-	<classpathentry kind="lib" path="lib/java-cup-11a-runtime.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/finitegames"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/parity"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry kind="src" output="bin" path="src"/>
+	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+	<classpathentry exported="true" kind="lib" path="/home/viktor/Gralog/logic/lib/java-cup-11a-runtime.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/viktor/Gralog/logic/lib/java-cup-11a.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/core"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/finitegames"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/parity"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

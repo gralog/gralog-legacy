@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>gralog-core.jar</name>
+			<type>2</type>
+			<location>/home/viktor/Gralog/core/dist/gralog-core.jar</location>
+		</link>
+	</linkedResources>
 </projectDescription>

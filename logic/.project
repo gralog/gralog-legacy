@@ -14,4 +14,21 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>gralog-core.jar</name>
+			<type>2</type>
+			<location>/home/viktor/Gralog/core/dist/gralog-core.jar</location>
+		</link>
+		<link>
+			<name>gralog-finite-games.jar</name>
+			<type>2</type>
+			<location>/home/viktor/Gralog/finitegames/dist/gralog-finite-games.jar</location>
+		</link>
+		<link>
+			<name>gralog-parity.jar</name>
+			<type>2</type>
+			<location>/home/viktor/Gralog/parity/dist/gralog-parity.jar</location>
+		</link>
+	</linkedResources>
 </projectDescription>
