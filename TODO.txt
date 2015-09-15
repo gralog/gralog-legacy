@@ -1,0 +1,5 @@
+1. In all build.xml: add dependencies to compile automatically
+
+2. Fix generating random graph
+
+3. First window like in LibreOffice with Open, Create, ...
