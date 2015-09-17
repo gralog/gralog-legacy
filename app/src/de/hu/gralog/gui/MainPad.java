@@ -471,12 +471,12 @@ public class MainPad extends JFrame {
 	protected JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu file = new JMenu( "File" );
-/*		JMenu fileNew = new JMenu( "New" );
+		
+		JMenu fileNew = new JMenu( "New" );
 		for ( FileNewAction action : FILE_NEW_ACTIONS )
 			fileNew.add( action );
-		
 		file.add( fileNew );
-*/		
+		
 		file.add( FILE_OPEN_ACTION );
 	
 		file.addSeparator();
