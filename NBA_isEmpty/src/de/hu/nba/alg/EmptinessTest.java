@@ -21,7 +21,7 @@ public class EmptinessTest<V extends AutomatonVertex, E extends LabeledStructure
 		return automaton;
 	}
 
-	public void setGraph(Structure<V,E,GB,G> automaton) {
+	public void setAutomaton(Structure<V,E,GB,G> automaton) {
 		this.automaton = automaton;
 	}
 
