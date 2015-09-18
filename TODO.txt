@@ -3,3 +3,5 @@
 2. Fix generating random graph
 
 3. First window like in LibreOffice with Open, Create, ...
+
+4. Fix function converting internal graph format to TGF: consider self loops (in Gralog/core/src/de/hu/gralog/export).
