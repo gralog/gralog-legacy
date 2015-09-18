@@ -121,16 +121,16 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 			if ( ! file.exists( ) )
 				file.createNewFile();
                         
-			content.write( DocumentContentFactory.getInstance().getFileFormat( file ), new FileOutputStream( file ) );
-                        //TrivialGraphFormat tgf = new TrivialGraphFormat();
-                        //tgf.Export(new FileOutputStream( file ), (ListenableUndirectedGraph<LabeledStructureVertex, DefaultEdge>)content.getGraph());
-                        
+			//content.write( DocumentContentFactory.getInstance().getFileFormat( file ), new FileOutputStream( file ) );
+                        TrivialGraphFormat tgf = new TrivialGraphFormat();
+                        tgf.Export(new FileOutputStream( file ), content.getGraph().getGraphT().getGraph());
+                                                
 			undoManager.discardAllEdits();
 			fireDocumentModifiedStatusChanged();
 		} catch (FileNotFoundException e) {
 			throw new UserException( "unable to save document to file: " + file, e );
-		} catch (InputOutputException e) {
-			throw new UserException( "unable to save document to file: " + file, e );
+//		} catch (InputOutputException e) {
+//			throw new UserException( "unable to save document to file: " + file, e );
 		} catch (IOException e) {
 			throw new UserException( "unable to save document to file: " + file, e );
 		}

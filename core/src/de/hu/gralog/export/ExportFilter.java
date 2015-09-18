@@ -5,8 +5,7 @@
  */
 package de.hu.gralog.export;
 
-import org.jgraph.JGraph;
-
+import org.jgrapht.Graph;
 import de.hu.gralog.app.UserException;
 import java.io.OutputStream;
 
@@ -14,8 +13,7 @@ import java.io.OutputStream;
  *
  * @author viktor
  */
-//public abstract class ExportFilter<V, E, GB, G extends ListenableGraph<V, E>> {   
-public abstract class ExportFilter<G extends JGraph> {   
+public abstract class ExportFilter<G extends Graph> {   
     public abstract void Export(OutputStream stream, G graph) throws UserException;
 }
 

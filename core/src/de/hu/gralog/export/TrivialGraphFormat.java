@@ -5,14 +5,14 @@
  */
 package de.hu.gralog.export;
 
+import org.jgrapht.Graph;
+
 import de.hu.gralog.app.UserException;
 import de.hu.gralog.structure.Structure;
 import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Vector;
-
-import org.jgraph.JGraph;
+import java.util.Map;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -24,30 +24,45 @@ import org.jgrapht.graph.SimpleGraph;
 
 
 public class TrivialGraphFormat extends 
-        //ExportFilter<SimpleGraph<LabeledStructureVertex, DefaultEdge>> {
-    ExportFilter<JGraph> {
+    ExportFilter<Graph> {
     
-//    @Override public void Export(OutputStream stream, UndirectedGraph<LabeledStructureVertex, DefaultEdge> graph)
-    @Override public void Export(OutputStream stream, JGraph graph)
+    @Override public void Export(OutputStream stream, Graph graph)
             throws UserException
     {
         try
         {
-        /*        
-            graph.
             int i = 1;
-            for(LabeledStructureVertex v : graph..vertexSet())
+            for(Object v : graph.vertexSet())
             {
-                stream.write(("" + i + " # " + v.getLabel() + "\n").getBytes());
+                stream.write(("" + i + "\n").getBytes());
                 i++;
             }
             stream.write(("#\n").getBytes());
             
-            for(DefaultEdge e : graph.edgeSet())
+            i = 1;
+            for(Object v : graph.vertexSet())
             {
-                e.
+                for(Object e : graph.edgesOf(v))
+                {
+                    Object neighbor = graph.getEdgeTarget(e);
+                    if(neighbor == v)
+                        continue;
+                    
+                    // slow and stupid - I want to store the indexes in a map...
+                    int j = 1;
+                    for(Object w : graph.vertexSet())
+                    {
+                        if(w == neighbor)
+                        {
+                            stream.write(("" + i + " " + j + "\n").getBytes());
+                            break;
+                        }
+                        j++;
+                    }
+                }
+                i++;
             }
-        */
+        
         }
         catch(Throwable e)
         {
