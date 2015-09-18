@@ -24,6 +24,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+// remove these if TGF format is abstracted away into a factory or something
+import de.hu.gralog.export.TrivialGraphFormat;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.ListenableUndirectedGraph;
+
 import net.infonode.docking.OperationAbortedException;
 import de.hu.gralog.app.InputOutputException;
 import de.hu.gralog.app.UserException;
@@ -31,7 +36,9 @@ import de.hu.gralog.gui.MainPad;
 import de.hu.gralog.gui.components.undo.GUndoManager;
 import de.hu.gralog.gui.components.undo.UndoManagerListener;
 import de.hu.gralog.jgraph.GJGraph;
+import de.hu.gralog.structure.types.elements.LabeledStructureVertex;
 import de.hu.gralog.util.WeakListenerList;
+
 
 public class Document implements UndoManagerListener, DocumentContentListener {
 	
@@ -113,7 +120,11 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 		try {
 			if ( ! file.exists( ) )
 				file.createNewFile();
+                        
 			content.write( DocumentContentFactory.getInstance().getFileFormat( file ), new FileOutputStream( file ) );
+                        //TrivialGraphFormat tgf = new TrivialGraphFormat();
+                        //tgf.Export(new FileOutputStream( file ), (ListenableUndirectedGraph<LabeledStructureVertex, DefaultEdge>)content.getGraph());
+                        
 			undoManager.discardAllEdits();
 			fireDocumentModifiedStatusChanged();
 		} catch (FileNotFoundException e) {
