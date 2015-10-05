@@ -5,3 +5,15 @@
 3. First window like in LibreOffice with Open, Create, ...
 
 4. Fix function converting internal graph format to TGF: consider self loops (in Gralog/core/src/de/hu/gralog/export).
+
+5. Choose fields to save as a graph
+
+6. Choose graph formats to export:
+   (1) GxL
+   (2) GraphML
+   (3) TGF
+   (4) LGF
+   (5) XGmmL, GmL, RGmL
+   (6) TEI
+   (7) DOT
+   (8) yEd?
