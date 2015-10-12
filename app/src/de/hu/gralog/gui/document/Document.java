@@ -25,6 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 // remove these if TGF format is abstracted away into a factory or something
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import de.hu.gralog.export.TrivialGraphFormat;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableUndirectedGraph;
@@ -102,7 +104,7 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 		return title;
 	}
 	
-	public void save() throws UserException, OperationAbortedException {
+	public void save() throws UserException, OperationAbortedException, ParserConfigurationException, TransformerException {
 		if (file == null) {
 			file = MainPad.getInstance().showFileDialog( content.getClass(), "Save " + getName() );
 			
@@ -122,15 +124,17 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 				file.createNewFile();
                         
 			//content.write( DocumentContentFactory.getInstance().getFileFormat( file ), new FileOutputStream( file ) );
-                        TrivialGraphFormat tgf = new TrivialGraphFormat();
-                        tgf.Export(new FileOutputStream( file ), content.getGraph().getGraphT().getGraph());
-                                                
+                        //TrivialGraphFormat tgf = new TrivialGraphFormat();
+                        //tgf.Export(new FileOutputStream( file ), content.getGraph().getGraphT().getGraph());
+                  
+                        content.getGraph().getGraphT().WriteToFile(file);
+                                
 			undoManager.discardAllEdits();
 			fireDocumentModifiedStatusChanged();
 		} catch (FileNotFoundException e) {
 			throw new UserException( "unable to save document to file: " + file, e );
-//		} catch (InputOutputException e) {
-//			throw new UserException( "unable to save document to file: " + file, e );
+		//} catch (InputOutputException e) {
+		//	throw new UserException( "unable to save document to file: " + file, e );
 		} catch (IOException e) {
 			throw new UserException( "unable to save document to file: " + file, e );
 		}

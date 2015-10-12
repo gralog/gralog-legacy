@@ -18,6 +18,31 @@
  */
 package de.hu.gralog.structure;
 
+import java.io.File;
+import java.util.Vector;
+import javax.xml.transform.OutputKeys;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import javax.xml.parsers.FactoryConfigurationError; 
+import org.xml.sax.SAXException; 
+import org.xml.sax.SAXParseException; 
+
+import org.w3c.dom.Document;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList; 
+
+
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.VertexFactory;
@@ -365,4 +390,54 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
 		}
 
 	}
+        
+        public void WriteToFile(String fileName) throws ParserConfigurationException, TransformerException
+        {
+            WriteToFile(new File(fileName));
+        }
+        
+        public void WriteToFile(File file) throws ParserConfigurationException, TransformerException
+        {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+            
+            Element graphml = doc.createElement("graphml");
+            WriteToXml(doc, graphml);
+            doc.appendChild(graphml);
+            
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");            
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(file);
+            transformer.transform(source, result);
+        }
+        
+        public void WriteToXml(Document doc, Element node)
+        {
+            Element graphnode = doc.createElement("graph");
+            node.appendChild(graphnode);
+            Vector<V> vertices = new Vector<V>();
+            int n = 1;
+            for (V v : typeInfoSupport.getGraph().vertexSet())
+            {
+                vertices.add(v);
+                n++;
+
+                Element vertexnode = doc.createElement("node");
+                vertexnode.setAttribute("id", ""+n);
+                graphnode.appendChild(vertexnode);
+            }
+            for (E e : typeInfoSupport.getGraph().edgeSet())
+            {
+                //graph.getEdgeTarget(e);
+                Element edgenode = doc.createElement("edge");
+                //edgenode.setAttribute("source", ""+n);
+                //edgenode.setAttribute("target", ""+n);
+		graphnode.appendChild(edgenode);
+            }
+        }
+        
 }
