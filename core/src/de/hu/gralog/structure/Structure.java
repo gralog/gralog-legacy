@@ -417,26 +417,47 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
         
         public void WriteToXml(Document doc, Element node)
         {
+            G graph = typeInfoSupport.getGraph();
             Element graphnode = doc.createElement("graph");
             node.appendChild(graphnode);
             Vector<V> vertices = new Vector<V>();
-            int n = 1;
-            for (V v : typeInfoSupport.getGraph().vertexSet())
+            int i = 1;
+            for (V v : graph.vertexSet())
             {
                 vertices.add(v);
-                n++;
+                i++;
 
                 Element vertexnode = doc.createElement("node");
-                vertexnode.setAttribute("id", ""+n);
+                vertexnode.setAttribute("id", "n"+i);
                 graphnode.appendChild(vertexnode);
             }
-            for (E e : typeInfoSupport.getGraph().edgeSet())
+            
+            i = 1;
+            for(V v : graph.vertexSet())
             {
-                //graph.getEdgeTarget(e);
-                Element edgenode = doc.createElement("edge");
-                //edgenode.setAttribute("source", ""+n);
-                //edgenode.setAttribute("target", ""+n);
-		graphnode.appendChild(edgenode);
+                for(E e : graph.edgesOf(v))
+                {
+                    Object src = graph.getEdgeSource(e);
+                    if(src != v)
+                        continue;
+                    Object dst = graph.getEdgeTarget(e);
+                    
+                    // slow and stupid - I want to store the indexes in a map...
+                    int j = 1;
+                    for(V w : graph.vertexSet())
+                    {
+                        if(w == dst)
+                        {
+                            Element edgenode = doc.createElement("edge");
+                            edgenode.setAttribute("source", "n"+i);
+                            edgenode.setAttribute("target", "n"+j);
+                            graphnode.appendChild(edgenode);
+                            break;
+                        }
+                        j++;
+                    }
+                }
+                i++;
             }
         }
         
