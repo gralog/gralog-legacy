@@ -30,17 +30,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import javax.xml.parsers.FactoryConfigurationError; 
-import org.xml.sax.SAXException; 
-import org.xml.sax.SAXParseException; 
-
 import org.w3c.dom.Document;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList; 
 
 
 import org.jgrapht.EdgeFactory;
@@ -417,9 +408,19 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
         
         public void WriteToXml(Document doc, Element node)
         {
+            //Namespace y = Namespace.getNamespace("y", "http://www.yworks.com/xml/graphml");
+            String y = "http://www.yworks.com/xml/graphml";
+            
+            Element key = doc.createElement("key");
+            key.setAttribute("for", "node");
+            key.setAttribute("id", "d6");
+            key.setAttribute("yfiles.type", "nodegraphics");
+            node.appendChild(key);
+            
             G graph = typeInfoSupport.getGraph();
             Element graphnode = doc.createElement("graph");
             node.appendChild(graphnode);
+            
             Vector<V> vertices = new Vector<V>();
             int i = 1;
             for (V v : graph.vertexSet())
@@ -430,6 +431,20 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
                 Element vertexnode = doc.createElement("node");
                 vertexnode.setAttribute("id", "n"+i);
                 graphnode.appendChild(vertexnode);
+
+                Element data = doc.createElement("data");
+                data.setAttribute("key", "d6");
+                vertexnode.appendChild(data);
+                
+                Element ShapeNode = doc.createElementNS(y,"ShapeNode");
+                data.appendChild(ShapeNode);
+                
+                Element Geometry = doc.createElementNS(y,"Geometry");
+                Geometry.setAttribute("height", "1.0");
+                Geometry.setAttribute("width", "1.0");
+                Geometry.setAttribute("x", "0");
+                Geometry.setAttribute("y", "0");
+                ShapeNode.appendChild(Geometry);
             }
             
             i = 1;
