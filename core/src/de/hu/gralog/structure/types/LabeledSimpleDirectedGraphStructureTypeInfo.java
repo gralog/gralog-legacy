@@ -92,9 +92,6 @@ public class LabeledSimpleDirectedGraphStructureTypeInfo<GB>
 		};
 	}
 
-	public StructureBeanFactory<GB> getStructureBeanFactory() {
-		return null;
-	}
 
 	public VertexFactory<LabeledStructureVertex> getVertexFactory() {
 		return new VertexFactory<LabeledStructureVertex>() {
@@ -103,13 +100,4 @@ public class LabeledSimpleDirectedGraphStructureTypeInfo<GB>
 			}
 		};
 	}
-
-	public DefaultVertexRenderer getVertexRenderer() {
-		return null;
-	}
-
-	public DefaultEdgeRenderer getEdgeRenderer() {
-		return null;
-	}
-
 }

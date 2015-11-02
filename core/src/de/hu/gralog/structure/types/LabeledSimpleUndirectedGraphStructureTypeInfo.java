@@ -88,10 +88,6 @@ public class LabeledSimpleUndirectedGraphStructureTypeInfo<GB>
 		};
 	}
 
-	public StructureBeanFactory<GB> getStructureBeanFactory() {
-		return null;
-	}
-
 	public VertexFactory<LabeledStructureVertex> getVertexFactory() {
 		return new VertexFactory<LabeledStructureVertex>() {
 			public LabeledStructureVertex createVertex() {
@@ -99,13 +95,4 @@ public class LabeledSimpleUndirectedGraphStructureTypeInfo<GB>
 			}
 		};
 	}
-
-	public DefaultVertexRenderer getVertexRenderer() {
-		return null;
-	}
-
-	public DefaultEdgeRenderer getEdgeRenderer() {
-		return null;
-	}
-
 }

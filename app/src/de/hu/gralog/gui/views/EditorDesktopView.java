@@ -145,8 +145,6 @@ public class EditorDesktopView extends View implements DocumentListener {
 			getCurrentDocument().save();
 		} catch(UserException e) {
 			MainPad.getInstance().handleUserException( e );
-		} catch(OperationAbortedException e) {
-			// do nothing
 		}
 	}
 	
@@ -165,8 +163,6 @@ public class EditorDesktopView extends View implements DocumentListener {
 			}
 		} catch (UserException e) {
 			MainPad.getInstance().handleUserException( e );
-		} catch (OperationAbortedException e) {
-			// to nothing
 		}
 	}
 

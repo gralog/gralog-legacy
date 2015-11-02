@@ -100,7 +100,10 @@ public abstract class StructureTypeInfo<V, E, GB, G extends ListenableGraph<V, E
 	 *         an instance of the underlying Structure-Bean. If your structure does not
 	 *         have a Structure-Bean, this function has to return null.
 	 */
-	public abstract StructureBeanFactory<GB> getStructureBeanFactory();
+	public StructureBeanFactory<GB> getStructureBeanFactory()
+        {
+            return null;
+        }
 
 	/**
 	 * 
@@ -123,7 +126,10 @@ public abstract class StructureTypeInfo<V, E, GB, G extends ListenableGraph<V, E
 	 *         instance of {@link DefaultVertexRenderer} is used to render the
 	 *         vertices.
 	 */
-	public abstract DefaultVertexRenderer getVertexRenderer();
+	public DefaultVertexRenderer getVertexRenderer()
+        {
+            return null;
+        }
 
 	/**
 	 * 
@@ -134,7 +140,10 @@ public abstract class StructureTypeInfo<V, E, GB, G extends ListenableGraph<V, E
 	 *         this structure. If this function returns null, an instance of
 	 *         {@link DefaultEdgeRenderer} is used to render the edges.
 	 */
-	public abstract DefaultEdgeRenderer getEdgeRenderer();
+	public DefaultEdgeRenderer getEdgeRenderer()
+        {
+            return null;
+        }
 
 	/**
 	 * This function is used by GrALoG to infer whether the given
