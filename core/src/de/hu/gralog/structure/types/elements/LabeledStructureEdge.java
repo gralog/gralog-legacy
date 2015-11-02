@@ -18,6 +18,9 @@
  */
 package de.hu.gralog.structure.types.elements;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  * This class defines a LabeledGraphEdge, which is a GrALoG-Edge, that has a
  * label. It can be seen as an example of how to implement edgeTypes in
@@ -79,4 +82,12 @@ public class LabeledStructureEdge extends DefaultListenableEdge {
 	public String toString() {
 		return label;
 	}
+        
+        
+        public Element WriteToXml(Document doc, Element parent, String srcid, String dstid) {
+            Element e = super.WriteToXml(doc,parent, srcid, dstid);
+            e.setAttribute("label", label);
+            return e;
+        }
+
 }

@@ -17,6 +17,7 @@
  *
  */
 package de.hu.gralog.structure;
+import de.hu.gralog.structure.types.elements.*;
 
 import java.io.File;
 import java.util.Vector;
@@ -34,6 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
 
+import org.jgrapht.graph.*;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.VertexFactory;
@@ -406,7 +408,7 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
             transformer.transform(source, result);
         }
         
-        public void WriteToXml(Document doc, Element node)
+        public Element WriteToXml(Document doc, Element node)
         {
             //Namespace y = Namespace.getNamespace("y", "http://www.yworks.com/xml/graphml");
             String y = "http://www.yworks.com/xml/graphml";
@@ -421,6 +423,17 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
             Element graphnode = doc.createElement("graph");
             node.appendChild(graphnode);
             
+            
+            /*
+            if(this instanceof ListenableDirectedGraph) {
+                    graphnode.setAttribute("edgedefault", "directed");
+            }
+            if(this instanceof ListenableUndirectedGraph) {
+                    graphnode.setAttribute("edgedefault","undirected");
+            }
+            */
+            
+            
             Vector<V> vertices = new Vector<V>();
             int i = 1;
             for (V v : graph.vertexSet())
@@ -428,23 +441,19 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
                 vertices.add(v);
                 i++;
 
-                Element vertexnode = doc.createElement("node");
-                vertexnode.setAttribute("id", "n"+i);
-                graphnode.appendChild(vertexnode);
-
-                Element data = doc.createElement("data");
-                data.setAttribute("key", "d6");
-                vertexnode.appendChild(data);
-                
-                Element ShapeNode = doc.createElementNS(y,"ShapeNode");
-                data.appendChild(ShapeNode);
-                
-                Element Geometry = doc.createElementNS(y,"Geometry");
-                Geometry.setAttribute("height", "1.0");
-                Geometry.setAttribute("width", "1.0");
-                Geometry.setAttribute("x", "0");
-                Geometry.setAttribute("y", "0");
-                ShapeNode.appendChild(Geometry);
+                // v has its own WriteToXml method
+                if(v instanceof DefaultListenableVertex)
+                {
+                    DefaultListenableVertex lv = (DefaultListenableVertex)v;
+                    lv.WriteToXml(doc, graphnode, "n"+i);
+                }
+                // v has no own WriteToXml method - write a default GraphML node
+                else 
+                {
+                    Element vertexnode = doc.createElement("node");
+                    vertexnode.setAttribute("id", "n"+i);
+                    graphnode.appendChild(vertexnode);
+                }
             }
             
             i = 1;
@@ -463,17 +472,32 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
                     {
                         if(w == dst)
                         {
-                            Element edgenode = doc.createElement("edge");
-                            edgenode.setAttribute("source", "n"+i);
-                            edgenode.setAttribute("target", "n"+j);
-                            graphnode.appendChild(edgenode);
+                            
+                            // e has its own WriteToXml method
+                            if(e instanceof DefaultListenableEdge)
+                            {
+                                DefaultListenableEdge le = (DefaultListenableEdge)e;
+                                le.WriteToXml(doc, graphnode, "n"+i, "n"+j);
+                            }
+                            // e has no own WriteToXml method - write a default GraphML edge
+                            else
+                            {
+                                Element edgenode = doc.createElement("edge");
+                                edgenode.setAttribute("source", "n"+i);
+                                edgenode.setAttribute("target", "n"+j);
+                                edgenode.setAttribute("directed","false");
+                                graphnode.appendChild(edgenode);
+                            }
                             break;
+                            
                         }
                         j++;
                     }
                 }
                 i++;
             }
+            
+            return graphnode;
         }
         
 }

@@ -104,64 +104,69 @@ public class Document implements UndoManagerListener, DocumentContentListener {
 		return title;
 	}
 	
-	public void save() throws UserException, OperationAbortedException, ParserConfigurationException, TransformerException {
-		if (file == null) {
-			file = MainPad.getInstance().showFileDialog( content.getClass(), "Save " + getName() );
+	public void save() throws UserException {
+            
+                if (file == null) {
+                        file = MainPad.getInstance().showFileDialog( content.getClass(), "Save " + getName() );
 			
-			if ( file == null )
-				throw new OperationAbortedException();
-			if ( file.exists() ) {
+			if ( file != null && file.exists() ) {
 				if ( !MainPad.getInstance().shouldOverrideFileDialog( file ) ) {
 					file = null;
-					return;
 				}
 			}
-			hasNotUndoAbleButUnSavedChanges = false;
 		}
 		
+                if ( file == null )
+                        return;
+
 		try {
 			if ( ! file.exists( ) )
 				file.createNewFile();
                         
-			//content.write( DocumentContentFactory.getInstance().getFileFormat( file ), new FileOutputStream( file ) );
-                        //TrivialGraphFormat tgf = new TrivialGraphFormat();
-                        //tgf.Export(new FileOutputStream( file ), content.getGraph().getGraphT().getGraph());
+			/*
+                        FileOutputStream out = new FileOutputStream( file );
+                        content.write( DocumentContentFactory.getInstance().getFileFormat( file ), out );
+                        */
+                        
+                        /*
+                        TrivialGraphFormat tgf = new TrivialGraphFormat();
+                        tgf.Export(new FileOutputStream( file ), content.getGraph().getGraphT().getGraph());
+                        */
                   
                         content.getGraph().getGraphT().WriteToFile(file);
                                 
 			undoManager.discardAllEdits();
+                        hasNotUndoAbleButUnSavedChanges = false;
 			fireDocumentModifiedStatusChanged();
+                        
 		} catch (FileNotFoundException e) {
 			throw new UserException( "unable to save document to file: " + file, e );
 		//} catch (InputOutputException e) {
 		//	throw new UserException( "unable to save document to file: " + file, e );
 		} catch (IOException e) {
-			throw new UserException( "unable to save document to file: " + file, e );
-		}
+                        throw new UserException( "unable to save document to file: " + file, e );
+                } catch (ParserConfigurationException e) {
+                        throw new UserException( "unable to save document to file: " + file, e );
+                } catch (TransformerException e) {
+                        throw new UserException( "unable to save document to file: " + file, e );
+                }
+                
 	}
 	
 	public void saveAs() throws UserException {
-		File newFile = MainPad.getInstance().showFileDialog( content.getClass(), "Save " +  getName() + " As" );
-
-		if ( newFile != null ) {
-			if ( newFile.exists() ) {
-				if ( ! MainPad.getInstance().shouldOverrideFileDialog( newFile ) )
-					return;
-			}
-			try {
-				FileOutputStream out = new FileOutputStream( newFile );
-				content.write( DocumentContentFactory.getInstance().getFileFormat( newFile ), out );
-				
-				undoManager.discardAllEdits();
-				file = newFile;
-				fireDocumentModifiedStatusChanged();
-				
-			} catch (FileNotFoundException e) {
-				throw new UserException( "Error writing to file: " + file, e );
-			} catch (InputOutputException e) {
-				throw new UserException( "Error writing to file: " + file, e );
-			}
-		}
+            
+            File newFile = MainPad.getInstance().showFileDialog( content.getClass(), "Save " +  getName() + " As" );
+            
+            if ( newFile == null )
+                return;
+            
+            if ( newFile.exists() ) {
+                if ( ! MainPad.getInstance().shouldOverrideFileDialog( newFile ) )
+                    return;
+            }
+                            
+	    file = newFile;
+            save();
 	}
 	
 	public void rename() throws UserException {

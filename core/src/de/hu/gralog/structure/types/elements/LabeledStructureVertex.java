@@ -18,6 +18,9 @@
  */
 package de.hu.gralog.structure.types.elements;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  * This class defines a LabeledStructureVertex, which is a GrALoG-Vertex that has a
  * label. It can be seen as an example of how to implement vertexTypes in
@@ -79,4 +82,11 @@ public class LabeledStructureVertex extends DefaultListenableVertex {
 	public String toString() {
 		return label;
 	}
+        
+        
+        public Element WriteToXml(Document doc, Element parent, String id) {
+            Element v = super.WriteToXml(doc, parent, id);
+            v.setAttribute("label", label);
+            return v;
+        }
 }

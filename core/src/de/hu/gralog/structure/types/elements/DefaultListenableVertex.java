@@ -19,6 +19,8 @@
 package de.hu.gralog.structure.types.elements;
 
 import de.hu.gralog.beans.support.DefaultPropertyAndDisplayChangeListenableBean;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * This class provides the default functionality for vertices in GrALoG. Like
@@ -63,4 +65,29 @@ public class DefaultListenableVertex extends
 		displayChangeSupport.addVertexForDefaultChange(this);
 	}
 
+        public Element WriteToXml(Document doc, Element parent, String id) {
+            //Namespace y = Namespace.getNamespace("y", "http://www.yworks.com/xml/graphml");
+            String y = "http://www.yworks.com/xml/graphml";
+            
+            Element vertexnode = doc.createElement("node");
+            vertexnode.setAttribute("id", id);
+            parent.appendChild(vertexnode);
+
+            Element data = doc.createElement("data");
+            data.setAttribute("key", "d6");
+            vertexnode.appendChild(data);
+                
+            Element ShapeNode = doc.createElementNS(y,"ShapeNode");
+            data.appendChild(ShapeNode);
+                
+            Element Geometry = doc.createElementNS(y,"Geometry");
+            Geometry.setAttribute("height", "1.0");
+            Geometry.setAttribute("width", "1.0");
+            Geometry.setAttribute("x", "0");
+            Geometry.setAttribute("y", "0");
+            ShapeNode.appendChild(Geometry);
+            
+            return vertexnode;
+        }
+                
 }

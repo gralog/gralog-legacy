@@ -27,6 +27,8 @@ import de.hu.gralog.beans.event.DisplayChangeListenable;
 import de.hu.gralog.beans.event.DisplayChangeListener;
 import de.hu.gralog.beans.event.DisplayChangeSupport;
 import de.hu.gralog.beans.event.PropertyChangeListenable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * 
@@ -69,4 +71,13 @@ public class DefaultListenableEdge extends DefaultEdge implements
 	public void removeDisplayChangeListener(DisplayChangeListener l) {
 		displayChangeSupport.removeDisplayChangeListener(l);
 	}
+        
+        public Element WriteToXml(Document doc, Element parent, String srcid, String dstid) {
+            Element edgenode = doc.createElement("edge");
+            edgenode.setAttribute("source", srcid);
+            edgenode.setAttribute("target", dstid);
+            edgenode.setAttribute("directed","false");
+            parent.appendChild(edgenode);
+            return edgenode;
+        }
 }
