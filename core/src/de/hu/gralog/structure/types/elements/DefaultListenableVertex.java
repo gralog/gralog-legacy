@@ -79,7 +79,7 @@ public class DefaultListenableVertex extends
                 
             Element ShapeNode = doc.createElementNS(y,"ShapeNode");
             data.appendChild(ShapeNode);
-                
+            
             Element Geometry = doc.createElementNS(y,"Geometry");
             Geometry.setAttribute("height", "1.0");
             Geometry.setAttribute("width", "1.0");

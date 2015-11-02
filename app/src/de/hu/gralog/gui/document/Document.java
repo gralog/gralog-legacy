@@ -133,6 +133,7 @@ public class Document implements UndoManagerListener, DocumentContentListener {
                         tgf.Export(new FileOutputStream( file ), content.getGraph().getGraphT().getGraph());
                         */
                   
+                        //Hashtable<V,Point> x = content.getGraph().getGModel().getVertexPositions();
                         content.getGraph().getGraphT().WriteToFile(file);
                                 
 			undoManager.discardAllEdits();

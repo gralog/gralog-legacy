@@ -20,7 +20,7 @@ package de.hu.gralog.structure;
 import de.hu.gralog.structure.types.elements.*;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.Hashtable;
 import javax.xml.transform.OutputKeys;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -424,7 +424,14 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
             node.appendChild(graphnode);
             
             
+            
             /*
+            
+            WHAT THE FUCK!?
+            so you cannot use mixed graphs!?
+            and you cannot distinguish directed from undirected graphs except
+            by the edgerenderer they use!?
+            
             if(this instanceof ListenableDirectedGraph) {
                     graphnode.setAttribute("edgedefault", "directed");
             }
@@ -434,12 +441,11 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
             */
             
             
-            Vector<V> vertices = new Vector<V>();
-            int i = 1;
+            Hashtable<V,Integer> nodeIndex = new Hashtable<V,Integer>();
+            int i = 0;
             for (V v : graph.vertexSet())
             {
-                vertices.add(v);
-                i++;
+                nodeIndex.put(v, ++i);
 
                 // v has its own WriteToXml method
                 if(v instanceof DefaultListenableVertex)
@@ -455,46 +461,29 @@ public class Structure<V, E, GB, G extends ListenableGraph<V, E>> {
                     graphnode.appendChild(vertexnode);
                 }
             }
-            
-            i = 1;
-            for(V v : graph.vertexSet())
+
+            for(E e : graph.edgeSet())
             {
-                for(E e : graph.edgesOf(v))
+                Object src = graph.getEdgeSource(e);
+                Object dst = graph.getEdgeTarget(e);
+                Integer srcidx = nodeIndex.get(src);
+                Integer dstidx = nodeIndex.get(dst);
+            
+                // e has its own WriteToXml method
+                if(e instanceof DefaultListenableEdge)
                 {
-                    Object src = graph.getEdgeSource(e);
-                    if(src != v)
-                        continue;
-                    Object dst = graph.getEdgeTarget(e);
-                    
-                    // slow and stupid - I want to store the indexes in a map...
-                    int j = 1;
-                    for(V w : graph.vertexSet())
-                    {
-                        if(w == dst)
-                        {
-                            
-                            // e has its own WriteToXml method
-                            if(e instanceof DefaultListenableEdge)
-                            {
-                                DefaultListenableEdge le = (DefaultListenableEdge)e;
-                                le.WriteToXml(doc, graphnode, "n"+i, "n"+j);
-                            }
-                            // e has no own WriteToXml method - write a default GraphML edge
-                            else
-                            {
-                                Element edgenode = doc.createElement("edge");
-                                edgenode.setAttribute("source", "n"+i);
-                                edgenode.setAttribute("target", "n"+j);
-                                edgenode.setAttribute("directed","false");
-                                graphnode.appendChild(edgenode);
-                            }
-                            break;
-                            
-                        }
-                        j++;
-                    }
+                    DefaultListenableEdge le = (DefaultListenableEdge)e;
+                    le.WriteToXml(doc, graphnode, "n"+srcidx, "n"+dstidx);
                 }
-                i++;
+                // e has no own WriteToXml method - write a default GraphML edge
+                else
+                {
+                    Element edgenode = doc.createElement("edge");
+                    edgenode.setAttribute("source", "n"+srcidx);
+                    edgenode.setAttribute("target", "n"+dstidx);
+                    //edgenode.setAttribute("directed","false");
+                    graphnode.appendChild(edgenode);
+                }                
             }
             
             return graphnode;

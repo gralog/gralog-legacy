@@ -76,7 +76,7 @@ public class DefaultListenableEdge extends DefaultEdge implements
             Element edgenode = doc.createElement("edge");
             edgenode.setAttribute("source", srcid);
             edgenode.setAttribute("target", dstid);
-            edgenode.setAttribute("directed","false");
+            //edgenode.setAttribute("directed","false");
             parent.appendChild(edgenode);
             return edgenode;
         }
